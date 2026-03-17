@@ -8,10 +8,10 @@ class CalendarUtils {
   }
 
   /// The grouping logic moved to a static utility method
-  static LinkedHashMap<DateTime, List<T>> groupEventDates<T>(
-    List<T> eventList,
-    DateTime? Function(T event) dateNormalizer,
-  ) {
+  static LinkedHashMap<DateTime, List<T>> groupEventDates<T>({
+    required List<T> eventList,
+    required DateTime? Function(T event) dateNormalizer,
+  }) {
     final map = LinkedHashMap<DateTime, List<T>>(
       equals: isSameDay,
       hashCode: getHashCode,
@@ -31,6 +31,19 @@ class CalendarUtils {
     }
 
     return map;
+  }
+
+  static LinkedHashMap<DateTime, List<T>> fromMap<T>(
+    Map<DateTime, List<T>> map,
+  ) {
+    final linkedMap = LinkedHashMap<DateTime, List<T>>(
+      equals: isSameDay,
+      hashCode: (DateTime key) =>
+          key.day * 1000000 + key.month * 10000 + key.year,
+    );
+
+    linkedMap.addAll(map);
+    return linkedMap;
   }
 
   static LinkedHashMap<DateTime, List<T>> emptyEvent<T>() {

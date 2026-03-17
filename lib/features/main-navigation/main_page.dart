@@ -34,6 +34,7 @@ class _MainPageState extends State<MainPage> {
         children: [
           PageView(
             controller: _pageController,
+            physics: NeverScrollableScrollPhysics(),
             onPageChanged: _onPageChanged,
             children: const [HomePage(), CalendarPage()],
           ),
@@ -72,7 +73,7 @@ class _MainPageState extends State<MainPage> {
     return GestureDetector(
       onTap: () => _onNavTap(index),
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 6),
         decoration: BoxDecoration(
           color: isActive ? const Color(0xFFFFE5D9) : Colors.transparent,
           borderRadius: BorderRadius.circular(30),
@@ -80,7 +81,11 @@ class _MainPageState extends State<MainPage> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(icon, color: isActive ? Colors.orange[900] : Colors.grey),
+            Icon(
+              icon,
+              size: 20,
+              color: isActive ? Colors.orange[900] : Colors.grey,
+            ),
             Text(
               label,
               style: TextStyle(

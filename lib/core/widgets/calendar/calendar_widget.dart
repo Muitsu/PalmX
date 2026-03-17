@@ -6,7 +6,7 @@ import 'package:table_calendar/table_calendar.dart';
 
 class CalendarWidget<T> extends StatefulWidget {
   final LinkedHashMap<DateTime, List<T>> eventData;
-  final DateTimeRange showDateRange;
+  final DateTimeRange? showDateRange;
   final DateTime focusedDay;
   final void Function(DateTime)? onPageChanged;
   final void Function(List<T>, DateTime selectedDay)? onDaySelected;
@@ -16,8 +16,8 @@ class CalendarWidget<T> extends StatefulWidget {
   const CalendarWidget({
     super.key,
     required this.eventData,
-    required this.showDateRange,
     required this.focusedDay,
+    this.showDateRange,
     this.onPageChanged,
     this.calendarFormat = CalendarFormat.month,
     this.onDaySelected,
@@ -109,14 +109,43 @@ class _CalendarWidgetState<T> extends State<CalendarWidget<T>> {
           padding: widget.padding,
           child: TableCalendar(
             onCalendarCreated: (controller) => _pageController = controller,
-            firstDay: widget.showDateRange.start,
-            lastDay: widget.showDateRange.end,
+            firstDay:
+                widget.showDateRange?.start ??
+                DateTime(
+                  DateTime.now().year,
+                  DateTime.now().month - 3,
+                  DateTime.now().day,
+                ),
+            lastDay:
+                widget.showDateRange?.end ??
+                DateTime(
+                  DateTime.now().year,
+                  DateTime.now().month + 3,
+                  DateTime.now().day,
+                ),
             focusedDay: _focusedDay.value,
             startingDayOfWeek: StartingDayOfWeek.monday,
             daysOfWeekStyle: DaysOfWeekStyle(
               weekendStyle: TextStyle(color: Colors.red.withValues(alpha: .7)),
             ),
-            calendarStyle: CalendarStyle(outsideDaysVisible: false),
+            calendarStyle: CalendarStyle(
+              outsideDaysVisible: false,
+
+              todayDecoration: BoxDecoration(
+                color: Colors.orange.withValues(alpha: 0.3),
+                shape: BoxShape.rectangle,
+                borderRadius: BorderRadius.circular(8),
+              ),
+              selectedDecoration: BoxDecoration(
+                color: Colors.orange[800],
+                shape: BoxShape.rectangle,
+                borderRadius: BorderRadius.circular(8),
+              ),
+              markerDecoration: const BoxDecoration(
+                color: Colors.deepOrange,
+                shape: BoxShape.circle,
+              ),
+            ),
             calendarBuilders: CalendarBuilders(
               markerBuilder: (context, day, events) {
                 if (events.isEmpty) return const SizedBox();

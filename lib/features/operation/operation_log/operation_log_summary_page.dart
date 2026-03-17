@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:palmx/features/operation/ol_form_page.dart';
+import 'operation_log_form_page.dart';
 
 class OperationLogSummaryPage extends StatelessWidget {
   const OperationLogSummaryPage({super.key});

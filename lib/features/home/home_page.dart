@@ -120,14 +120,17 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _buildFilterChips() {
-    return Row(
-      children: [
-        _chip("All Operations", true),
-        const SizedBox(width: 8),
-        _chip("Harvesting", false),
-        const SizedBox(width: 8),
-        _chip("Maintenance", false),
-      ],
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: Row(
+        children: [
+          _chip("All Operations", true),
+          const SizedBox(width: 8),
+          _chip("Harvesting", false),
+          const SizedBox(width: 8),
+          _chip("Maintenance", false),
+        ],
+      ),
     );
   }
 
