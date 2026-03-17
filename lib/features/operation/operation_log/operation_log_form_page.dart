@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:palmx/core/widgets/input/custom_date_picker.dart';
+import 'package:palmx/core/widgets/utils.dart';
 import 'package:palmx/features/operation/cost_table/edit_cost_dialog.dart';
 
 class OperationLogFormPage extends StatefulWidget {
@@ -14,6 +16,8 @@ class _OperationLogFormPageState extends State<OperationLogFormPage> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
+        scrolledUnderElevation: 0,
+
         backgroundColor: Colors.white,
         elevation: 0,
         leading: IconButton(
@@ -40,56 +44,61 @@ class _OperationLogFormPageState extends State<OperationLogFormPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildLabel("Date"),
-            _buildTextField(
-              hint: "mm/dd/yyyy",
-              icon: Icons.calendar_today_outlined,
-              isDate: true,
+            buildTextField(
+              prefixWidget: Icon(Icons.calendar_today_outlined),
+              label: "Date",
+              hint: "dd/mm/yyyy",
+              isDropdown: true,
+              onTap: () async {
+                await CustomDatePicker.show(
+                  context: context,
+                  type: DatePickerType.single,
+                );
+              },
             ),
-
-            _buildLabel("Activity Type"),
-            _buildDropdownField(
-              "Harvesting & Collection",
-              Icons.shopping_bag_outlined,
+            const SizedBox(height: 10),
+            //Dropdown
+            buildTextField(
+              prefixWidget: Icon(Icons.shopping_bag_outlined),
+              label: "Activity Type",
+              hint: "Harvesting & Collection",
+              isDropdown: true,
             ),
-
-            _buildLabel("Field"),
-            _buildDropdownField(
-              "Division A - Block 12",
-              Icons.location_on_outlined,
+            const SizedBox(height: 10),
+            //Dropdown
+            buildTextField(
+              prefixWidget: Icon(Icons.location_on_outlined),
+              label: "Field",
+              hint: "Division A - Block 12",
+              isDropdown: true,
             ),
-
+            const SizedBox(height: 10),
             Row(
               children: [
                 Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      _buildLabel("Ha today"),
-                      _buildTextField(
-                        hint: "0.00",
-                        icon: Icons.architecture_outlined,
-                      ),
-                    ],
+                  child: buildTextField(
+                    prefixWidget: Icon(Icons.architecture_outlined),
+                    label: "Ha today",
+                    hint: "0.00",
+                    keyboardType: TextInputType.number,
                   ),
                 ),
                 const SizedBox(width: 15),
                 Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      _buildLabel("Mandays"),
-                      _buildTextField(hint: "0", icon: Icons.group_outlined),
-                    ],
+                  child: buildTextField(
+                    prefixWidget: Icon(Icons.group_outlined),
+                    label: "Mandays",
+                    hint: "0",
+                    keyboardType: TextInputType.number,
                   ),
                 ),
               ],
             ),
-
-            _buildLabel("Remarks"),
-            _buildTextField(
+            const SizedBox(height: 10),
+            buildTextField(
+              prefixWidget: Icon(Icons.edit_note_outlined),
+              label: "Remarks",
               hint: "Additional observations...",
-              icon: Icons.edit_note_outlined,
               maxLines: 3,
             ),
 
@@ -123,67 +132,6 @@ class _OperationLogFormPageState extends State<OperationLogFormPage> {
             const SizedBox(height: 20),
           ],
         ),
-      ),
-    );
-  }
-
-  // --- UI Components ---
-  Widget _buildLabel(String text) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 8, top: 12),
-      child: Text(
-        text,
-        style: const TextStyle(
-          fontWeight: FontWeight.bold,
-          color: Colors.blueGrey,
-          fontSize: 13,
-        ),
-      ),
-    );
-  }
-
-  Widget _buildTextField({
-    required String hint,
-    required IconData icon,
-    bool isDate = false,
-    int maxLines = 1,
-  }) {
-    return TextField(
-      maxLines: maxLines,
-      decoration: InputDecoration(
-        hintText: hint,
-        hintStyle: const TextStyle(color: Colors.grey),
-        prefixIcon: Icon(icon, color: Colors.blueGrey[300]),
-        suffixIcon: isDate
-            ? const Icon(Icons.calendar_month, color: Colors.orange)
-            : null,
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
-          borderSide: BorderSide(color: Colors.grey.shade200),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
-          borderSide: const BorderSide(color: Colors.orange),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildDropdownField(String value, IconData icon) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: Colors.grey.shade200),
-      ),
-      child: Row(
-        children: [
-          Icon(icon, color: Colors.blueGrey[300]),
-          const SizedBox(width: 12),
-          Text(value, style: const TextStyle(fontSize: 15)),
-          const Spacer(),
-          const Icon(Icons.keyboard_arrow_down, color: Colors.grey),
-        ],
       ),
     );
   }
