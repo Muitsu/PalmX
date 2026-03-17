@@ -1,124 +1,173 @@
 import 'package:flutter/material.dart';
 import 'operation_log_form_page.dart';
 
-class OperationLogSummaryPage extends StatelessWidget {
+class OperationLogSummaryPage extends StatefulWidget {
   const OperationLogSummaryPage({super.key});
+
+  @override
+  State<OperationLogSummaryPage> createState() =>
+      _OperationLogSummaryPageState();
+}
+
+class _OperationLogSummaryPageState extends State<OperationLogSummaryPage> {
+  late ScrollController _scrollController;
+  bool _showTitle = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController = ScrollController();
+
+    // Listen to scroll changes to toggle the AppBar title
+    _scrollController.addListener(() {
+      if (_scrollController.offset > 120 && !_showTitle) {
+        setState(() => _showTitle = true);
+      } else if (_scrollController.offset <= 120 && _showTitle) {
+        setState(() => _showTitle = false);
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Color(0xFF1A2B47)),
-          onPressed: () => Navigator.pop(context),
-        ),
-
-        centerTitle: true,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.edit, color: Color(0xFF1A2B47)),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => OperationLogFormPage()),
-              );
-            },
-          ),
-        ],
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 24),
-        child: Column(
-          children: [
-            const SizedBox(height: 20),
-            // Header Section
-            Center(
-              child: Column(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFFFF4ED),
-                      shape: BoxShape.circle,
-                    ),
-                    child: Icon(
-                      Icons.shield_outlined,
-                      color: Colors.orange[800],
-                      size: 32,
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  const Text(
-                    "Operation Summary",
-                    style: TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                      color: Color(0xFF1A2B47),
-                    ),
-                  ),
-                  const Text(
-                    "Ref ID: #OPS-9942-2024",
-                    style: TextStyle(color: Colors.blueGrey, fontSize: 14),
-                  ),
-                ],
-              ),
+      body: CustomScrollView(
+        controller: _scrollController,
+        slivers: [
+          // The dynamic AppBar
+          SliverAppBar(
+            pinned: true,
+            elevation: 0,
+            scrolledUnderElevation: 0,
+            backgroundColor: Colors.white,
+            surfaceTintColor: Colors.white,
+            leading: IconButton(
+              icon: const Icon(Icons.arrow_back, color: Color(0xFF1A2B47)),
+              onPressed: () => Navigator.pop(context),
             ),
-            const SizedBox(height: 30),
-
-            // Top Info Card
-            _buildInfoCard(),
-
-            const SizedBox(height: 32),
-            const Align(
-              alignment: Alignment.centerLeft,
-              child: Text(
-                "Itemized Statement",
+            // The title that appears/disappears
+            title: AnimatedOpacity(
+              opacity: _showTitle ? 1.0 : 0.0,
+              duration: const Duration(milliseconds: 250),
+              child: const Text(
+                "Operation Summary",
                 style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
                   color: Color(0xFF1A2B47),
+                  fontWeight: FontWeight.bold,
+                  fontSize: 18,
                 ),
               ),
             ),
-            const SizedBox(height: 16),
+            centerTitle: true,
+            actions: [
+              IconButton(
+                icon: const Icon(Icons.edit, color: Color(0xFF1A2B47)),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => const OperationLogFormPage(),
+                    ),
+                  );
+                },
+              ),
+            ],
+          ),
 
-            // Statement List
-            _buildStatementItem(
-              Icons.inventory_2_outlined,
-              "Materials & Supplies",
-              "\$1,240.00",
+          // The Body Content
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24),
+              child: Column(
+                children: [
+                  const SizedBox(height: 20),
+                  // Header Section (This is the one that scrolls away)
+                  Center(
+                    child: Column(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(12),
+                          decoration: const BoxDecoration(
+                            color: Color(0xFFFFF4ED),
+                            shape: BoxShape.circle,
+                          ),
+                          child: Icon(
+                            Icons.shield_outlined,
+                            color: Colors.orange[800],
+                            size: 32,
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        const Text(
+                          "Operation Summary",
+                          style: TextStyle(
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xFF1A2B47),
+                          ),
+                        ),
+                        const Text(
+                          "Ref ID: #OPS-9942-2024",
+                          style: TextStyle(
+                            color: Colors.blueGrey,
+                            fontSize: 14,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 30),
+                  _buildInfoCard(),
+                  const SizedBox(height: 32),
+                  const Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      "Itemized Statement",
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Color(0xFF1A2B47),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  _buildStatementItem(
+                    Icons.inventory_2_outlined,
+                    "Materials & Supplies",
+                    "\$1,240.00",
+                  ),
+                  _buildStatementItem(
+                    Icons.group_outlined,
+                    "Labor (42.5 hrs)",
+                    "\$850.00",
+                  ),
+                  _buildStatementItem(
+                    Icons.handyman_outlined,
+                    "Equipment Rental",
+                    "\$300.00",
+                  ),
+                  _buildStatementItem(
+                    Icons.local_shipping_outlined,
+                    "Logistics & Transport",
+                    "\$125.50",
+                  ),
+                  const SizedBox(height: 24),
+                  _buildTotalCard(),
+                  const SizedBox(height: 40),
+                  _buildDisclaimer(),
+                  const SizedBox(height: 40),
+                ],
+              ),
             ),
-            _buildStatementItem(
-              Icons.group_outlined,
-              "Labor (42.5 hrs)",
-              "\$850.00",
-            ),
-            _buildStatementItem(
-              Icons.handyman_outlined,
-              "Equipment Rental",
-              "\$300.00",
-            ),
-            _buildStatementItem(
-              Icons.local_shipping_outlined,
-              "Logistics & Transport",
-              "\$125.50",
-            ),
-
-            const SizedBox(height: 24),
-
-            // Grand Total Card
-            _buildTotalCard(),
-
-            const SizedBox(height: 40),
-
-            // Footer Disclaimer
-            _buildDisclaimer(),
-            const SizedBox(height: 40),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -214,23 +263,15 @@ class OperationLogSummaryPage extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text(
-                "GRAND TOTAL",
-                style: TextStyle(
-                  color: Colors.orange,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 13,
-                  letterSpacing: 1,
-                ),
-              ),
-              Text(
-                "Net 30 Payment Terms Apply",
-                style: TextStyle(color: Colors.blueGrey[300], fontSize: 10),
-              ),
-            ],
+          const Text(
+            "GRAND TOTAL",
+            style: TextStyle(
+              overflow: TextOverflow.ellipsis,
+              color: Colors.orange,
+              fontWeight: FontWeight.bold,
+              fontSize: 13,
+              letterSpacing: 1,
+            ),
           ),
           const Text(
             "\$2,515.50",

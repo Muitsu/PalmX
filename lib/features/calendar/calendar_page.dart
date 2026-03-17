@@ -22,18 +22,20 @@ class _CalendarPageState extends State<CalendarPage> {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-      child: Column(
-        children: [
-          _buildHeader(),
-          CalendarWidget<String>(
-            eventData: CalendarUtils.fromMap(_events),
-            focusedDay: DateTime.now(),
-          ),
-          _buildLegend(),
-          const Spacer(),
-          _buildEmptyState(),
-          const Spacer(flex: 2),
-        ],
+      child: SingleChildScrollView(
+        child: Column(
+          children: [
+            _buildHeader(),
+            CalendarWidget<String>(
+              eventData: CalendarUtils.fromMap(_events),
+              focusedDay: DateTime.now(),
+            ),
+            _buildLegend(),
+
+            _buildEmptyState(),
+            SizedBox(height: kBottomNavigationBarHeight + 60),
+          ],
+        ),
       ),
     );
   }

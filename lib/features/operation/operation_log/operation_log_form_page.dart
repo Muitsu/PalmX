@@ -1,8 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:palmx/features/operation/cost_table/edit_cost_dialog.dart';
 
-class OperationLogFormPage extends StatelessWidget {
+class OperationLogFormPage extends StatefulWidget {
   const OperationLogFormPage({super.key});
 
+  @override
+  State<OperationLogFormPage> createState() => _OperationLogFormPageState();
+}
+
+class _OperationLogFormPageState extends State<OperationLogFormPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -122,7 +128,6 @@ class OperationLogFormPage extends StatelessWidget {
   }
 
   // --- UI Components ---
-
   Widget _buildLabel(String text) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 8, top: 12),
@@ -209,43 +214,49 @@ class OperationLogFormPage extends StatelessWidget {
     String amount, {
     bool isLast = false,
   }) {
-    return Column(
-      children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8),
-          child: Row(
-            children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      title,
-                      style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 13,
+    return InkWell(
+      onTap: () => showEditCostDialog(context),
+      child: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        title,
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 13,
+                        ),
                       ),
-                    ),
-                    Text(
-                      sub,
-                      style: const TextStyle(color: Colors.grey, fontSize: 11),
-                    ),
-                  ],
+                      Text(
+                        sub,
+                        style: const TextStyle(
+                          color: Colors.grey,
+                          fontSize: 11,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-              Text(
-                "RM $amount",
-                style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 13,
+                Text(
+                  "RM $amount",
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 13,
+                  ),
                 ),
-              ),
-              const Icon(Icons.chevron_right, size: 18, color: Colors.grey),
-            ],
+                const Icon(Icons.chevron_right, size: 18, color: Colors.grey),
+              ],
+            ),
           ),
-        ),
-        if (!isLast) Divider(color: Colors.grey.shade200),
-      ],
+          if (!isLast) Divider(color: Colors.grey.shade200),
+        ],
+      ),
     );
   }
 

@@ -42,7 +42,7 @@ class _MainPageState extends State<MainPage> {
             bottom: 30,
             left: 0,
             right: 0,
-            child: Center(child: _buildCustomNavBar()),
+            child: _buildCustomNavBar(),
           ),
           if (_currentIndex == 0) _buildFloatingActionButton(),
         ],
@@ -52,18 +52,34 @@ class _MainPageState extends State<MainPage> {
 
   Widget _buildCustomNavBar() {
     return Container(
-      padding: const EdgeInsets.all(6),
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(40),
-        boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 10)],
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [
+            Colors.white.withValues(alpha: 0.0), // Transparent top
+            Colors.white.withValues(alpha: 0.6), // Semi-solid middle
+            Colors.white, // Solid bottom
+          ],
+          stops: const [0.0, 0.4, 1.0],
+        ),
       ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          _navItem(Icons.home_outlined, "HOME", 0),
-          _navItem(Icons.calendar_month_outlined, "CALENDAR", 1),
-        ],
+      child: Center(
+        child: Container(
+          padding: const EdgeInsets.all(6),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(40),
+            boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 10)],
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              _navItem(Icons.home_outlined, "HOME", 0),
+              _navItem(Icons.calendar_month_outlined, "CALENDAR", 1),
+            ],
+          ),
+        ),
       ),
     );
   }
