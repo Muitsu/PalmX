@@ -35,6 +35,7 @@ class CustomTextField extends StatelessWidget {
   final FocusNode? focusNode;
   final InputBorder? focusedBorder;
   final void Function(PointerDownEvent)? onTapOutside;
+  final TextAlign textAlign;
   const CustomTextField({
     super.key,
     this.title,
@@ -70,6 +71,7 @@ class CustomTextField extends StatelessWidget {
     this.enabledBorderColor = const Color(0xFFDEDEDE),
     this.focusedBorder,
     this.onTapOutside,
+    this.textAlign = TextAlign.start,
   });
 
   @override
@@ -113,7 +115,7 @@ class CustomTextField extends StatelessWidget {
           validator: validator,
           onTap: onTap,
           onTapOutside: onTapOutside,
-
+          textAlign: textAlign,
           style: style,
           onChanged: onChanged,
           inputFormatters: inputFormatters,

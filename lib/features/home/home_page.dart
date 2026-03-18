@@ -51,21 +51,21 @@ class _HomePageState extends State<HomePage> {
           _operationItem(
             "Fertilizing - Block A",
             "Oct 24, 2023 • Maintenance",
-            "\$1,200.00",
+            "RM 1,200.00",
             "PAID",
             Colors.orange,
           ),
           _operationItem(
             "Harvesting - Section 12",
             "Oct 23, 2023 • Labor",
-            "\$3,450.50",
+            "RM 3,450.50",
             "PENDING",
             Colors.deepOrange,
           ),
           _operationItem(
             "FFB Transport to Mill",
             "Oct 22, 2023 • Logistics",
-            "\$850.00",
+            "RM 850.00",
             "PAID",
             Colors.blue,
           ),
@@ -97,7 +97,7 @@ class _HomePageState extends State<HomePage> {
           Row(
             children: [
               const Text(
-                "\$12,450.00",
+                "RM 12,450.00",
                 style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
               ),
               const SizedBox(width: 8),

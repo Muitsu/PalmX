@@ -1,7 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:palmx/core/widgets/input/custom_date_picker.dart';
+import 'package:palmx/core/widgets/input/custom_dropdown_sheet.dart';
+import 'package:palmx/core/widgets/input_formatter/currency_input_formatter.dart';
+import 'package:palmx/core/widgets/modal/custom_draggable_sheet.dart';
 import 'package:palmx/core/widgets/utils.dart';
-import 'package:palmx/features/operation/cost_table/edit_cost_dialog.dart';
+import 'package:palmx/features/operation/cost_table/driver_cost_sheet.dart';
+import 'package:palmx/features/operation/cost_table/evit_cost_sheet.dart';
+import 'package:palmx/features/operation/cost_table/labour_cost_sheet.dart';
+import 'package:palmx/features/operation/cost_table/material_cost_sheet.dart';
+import 'package:palmx/features/operation/cost_table/supervision_cost_sheet.dart';
 
 class OperationLogFormPage extends StatefulWidget {
   const OperationLogFormPage({super.key});
@@ -45,6 +53,7 @@ class _OperationLogFormPageState extends State<OperationLogFormPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             buildTextField(
+              ctrl: null,
               prefixWidget: Icon(Icons.calendar_today_outlined),
               label: "Date",
               hint: "dd/mm/yyyy",
@@ -59,43 +68,75 @@ class _OperationLogFormPageState extends State<OperationLogFormPage> {
             const SizedBox(height: 10),
             //Dropdown
             buildTextField(
+              ctrl: null,
               prefixWidget: Icon(Icons.shopping_bag_outlined),
               label: "Activity Type",
               hint: "Harvesting & Collection",
               isDropdown: true,
+              onTap: () {
+                CustomDropdownSheet.show<String>(
+                  context,
+                  label: "Activity",
+                  accentColor: Colors.deepOrange,
+                  items: ["A", "B", "C"],
+                  groupValue: "A",
+                  getTitle: (item) => item,
+                  onChange: (item) {},
+                );
+              },
             ),
             const SizedBox(height: 10),
             //Dropdown
             buildTextField(
+              ctrl: null,
               prefixWidget: Icon(Icons.location_on_outlined),
               label: "Field",
               hint: "Division A - Block 12",
               isDropdown: true,
+              onTap: () {
+                CustomDropdownSheet.show<String>(
+                  context,
+                  label: "Field",
+                  accentColor: Colors.deepOrange,
+                  items: ["A", "B", "C"],
+                  groupValue: "A",
+                  getTitle: (item) => item,
+                  onChange: (item) {},
+                );
+              },
             ),
             const SizedBox(height: 10),
             Row(
               children: [
                 Expanded(
                   child: buildTextField(
+                    ctrl: null,
                     prefixWidget: Icon(Icons.architecture_outlined),
                     label: "Ha today",
                     hint: "0.00",
                     keyboardType: TextInputType.number,
+                    inputFormatters: [
+                      FilteringTextInputFormatter.digitsOnly,
+                      CurrencyInputFormatter(),
+                    ],
                   ),
                 ),
                 const SizedBox(width: 15),
                 Expanded(
                   child: buildTextField(
+                    ctrl: null,
                     prefixWidget: Icon(Icons.group_outlined),
                     label: "Mandays",
                     hint: "0",
                     keyboardType: TextInputType.number,
+                    inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                   ),
                 ),
               ],
             ),
             const SizedBox(height: 10),
             buildTextField(
+              ctrl: null,
               prefixWidget: Icon(Icons.edit_note_outlined),
               label: "Remarks",
               hint: "Additional observations...",
@@ -146,11 +187,65 @@ class _OperationLogFormPageState extends State<OperationLogFormPage> {
       ),
       child: Column(
         children: [
-          _costItem("Labour cost", "12 workers x RM65.00", "780.00"),
-          _costItem("Supervision cost", "2 units x RM85.00", "170.00"),
-          _costItem("Driver cost", "4 units x RM55.00", "220.00"),
-          _costItem("Material cost", "50 bags x RM45.50", "2,275.00"),
-          _costItem("Evit cost", "System overhead 10%", "344.50", isLast: true),
+          _costItem(
+            "Labour cost",
+            "12 workers x RM65.00",
+            "780.00",
+            onTap: () {
+              CustomDraggableSheet.show(
+                context: context,
+                maxChildSize: .9,
+                minChildSize: .6,
+                initialChildSize: .85,
+                builder: (_, sc) => LabourCostSheet(sc: sc),
+              );
+            },
+          ),
+          _costItem(
+            "Supervision cost",
+            "2 units x RM85.00",
+            "170.00",
+            onTap: () {
+              CustomDraggableSheet.show(
+                context: context,
+                builder: (_, _) => SupervisionCostSheet(),
+              );
+            },
+          ),
+          _costItem(
+            "Driver cost",
+            "4 units x RM55.00",
+            "220.00",
+            onTap: () {
+              CustomDraggableSheet.show(
+                context: context,
+                builder: (_, sc) => DriverCostSheet(sc: sc),
+              );
+            },
+          ),
+          _costItem(
+            "Material cost",
+            "50 bags x RM45.50",
+            "2,275.00",
+            onTap: () {
+              CustomDraggableSheet.show(
+                context: context,
+                builder: (_, sc) => MaterialCostSheet(sc: sc),
+              );
+            },
+          ),
+          _costItem(
+            "Evit cost",
+            "System overhead 10%",
+            "344.50",
+            isLast: true,
+            onTap: () {
+              CustomDraggableSheet.show(
+                context: context,
+                builder: (_, sc) => EvitCostSheet(sc: sc),
+              );
+            },
+          ),
         ],
       ),
     );
@@ -160,10 +255,11 @@ class _OperationLogFormPageState extends State<OperationLogFormPage> {
     String title,
     String sub,
     String amount, {
+    void Function()? onTap,
     bool isLast = false,
   }) {
     return InkWell(
-      onTap: () => showEditCostDialog(context),
+      onTap: onTap,
       child: Column(
         children: [
           Padding(

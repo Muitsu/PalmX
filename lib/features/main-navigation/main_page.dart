@@ -66,7 +66,7 @@ class _MainPageState extends State<MainPage> {
       ),
       child: Center(
         child: Container(
-          padding: const EdgeInsets.all(6),
+          padding: const EdgeInsets.all(9),
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(40),

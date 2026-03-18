@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:palmx/core/service/app_navigator.dart';
+import 'package:palmx/core/theme/app_color_pallets.dart';
 import '../service/app_snackbar.dart';
 import 'input/custom_textfield.dart';
 
@@ -49,9 +51,13 @@ Widget buildTextField({
   void Function()? onTap,
   String? Function(String?)? validator,
   bool? isDropdown,
+  List<TextInputFormatter>? inputFormatters,
+  TextAlign textAlign = TextAlign.start,
 }) {
   return CustomTextField(
     title: label,
+    inputFormatters: inputFormatters,
+    textAlign: textAlign,
     hintText: hint,
     controller: ctrl,
     readOnly: (isDropdown == null) ? readOnly : true,
@@ -61,11 +67,15 @@ Widget buildTextField({
     contentPadding: EdgeInsets.all(12),
     hintStyle: const TextStyle(color: Colors.black38, fontSize: 14),
     titleStyle: TextStyle(color: Colors.black54, fontWeight: FontWeight.w500),
-    fillColor: Colors.black.withValues(alpha: 0.05),
-    style: const TextStyle(color: Colors.white),
+    fillColor: Colors.black.withValues(alpha: 0.01),
+    style: const TextStyle(color: Colors.black),
     prefixWidget: prefixWidget,
     suffixWidget: (isDropdown ?? false) ? Icon(Icons.arrow_drop_down) : null,
     addBorder: true,
+    focusedBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(12),
+      borderSide: BorderSide(color: AppColorPalettes.light.primary),
+    ),
     maxLines: maxLines,
     onTapOutside: (PointerDownEvent event) {
       FocusManager.instance.primaryFocus?.unfocus();

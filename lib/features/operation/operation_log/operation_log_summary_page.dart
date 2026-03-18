@@ -141,22 +141,22 @@ class _OperationLogSummaryPageState extends State<OperationLogSummaryPage> {
                   _buildStatementItem(
                     Icons.inventory_2_outlined,
                     "Materials & Supplies",
-                    "\$1,240.00",
+                    "RM 1,240.00",
                   ),
                   _buildStatementItem(
                     Icons.group_outlined,
                     "Labor (42.5 hrs)",
-                    "\$850.00",
+                    "RM 850.00",
                   ),
                   _buildStatementItem(
                     Icons.handyman_outlined,
                     "Equipment Rental",
-                    "\$300.00",
+                    "RM 300.00",
                   ),
                   _buildStatementItem(
                     Icons.local_shipping_outlined,
                     "Logistics & Transport",
-                    "\$125.50",
+                    "RM 125.50",
                   ),
                   const SizedBox(height: 24),
                   _buildTotalCard(),
@@ -274,7 +274,7 @@ class _OperationLogSummaryPageState extends State<OperationLogSummaryPage> {
             ),
           ),
           const Text(
-            "\$2,515.50",
+            "RM 2,515.50",
             style: TextStyle(
               fontSize: 28,
               fontWeight: FontWeight.bold,

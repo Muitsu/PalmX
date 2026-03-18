@@ -13,52 +13,57 @@ class DatePickerResult {
 }
 
 class CustomDatePicker {
-  static ThemeData _datePickerTheme(BuildContext context) =>
-      Theme.of(context).copyWith(
-        datePickerTheme: DatePickerThemeData(
-          //header
-          headerBackgroundColor: Color(0xFF181818),
-          rangePickerHeaderBackgroundColor: Colors.blue.shade800,
-          headerForegroundColor: Colors.white,
-          rangePickerHeaderForegroundColor: Colors.white,
-          //header divider
-          dividerColor: Color(0xFF181818),
-          //background
-          backgroundColor: Color(0xFF212121),
-          rangePickerBackgroundColor: Colors.white,
-          //Month text
-          subHeaderForegroundColor: Colors.white,
-          //Calendar text
-          weekdayStyle: const TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.w600,
-          ),
-          dayBackgroundColor: _colorState(
-            selected: Colors.blue.shade800,
-            unSelected: Colors.transparent,
-            disable: Colors.transparent,
-          ),
-          dayForegroundColor: _colorState(
-            selected: Colors.white,
-            unSelected: Colors.white,
-            disable: Colors.white30,
-          ),
-          todayBackgroundColor: _colorState(
-            selected: Colors.blue.shade800,
-            unSelected: Colors.white30,
-            disable: Colors.transparent,
-          ),
-          todayForegroundColor: WidgetStateColor.resolveWith(
-            (_) => Colors.black,
-          ),
+  static ThemeData _datePickerTheme(
+    BuildContext context,
+  ) => Theme.of(context).copyWith(
+    datePickerTheme: DatePickerThemeData(
+      //header
+      headerBackgroundColor: Colors.orange,
+      rangePickerHeaderBackgroundColor: Colors.orange.shade800,
+      headerForegroundColor: Colors.white,
+      rangePickerHeaderForegroundColor: Colors.black,
+      //header divider
+      dividerColor: Colors.black12,
+      //background
+      backgroundColor: Colors.white,
+      rangePickerBackgroundColor: Colors.black,
+      //Month text
+      subHeaderForegroundColor: Colors.black,
+      //Calendar text
+      weekdayStyle: const TextStyle(
+        color: Colors.black,
+        fontWeight: FontWeight.w600,
+      ),
+      dayBackgroundColor: _colorState(
+        selected: Colors.orange.shade800,
+        unSelected: Colors.transparent,
+        disable: Colors.transparent,
+      ),
+      dayForegroundColor: _colorState(
+        selected: Colors.black,
+        unSelected: Colors.black,
+        disable: Colors.black38,
+      ),
+      todayBackgroundColor: _colorState(
+        selected: Colors.orange.shade800,
+        unSelected: Colors.black38,
+        disable: Colors.transparent,
+      ),
+      todayForegroundColor: WidgetStateColor.resolveWith((_) => Colors.black),
 
-          yearForegroundColor: WidgetStateColor.resolveWith((_) => Colors.blue),
+      yearForegroundColor: WidgetStateColor.resolveWith((_) => Colors.orange),
 
-          //button
-          confirmButtonStyle: _colorChange(Colors.white),
-          cancelButtonStyle: _colorChange(Colors.white54),
-        ),
-      );
+      //button
+      confirmButtonStyle: _colorChange(
+        background: Colors.orange,
+        foreground: Colors.black,
+      ),
+      cancelButtonStyle: _colorChange(
+        background: Colors.black12,
+        foreground: Colors.black54,
+      ),
+    ),
+  );
 
   /// Shows the picker dialog
   static Future<DatePickerResult?> show({
@@ -111,14 +116,17 @@ class CustomDatePicker {
     return null;
   }
 
-  static ButtonStyle _colorChange(Color color) {
+  static ButtonStyle _colorChange({
+    required Color background,
+    required Color foreground,
+  }) {
     return ButtonStyle(
       backgroundColor: _colorState(
         selected: Colors.red,
-        unSelected: Colors.white10,
+        unSelected: background,
         disable: Colors.green,
       ),
-      foregroundColor: WidgetStatePropertyAll(color),
+      foregroundColor: WidgetStatePropertyAll(foreground),
     );
   }
 
