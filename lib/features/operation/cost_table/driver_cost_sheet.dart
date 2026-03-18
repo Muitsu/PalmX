@@ -97,7 +97,11 @@ class _DriverCostSheetState extends State<DriverCostSheet> {
                         label: 'Mandays',
                         hint: '',
                         ctrl: mandaysController,
-                        keyboardType: TextInputType.number,
+                        readOnly: true,
+                        inputFormatters: [
+                          FilteringTextInputFormatter.digitsOnly,
+                          CurrencyInputFormatter(),
+                        ],
                         textAlign: TextAlign.center,
                       ),
 
