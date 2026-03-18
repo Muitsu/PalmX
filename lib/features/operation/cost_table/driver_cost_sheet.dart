@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_animate/flutter_animate.dart';
+import 'package:palmx/core/widgets/input_formatter/currency_input_formatter.dart';
 import 'package:palmx/core/widgets/utils.dart';
 
 class DriverCostSheet extends StatefulWidget {
@@ -20,115 +23,145 @@ class _DriverCostSheetState extends State<DriverCostSheet> {
         backgroundColor: Colors.white,
         body: SingleChildScrollView(
           controller: widget.sc,
-          padding: EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              // Drag Handle
+              // 1. Drag Handle
               Container(
-                width: 40,
-                height: 4,
-                decoration: BoxDecoration(
-                  color: Colors.grey[300],
-                  borderRadius: BorderRadius.circular(10),
-                ),
-              ),
+                    width: 40,
+                    height: 4,
+                    decoration: BoxDecoration(
+                      color: Colors.grey[300],
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  )
+                  .animate()
+                  .fadeIn(duration: 400.ms)
+                  .scale(begin: const Offset(0.8, 1)),
+
               const SizedBox(height: 20),
 
-              // Header Row
+              // 2. Header Row - Slides in from the left
               Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text(
-                          'Driver Cost',
-                          style: TextStyle(
-                            fontSize: 22,
-                            fontWeight: FontWeight.bold,
-                            color: Color(0xFF1A233A),
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              'Driver Cost',
+                              style: TextStyle(
+                                fontSize: 22,
+                                fontWeight: FontWeight.bold,
+                                color: Color(0xFF1A233A),
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              'Review and update calculation',
+                              style: TextStyle(
+                                color: Colors.grey[600],
+                                fontSize: 14,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      IconButton(
+                        onPressed: () => Navigator.pop(context),
+                        icon: const Icon(
+                          Icons.close,
+                          color: Colors.blueGrey,
+                          size: 20,
+                        ),
+                        style: IconButton.styleFrom(
+                          backgroundColor: Colors.blueGrey.withValues(
+                            alpha: 0.05,
                           ),
                         ),
-                        const SizedBox(height: 4),
-                        Text(
-                          'Review and update calculation',
-                          style: TextStyle(
-                            color: Colors.grey[600],
-                            fontSize: 14,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  IconButton(
-                    onPressed: () => Navigator.pop(context),
-                    icon: const Icon(
-                      Icons.close,
-                      color: Colors.blueGrey,
-                      size: 20,
-                    ),
-                    style: IconButton.styleFrom(
-                      backgroundColor: Colors.blueGrey.withValues(alpha: 0.05),
-                    ),
-                  ),
-                ],
-              ),
+                      ),
+                    ],
+                  )
+                  .animate()
+                  .fadeIn(duration: 400.ms, delay: 100.ms)
+                  .slideX(begin: -0.1),
+
               const SizedBox(height: 16),
 
-              // Mandays Input
-              buildTextField(
-                label: 'Mandays',
-                hint: '',
-                ctrl: mandaysController,
-                keyboardType: TextInputType.number,
-                textAlign: TextAlign.center,
-              ),
-
-              // Divider with "X" (Multiplication)
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 20),
-                child: Row(
-                  children: [
-                    const Expanded(child: Divider(color: Colors.black12)),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                      child: Icon(
-                        Icons.close,
-                        color: Colors.orange[800],
-                        size: 18,
+              // 3. Form Fields - Staggered entrance
+              Column(
+                    children: [
+                      buildTextField(
+                        label: 'Mandays',
+                        hint: '',
+                        ctrl: mandaysController,
+                        keyboardType: TextInputType.number,
+                        textAlign: TextAlign.center,
                       ),
-                    ),
-                    const Expanded(child: Divider(color: Colors.black12)),
-                  ],
-                ),
-              ),
 
-              // Fixed Rate Input
-              buildTextField(
-                label: 'Fixed Rate (Daily)',
-                hint: '',
-                ctrl: rateController,
-                keyboardType: TextInputType.number,
-                textAlign: TextAlign.center,
-                prefixWidget: Padding(
-                  padding: const EdgeInsets.only(top: 14, left: 10),
-                  child: Text("RM "),
-                ),
-              ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 20),
+                        child: Row(
+                          children: [
+                            const Expanded(
+                              child: Divider(color: Colors.black12),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                              ),
+                              child: Icon(
+                                Icons.close,
+                                color: Colors.orange[800],
+                                size: 18,
+                              ),
+                            ),
+                            const Expanded(
+                              child: Divider(color: Colors.black12),
+                            ),
+                          ],
+                        ),
+                      ),
+
+                      buildTextField(
+                        label: 'Fixed Rate (Daily)',
+                        hint: '',
+                        ctrl: rateController,
+                        keyboardType: TextInputType.number,
+                        inputFormatters: [
+                          FilteringTextInputFormatter.digitsOnly,
+                          CurrencyInputFormatter(),
+                        ],
+                        textAlign: TextAlign.center,
+                        prefixWidget: const Padding(
+                          padding: EdgeInsets.only(top: 14, left: 10),
+                          child: Text("RM "),
+                        ),
+                      ),
+                    ],
+                  )
+                  .animate()
+                  .fadeIn(duration: 500.ms, delay: 200.ms)
+                  .slideY(begin: 0.1),
+
               const SizedBox(height: 24),
             ],
           ),
         ),
-        bottomNavigationBar: _bottomCalculationButton(),
+        // 4. Bottom Button - Slides up from the bottom
+        bottomNavigationBar: _bottomCalculationButton()
+            .animate()
+            .fadeIn(duration: 400.ms, delay: 300.ms)
+            .slideY(begin: 0.2, curve: Curves.easeOutQuad),
       ),
     );
   }
 
   Widget _bottomCalculationButton() {
     return Padding(
-      padding: EdgeInsets.only(left: 24, right: 24, bottom: 16),
+      padding: const EdgeInsets.only(left: 24, right: 24, bottom: 16),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -136,11 +169,10 @@ class _DriverCostSheetState extends State<DriverCostSheet> {
             padding: EdgeInsets.only(bottom: 10),
             child: Divider(color: Color(0xFFEEEEEE), thickness: 1),
           ),
-          // Total Section
-          Row(
+          const Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text(
+              Text(
                 'Total Cost',
                 style: TextStyle(
                   fontSize: 18,
@@ -148,7 +180,7 @@ class _DriverCostSheetState extends State<DriverCostSheet> {
                   color: Color(0xFF1A233A),
                 ),
               ),
-              const Text(
+              Text(
                 'RM0.00',
                 style: TextStyle(
                   fontSize: 24,
@@ -159,15 +191,13 @@ class _DriverCostSheetState extends State<DriverCostSheet> {
             ],
           ),
           const SizedBox(height: 15),
-
-          // Action Button
           SizedBox(
             width: double.infinity,
             height: 56,
             child: ElevatedButton(
               onPressed: () {},
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.orange[800], // Matches the visual brand
+                backgroundColor: Colors.orange[800],
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),

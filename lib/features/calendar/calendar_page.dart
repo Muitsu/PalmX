@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:palmx/core/widgets/calendar/calendar_utils.dart';
 import 'package:palmx/core/widgets/calendar/calendar_widget.dart';
+import 'package:palmx/features/operation/operation_log/operation_log_form_page.dart';
 
 class CalendarPage extends StatefulWidget {
   const CalendarPage({super.key});
@@ -9,7 +10,16 @@ class CalendarPage extends StatefulWidget {
   State<CalendarPage> createState() => _CalendarPageState();
 }
 
-class _CalendarPageState extends State<CalendarPage> {
+class _CalendarPageState extends State<CalendarPage>
+    with AutomaticKeepAliveClientMixin {
+  @override
+  bool get wantKeepAlive => true;
+  @override
+  void initState() {
+    super.initState();
+    debugPrint("Init Calendar");
+  }
+
   // Mock data to simulate the orange dots/intensity in your screenshot
   final Map<DateTime, List<String>> _events = {
     DateTime.utc(2023, 10, 3): ['Event 1'],
@@ -21,6 +31,7 @@ class _CalendarPageState extends State<CalendarPage> {
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return SafeArea(
       child: SingleChildScrollView(
         child: Column(
@@ -111,7 +122,12 @@ class _CalendarPageState extends State<CalendarPage> {
         ),
         const SizedBox(height: 24),
         ElevatedButton.icon(
-          onPressed: () {},
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => OperationLogFormPage()),
+            );
+          },
           icon: const Icon(Icons.add, color: Colors.white),
           label: const Text(
             "Create New Operation",

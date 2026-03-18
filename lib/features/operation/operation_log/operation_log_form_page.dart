@@ -56,7 +56,7 @@ class _OperationLogFormPageState extends State<OperationLogFormPage> {
               ctrl: null,
               prefixWidget: Icon(Icons.calendar_today_outlined),
               label: "Date",
-              hint: "dd/mm/yyyy",
+              hint: "Choose date",
               isDropdown: true,
               onTap: () async {
                 await CustomDatePicker.show(

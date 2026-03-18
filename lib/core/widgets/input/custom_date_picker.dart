@@ -45,7 +45,7 @@ class CustomDatePicker {
         disable: Colors.black38,
       ),
       todayBackgroundColor: _colorState(
-        selected: Colors.orange.shade800,
+        selected: Colors.orange,
         unSelected: Colors.black38,
         disable: Colors.transparent,
       ),
@@ -56,7 +56,7 @@ class CustomDatePicker {
       //button
       confirmButtonStyle: _colorChange(
         background: Colors.orange,
-        foreground: Colors.black,
+        foreground: Colors.white,
       ),
       cancelButtonStyle: _colorChange(
         background: Colors.black12,

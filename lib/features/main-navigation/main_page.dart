@@ -30,22 +30,24 @@ class _MainPageState extends State<MainPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      body: Stack(
-        children: [
-          PageView(
-            controller: _pageController,
-            physics: NeverScrollableScrollPhysics(),
-            onPageChanged: _onPageChanged,
-            children: const [HomePage(), CalendarPage()],
-          ),
-          Positioned(
-            bottom: 30,
-            left: 0,
-            right: 0,
-            child: _buildCustomNavBar(),
-          ),
-          if (_currentIndex == 0) _buildFloatingActionButton(),
-        ],
+      body: SafeArea(
+        child: Stack(
+          children: [
+            PageView(
+              controller: _pageController,
+              physics: NeverScrollableScrollPhysics(),
+              onPageChanged: _onPageChanged,
+              children: const [HomePage(), CalendarPage()],
+            ),
+            Positioned(
+              bottom: 30,
+              left: 0,
+              right: 0,
+              child: _buildCustomNavBar(),
+            ),
+            if (_currentIndex == 0) _buildFloatingActionButton(),
+          ],
+        ),
       ),
     );
   }

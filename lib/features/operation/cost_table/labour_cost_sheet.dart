@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:palmx/core/widgets/utils.dart';
+
+import '../../../core/widgets/input_formatter/currency_input_formatter.dart';
 
 class LabourCostSheet extends StatefulWidget {
   final ScrollController? sc;
@@ -10,7 +14,6 @@ class LabourCostSheet extends StatefulWidget {
 }
 
 class _LabourCostSheetState extends State<LabourCostSheet> {
-  // Controllers for the input fields
   final mandaysController = TextEditingController(text: "0");
   final basicRateController = TextEditingController(text: "0.00");
   final otHoursController = TextEditingController(text: "0");
@@ -25,12 +28,12 @@ class _LabourCostSheetState extends State<LabourCostSheet> {
         backgroundColor: Colors.white,
         body: SingleChildScrollView(
           controller: widget.sc,
-          padding: EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
-              // Handle bar at the top
+              // 1. Drag Handle
               Center(
                 child: Container(
                   width: 40,
@@ -40,8 +43,11 @@ class _LabourCostSheetState extends State<LabourCostSheet> {
                     borderRadius: BorderRadius.circular(10),
                   ),
                 ),
-              ),
+              ).animate().fadeIn().scaleY(begin: 0),
+
               const SizedBox(height: 20),
+
+              // 2. Header Row
               Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -80,111 +86,154 @@ class _LabourCostSheetState extends State<LabourCostSheet> {
                     ),
                   ),
                 ],
-              ),
+              ).animate().fadeIn(duration: 400.ms).slideX(begin: -0.05),
 
               const SizedBox(height: 32),
 
+              // 3. Staggered Sections
               // Basic Labor Section
-              _buildSectionHeader('BASIC LABOR'),
-              Row(
-                children: [
-                  Expanded(
-                    child: buildTextField(
-                      label: 'Mandays',
-                      hint: "",
-                      ctrl: mandaysController,
-                      keyboardType: TextInputType.number,
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-                  _multiplier(),
-                  Expanded(
-                    child: buildTextField(
-                      label: 'Rate (Flat)',
-                      hint: "",
-                      ctrl: basicRateController,
-                      keyboardType: TextInputType.number,
-                      prefixWidget: Padding(
-                        padding: const EdgeInsets.only(top: 14, left: 10),
-                        child: Text("RM "),
+              _buildAnimatedSection(
+                delay: 100.ms,
+                title: 'BASIC LABOR',
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: buildTextField(
+                        label: 'Mandays',
+                        hint: "",
+                        ctrl: mandaysController,
+                        keyboardType: TextInputType.number,
+                        textAlign: TextAlign.center,
                       ),
                     ),
-                  ),
-                ],
+                    _multiplier(),
+                    Expanded(
+                      child: buildTextField(
+                        label: 'Rate (Flat)',
+                        hint: "",
+                        ctrl: basicRateController,
+                        keyboardType: TextInputType.number,
+                        inputFormatters: [
+                          FilteringTextInputFormatter.digitsOnly,
+                          CurrencyInputFormatter(),
+                        ],
+                        prefixWidget: const Padding(
+                          padding: EdgeInsets.only(top: 14, left: 10),
+                          child: Text("RM "),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
+
               const SizedBox(height: 24),
 
               // Overtime Section
-              _buildSectionHeader('OVERTIME'),
-              Row(
-                children: [
-                  Expanded(
-                    child: buildTextField(
-                      label: 'Hours',
-                      hint: "",
-                      textAlign: TextAlign.center,
-                      keyboardType: TextInputType.number,
-                      ctrl: otHoursController,
-                    ),
-                  ),
-                  _multiplier(),
-                  Expanded(
-                    child: buildTextField(
-                      label: 'OT Rate',
-                      hint: "",
-                      ctrl: otRateController,
-                      keyboardType: TextInputType.number,
-                      prefixWidget: Padding(
-                        padding: const EdgeInsets.only(top: 14, left: 10),
-                        child: Text("RM "),
+              _buildAnimatedSection(
+                delay: 250.ms,
+                title: 'OVERTIME',
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: buildTextField(
+                        label: 'Hours',
+                        hint: "",
+                        textAlign: TextAlign.center,
+                        keyboardType: TextInputType.number,
+                        ctrl: otHoursController,
                       ),
                     ),
-                  ),
-                ],
+                    _multiplier(),
+                    Expanded(
+                      child: buildTextField(
+                        label: 'OT Rate',
+                        hint: "",
+                        ctrl: otRateController,
+                        keyboardType: TextInputType.number,
+                        inputFormatters: [
+                          FilteringTextInputFormatter.digitsOnly,
+                          CurrencyInputFormatter(),
+                        ],
+                        prefixWidget: const Padding(
+                          padding: EdgeInsets.only(top: 14, left: 10),
+                          child: Text("RM "),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
+
               const SizedBox(height: 24),
 
               // Output Based Section
-              _buildSectionHeader('PIECE RATE'),
-              Row(
-                children: [
-                  Expanded(
-                    child: buildTextField(
-                      label: 'Quantity',
-                      hint: "",
-                      ctrl: quantityController,
-                      textAlign: TextAlign.center,
-                      keyboardType: TextInputType.number,
-                    ),
-                  ),
-                  _multiplier(),
-                  Expanded(
-                    child: buildTextField(
-                      label: 'Unit Rate',
-                      hint: "",
-                      ctrl: unitRateController,
-                      keyboardType: TextInputType.number,
-                      prefixWidget: Padding(
-                        padding: const EdgeInsets.only(top: 14, left: 10),
-                        child: Text("RM "),
+              _buildAnimatedSection(
+                delay: 400.ms,
+                title: 'PIECE RATE',
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: buildTextField(
+                        label: 'Quantity',
+                        hint: "",
+                        ctrl: quantityController,
+                        textAlign: TextAlign.center,
+                        keyboardType: TextInputType.number,
                       ),
                     ),
-                  ),
-                ],
+                    _multiplier(),
+                    Expanded(
+                      child: buildTextField(
+                        label: 'Unit Rate',
+                        hint: "",
+                        ctrl: unitRateController,
+                        keyboardType: TextInputType.number,
+                        inputFormatters: [
+                          FilteringTextInputFormatter.digitsOnly,
+                          CurrencyInputFormatter(),
+                        ],
+                        prefixWidget: const Padding(
+                          padding: EdgeInsets.only(top: 14, left: 10),
+                          child: Text("RM "),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
 
               const SizedBox(height: 16),
             ],
           ),
         ),
-        bottomNavigationBar: _bottomCalculationButton(),
+        // 4. Bottom Button
+        bottomNavigationBar: _bottomCalculationButton()
+            .animate()
+            .fadeIn(delay: 600.ms)
+            .slideY(begin: 0.1),
       ),
     );
   }
 
+  // Helper to wrap sections in animation logic
+  Widget _buildAnimatedSection({
+    required Duration delay,
+    required String title,
+    required Widget child,
+  }) {
+    return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [_buildSectionHeader(title), child],
+        )
+        .animate()
+        .fadeIn(delay: delay, duration: 400.ms)
+        .slideY(begin: 0.05, curve: Curves.easeOut);
+  }
+
   Widget _bottomCalculationButton() {
     return Padding(
-      padding: EdgeInsets.only(left: 24, right: 24, bottom: 16),
+      padding: const EdgeInsets.only(left: 24, right: 24, bottom: 16),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -192,11 +241,10 @@ class _LabourCostSheetState extends State<LabourCostSheet> {
             padding: EdgeInsets.only(bottom: 10),
             child: Divider(color: Color(0xFFEEEEEE), thickness: 1),
           ),
-          // Total Section
-          Row(
+          const Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text(
+              Text(
                 'Total Cost',
                 style: TextStyle(
                   fontSize: 18,
@@ -204,7 +252,7 @@ class _LabourCostSheetState extends State<LabourCostSheet> {
                   color: Color(0xFF1A233A),
                 ),
               ),
-              const Text(
+              Text(
                 'RM0.00',
                 style: TextStyle(
                   fontSize: 24,
@@ -215,15 +263,13 @@ class _LabourCostSheetState extends State<LabourCostSheet> {
             ],
           ),
           const SizedBox(height: 15),
-
-          // Action Button
           SizedBox(
             width: double.infinity,
             height: 56,
             child: ElevatedButton(
               onPressed: () {},
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.orange[800], // Matches the visual brand
+                backgroundColor: Colors.orange[800],
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
@@ -247,13 +293,13 @@ class _LabourCostSheetState extends State<LabourCostSheet> {
   Widget _multiplier() {
     return Column(
       children: [
-        SizedBox(height: 24),
+        const SizedBox(height: 24),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 8),
           child: Icon(Icons.close, color: Colors.orange[800], size: 18),
         ),
       ],
-    );
+    ).animate(delay: 800.ms).scale(duration: 300.ms, curve: Curves.elasticOut);
   }
 
   Widget _buildSectionHeader(String title) {

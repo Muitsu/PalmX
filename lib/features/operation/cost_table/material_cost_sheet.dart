@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_animate/flutter_animate.dart'; // Ensure this is imported
 import 'package:palmx/core/widgets/input/custom_dropdown_sheet.dart';
+import 'package:palmx/core/widgets/input_formatter/currency_input_formatter.dart';
 import 'package:palmx/core/widgets/utils.dart';
 
 class MaterialCostSheet extends StatefulWidget {
@@ -22,12 +25,12 @@ class _MaterialCostSheetState extends State<MaterialCostSheet> {
         backgroundColor: Colors.white,
         body: SingleChildScrollView(
           controller: widget.sc,
-          padding: EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
-              // Drag Handle
+              // 1. Drag Handle
               Center(
                 child: Container(
                   width: 40,
@@ -37,10 +40,11 @@ class _MaterialCostSheetState extends State<MaterialCostSheet> {
                     borderRadius: BorderRadius.circular(10),
                   ),
                 ),
-              ),
+              ).animate().fadeIn(duration: 300.ms).scaleY(begin: 0),
+
               const SizedBox(height: 20),
 
-              // Header Row
+              // 2. Header
               Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -79,66 +83,88 @@ class _MaterialCostSheetState extends State<MaterialCostSheet> {
                     ),
                   ),
                 ],
-              ),
+              ).animate().fadeIn(delay: 100.ms).slideX(begin: -0.1),
+
               const SizedBox(height: 16),
-              //Dropdown
+
+              // 3. Dropdown - Slightly more prominent entrance
               buildTextField(
-                ctrl: materialTypeController,
-                label: "Material type",
-                hint: "Choose material",
-                isDropdown: true,
-                onTap: () {
-                  CustomDropdownSheet.show<String>(
-                    context,
+                    ctrl: materialTypeController,
                     label: "Material type",
-                    accentColor: Colors.deepOrange,
-                    items: ["A", "B", "C"],
-                    groupValue: "A",
-                    getTitle: (item) => item,
-                    onChange: (item) {},
-                  );
-                },
-              ),
+                    hint: "Choose material",
+                    isDropdown: true,
+                    onTap: () {
+                      CustomDropdownSheet.show<String>(
+                        context,
+                        label: "Material type",
+                        accentColor: Colors.deepOrange,
+                        items: ["A", "B", "C"],
+                        groupValue: "A",
+                        getTitle: (item) => item,
+                        onChange: (item) {},
+                      );
+                    },
+                  )
+                  .animate()
+                  .fadeIn(delay: 200.ms)
+                  .slideY(begin: 0.2, curve: Curves.easeOutBack),
+
               const SizedBox(height: 24),
-              // Basic Labor Section
-              _buildSectionHeader('BASIC LABOR'),
-              Row(
+
+              // 4. Labor Section row
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Expanded(
-                    child: buildTextField(
-                      label: 'Material Qty',
-                      hint: "",
-                      ctrl: materialQtyController,
-                      keyboardType: TextInputType.number,
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-                  _multiplier(),
-                  Expanded(
-                    child: buildTextField(
-                      label: 'Material cost (Litre)',
-                      hint: "",
-                      ctrl: materialCostController,
-                      prefixWidget: Padding(
-                        padding: const EdgeInsets.only(top: 14, left: 10),
-                        child: Text("RM "),
+                  _buildSectionHeader('BASIC LABOR'),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: buildTextField(
+                          label: 'Material Qty',
+                          hint: "",
+                          ctrl: materialQtyController,
+                          keyboardType: TextInputType.number,
+                          textAlign: TextAlign.center,
+                        ),
                       ),
-                    ),
+                      _multiplier(),
+                      Expanded(
+                        child: buildTextField(
+                          label: 'Material cost (Litre)',
+                          hint: "",
+                          ctrl: materialCostController,
+                          keyboardType: TextInputType.number,
+                          inputFormatters: [
+                            FilteringTextInputFormatter.digitsOnly,
+                            CurrencyInputFormatter(),
+                          ],
+                          prefixWidget: const Padding(
+                            padding: EdgeInsets.only(top: 14, left: 10),
+                            child: Text("RM "),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ],
-              ),
+              ).animate().fadeIn(delay: 350.ms).slideY(begin: 0.1),
+
               const SizedBox(height: 24),
             ],
           ),
         ),
-        bottomNavigationBar: _bottomCalculationButton(),
+        // 5. Bottom Navigation
+        bottomNavigationBar: _bottomCalculationButton()
+            .animate()
+            .fadeIn(delay: 500.ms)
+            .slideY(begin: 0.3, curve: Curves.easeOutQuad),
       ),
     );
   }
 
   Widget _bottomCalculationButton() {
     return Padding(
-      padding: EdgeInsets.only(left: 24, right: 24, bottom: 16),
+      padding: const EdgeInsets.only(left: 24, right: 24, bottom: 16),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -146,11 +172,10 @@ class _MaterialCostSheetState extends State<MaterialCostSheet> {
             padding: EdgeInsets.only(bottom: 10),
             child: Divider(color: Color(0xFFEEEEEE), thickness: 1),
           ),
-          // Total Section
-          Row(
+          const Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text(
+              Text(
                 'Total Cost',
                 style: TextStyle(
                   fontSize: 18,
@@ -158,7 +183,7 @@ class _MaterialCostSheetState extends State<MaterialCostSheet> {
                   color: Color(0xFF1A233A),
                 ),
               ),
-              const Text(
+              Text(
                 'RM0.00',
                 style: TextStyle(
                   fontSize: 24,
@@ -169,15 +194,13 @@ class _MaterialCostSheetState extends State<MaterialCostSheet> {
             ],
           ),
           const SizedBox(height: 15),
-
-          // Action Button
           SizedBox(
             width: double.infinity,
             height: 56,
             child: ElevatedButton(
               onPressed: () {},
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.orange[800], // Matches the visual brand
+                backgroundColor: Colors.orange[800],
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
@@ -201,13 +224,13 @@ class _MaterialCostSheetState extends State<MaterialCostSheet> {
   Widget _multiplier() {
     return Column(
       children: [
-        SizedBox(height: 24),
+        const SizedBox(height: 24),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 8),
           child: Icon(Icons.close, color: Colors.orange[800], size: 18),
         ),
       ],
-    );
+    ).animate(delay: 700.ms).scale(curve: Curves.elasticOut);
   }
 
   Widget _buildSectionHeader(String title) {
