@@ -133,13 +133,13 @@ class _CalendarWidgetState<T> extends State<CalendarWidget<T>> {
 
               todayDecoration: BoxDecoration(
                 color: Colors.orange.withValues(alpha: 0.3),
-                shape: BoxShape.rectangle,
-                borderRadius: BorderRadius.circular(8),
+                shape: BoxShape.circle,
+                // borderRadius: BorderRadius.circular(8),
               ),
               selectedDecoration: BoxDecoration(
                 color: Colors.orange[800],
-                shape: BoxShape.rectangle,
-                borderRadius: BorderRadius.circular(8),
+                shape: BoxShape.circle,
+                // borderRadius: BorderRadius.circular(8),
               ),
               markerDecoration: const BoxDecoration(
                 color: Colors.deepOrange,

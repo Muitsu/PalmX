@@ -38,136 +38,138 @@ class _OperationLogSummaryPageState extends State<OperationLogSummaryPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      body: CustomScrollView(
-        controller: _scrollController,
-        slivers: [
-          // The dynamic AppBar
-          SliverAppBar(
-            pinned: true,
-            elevation: 0,
-            scrolledUnderElevation: 0,
-            backgroundColor: Colors.white,
-            surfaceTintColor: Colors.white,
-            leading: IconButton(
-              icon: const Icon(Icons.arrow_back, color: Color(0xFF1A2B47)),
-              onPressed: () => Navigator.pop(context),
+      body: SafeArea(
+        child: CustomScrollView(
+          controller: _scrollController,
+          slivers: [
+            // The dynamic AppBar
+            SliverAppBar(
+              pinned: true,
+              elevation: 0,
+              scrolledUnderElevation: 0,
+              backgroundColor: Colors.white,
+              surfaceTintColor: Colors.white,
+              leading: IconButton(
+                icon: const Icon(Icons.arrow_back, color: Color(0xFF1A2B47)),
+                onPressed: () => Navigator.pop(context),
+              ),
+              // The title that appears/disappears
+              title: AnimatedOpacity(
+                opacity: _showTitle ? 1.0 : 0.0,
+                duration: const Duration(milliseconds: 250),
+                child: const Text(
+                  "Operation Summary",
+                  style: TextStyle(
+                    color: Color(0xFF1A2B47),
+                    fontWeight: FontWeight.bold,
+                    fontSize: 18,
+                  ),
+                ),
+              ),
+              centerTitle: true,
+              actions: [
+                IconButton(
+                  icon: const Icon(Icons.edit, color: Color(0xFF1A2B47)),
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => const OperationLogFormPage(),
+                      ),
+                    );
+                  },
+                ),
+              ],
             ),
-            // The title that appears/disappears
-            title: AnimatedOpacity(
-              opacity: _showTitle ? 1.0 : 0.0,
-              duration: const Duration(milliseconds: 250),
-              child: const Text(
-                "Operation Summary",
-                style: TextStyle(
-                  color: Color(0xFF1A2B47),
-                  fontWeight: FontWeight.bold,
-                  fontSize: 18,
+
+            // The Body Content
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 24),
+                child: Column(
+                  children: [
+                    const SizedBox(height: 20),
+                    // Header Section (This is the one that scrolls away)
+                    Center(
+                      child: Column(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(12),
+                            decoration: const BoxDecoration(
+                              color: Color(0xFFFFF4ED),
+                              shape: BoxShape.circle,
+                            ),
+                            child: Icon(
+                              Icons.shield_outlined,
+                              color: Colors.orange[800],
+                              size: 32,
+                            ),
+                          ),
+                          const SizedBox(height: 16),
+                          const Text(
+                            "Operation Summary",
+                            style: TextStyle(
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold,
+                              color: Color(0xFF1A2B47),
+                            ),
+                          ),
+                          const Text(
+                            "Ref ID: #OPS-9942-2024",
+                            style: TextStyle(
+                              color: Colors.blueGrey,
+                              fontSize: 14,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 30),
+                    _buildInfoCard(),
+                    const SizedBox(height: 32),
+                    const Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        "Itemized Statement",
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFF1A2B47),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    _buildStatementItem(
+                      Icons.inventory_2_outlined,
+                      "Materials & Supplies",
+                      "RM 1,240.00",
+                    ),
+                    _buildStatementItem(
+                      Icons.group_outlined,
+                      "Labor (42.5 hrs)",
+                      "RM 850.00",
+                    ),
+                    _buildStatementItem(
+                      Icons.handyman_outlined,
+                      "Equipment Rental",
+                      "RM 300.00",
+                    ),
+                    _buildStatementItem(
+                      Icons.local_shipping_outlined,
+                      "Logistics & Transport",
+                      "RM 125.50",
+                    ),
+                    const SizedBox(height: 24),
+                    _buildTotalCard(),
+                    const SizedBox(height: 40),
+                    _buildDisclaimer(),
+                    const SizedBox(height: 40),
+                  ],
                 ),
               ),
             ),
-            centerTitle: true,
-            actions: [
-              IconButton(
-                icon: const Icon(Icons.edit, color: Color(0xFF1A2B47)),
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => const OperationLogFormPage(),
-                    ),
-                  );
-                },
-              ),
-            ],
-          ),
-
-          // The Body Content
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24),
-              child: Column(
-                children: [
-                  const SizedBox(height: 20),
-                  // Header Section (This is the one that scrolls away)
-                  Center(
-                    child: Column(
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.all(12),
-                          decoration: const BoxDecoration(
-                            color: Color(0xFFFFF4ED),
-                            shape: BoxShape.circle,
-                          ),
-                          child: Icon(
-                            Icons.shield_outlined,
-                            color: Colors.orange[800],
-                            size: 32,
-                          ),
-                        ),
-                        const SizedBox(height: 16),
-                        const Text(
-                          "Operation Summary",
-                          style: TextStyle(
-                            fontSize: 24,
-                            fontWeight: FontWeight.bold,
-                            color: Color(0xFF1A2B47),
-                          ),
-                        ),
-                        const Text(
-                          "Ref ID: #OPS-9942-2024",
-                          style: TextStyle(
-                            color: Colors.blueGrey,
-                            fontSize: 14,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 30),
-                  _buildInfoCard(),
-                  const SizedBox(height: 32),
-                  const Align(
-                    alignment: Alignment.centerLeft,
-                    child: Text(
-                      "Itemized Statement",
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: Color(0xFF1A2B47),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  _buildStatementItem(
-                    Icons.inventory_2_outlined,
-                    "Materials & Supplies",
-                    "RM 1,240.00",
-                  ),
-                  _buildStatementItem(
-                    Icons.group_outlined,
-                    "Labor (42.5 hrs)",
-                    "RM 850.00",
-                  ),
-                  _buildStatementItem(
-                    Icons.handyman_outlined,
-                    "Equipment Rental",
-                    "RM 300.00",
-                  ),
-                  _buildStatementItem(
-                    Icons.local_shipping_outlined,
-                    "Logistics & Transport",
-                    "RM 125.50",
-                  ),
-                  const SizedBox(height: 24),
-                  _buildTotalCard(),
-                  const SizedBox(height: 40),
-                  _buildDisclaimer(),
-                  const SizedBox(height: 40),
-                ],
-              ),
-            ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

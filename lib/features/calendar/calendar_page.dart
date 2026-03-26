@@ -35,10 +35,8 @@ class _CalendarPageState extends State<CalendarPage>
 
     final logs = await OperationLogsLocalDatasource().getAllByDate(date);
 
-    setState(() {
-      _dailyLogs = logs.map((e) => OperationLogModel.fromDrift(e)).toList();
-      _isLoading = false;
-    });
+    _dailyLogs = logs.map((e) => OperationLogModel.fromDrift(e)).toList();
+    _isLoading = false;
   }
 
   Future<void> _fetchMonthlyLogs(DateTime monthDate) async {
@@ -47,10 +45,8 @@ class _CalendarPageState extends State<CalendarPage>
     // Call the new monthly method
     final logs = await OperationLogsLocalDatasource().getByMonth(monthDate);
 
-    setState(() {
-      _monthLogs = logs.map((e) => OperationLogModel.fromDrift(e)).toList();
-      _isLoading = false;
-    });
+    _monthLogs = logs.map((e) => OperationLogModel.fromDrift(e)).toList();
+    _isLoading = false;
   }
 
   @override

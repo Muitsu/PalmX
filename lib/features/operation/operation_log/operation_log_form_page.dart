@@ -47,131 +47,133 @@ class _OperationLogFormPageState extends State<OperationLogFormPage> {
           ),
         ],
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            buildTextField(
-              ctrl: null,
-              prefixWidget: Icon(Icons.calendar_today_outlined),
-              label: "Date",
-              hint: "Choose date",
-              isDropdown: true,
-              onTap: () async {
-                await CustomDatePicker.show(
-                  context: context,
-                  type: DatePickerType.single,
-                );
-              },
-            ),
-            const SizedBox(height: 10),
-            //Dropdown
-            buildTextField(
-              ctrl: null,
-              prefixWidget: Icon(Icons.shopping_bag_outlined),
-              label: "Activity Type",
-              hint: "Harvesting & Collection",
-              isDropdown: true,
-              onTap: () {
-                CustomDropdownSheet.show<String>(
-                  context,
-                  label: "Activity",
-                  accentColor: Colors.deepOrange,
-                  items: ["A", "B", "C"],
-                  groupValue: "A",
-                  getTitle: (item) => item,
-                  onChange: (item) {},
-                );
-              },
-            ),
-            const SizedBox(height: 10),
-            //Dropdown
-            buildTextField(
-              ctrl: null,
-              prefixWidget: Icon(Icons.location_on_outlined),
-              label: "Field",
-              hint: "Division A - Block 12",
-              isDropdown: true,
-              onTap: () {
-                CustomDropdownSheet.show<String>(
-                  context,
-                  label: "Field",
-                  accentColor: Colors.deepOrange,
-                  items: ["A", "B", "C"],
-                  groupValue: "A",
-                  getTitle: (item) => item,
-                  onChange: (item) {},
-                );
-              },
-            ),
-            const SizedBox(height: 10),
-            Row(
-              children: [
-                Expanded(
-                  child: buildTextField(
-                    ctrl: null,
-                    prefixWidget: Icon(Icons.architecture_outlined),
-                    label: "Ha today",
-                    hint: "0.00",
-                    keyboardType: TextInputType.number,
-                    inputFormatters: [
-                      FilteringTextInputFormatter.digitsOnly,
-                      CurrencyInputFormatter(),
-                    ],
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              buildTextField(
+                ctrl: null,
+                prefixWidget: Icon(Icons.calendar_today_outlined),
+                label: "Date",
+                hint: "Choose date",
+                isDropdown: true,
+                onTap: () async {
+                  await CustomDatePicker.show(
+                    context: context,
+                    type: DatePickerType.single,
+                  );
+                },
+              ),
+              const SizedBox(height: 10),
+              //Dropdown
+              buildTextField(
+                ctrl: null,
+                prefixWidget: Icon(Icons.shopping_bag_outlined),
+                label: "Activity Type",
+                hint: "Harvesting & Collection",
+                isDropdown: true,
+                onTap: () {
+                  CustomDropdownSheet.show<String>(
+                    context,
+                    label: "Activity",
+                    accentColor: Colors.deepOrange,
+                    items: ["A", "B", "C"],
+                    groupValue: "A",
+                    getTitle: (item) => item,
+                    onChange: (item) {},
+                  );
+                },
+              ),
+              const SizedBox(height: 10),
+              //Dropdown
+              buildTextField(
+                ctrl: null,
+                prefixWidget: Icon(Icons.location_on_outlined),
+                label: "Field",
+                hint: "Division A - Block 12",
+                isDropdown: true,
+                onTap: () {
+                  CustomDropdownSheet.show<String>(
+                    context,
+                    label: "Field",
+                    accentColor: Colors.deepOrange,
+                    items: ["A", "B", "C"],
+                    groupValue: "A",
+                    getTitle: (item) => item,
+                    onChange: (item) {},
+                  );
+                },
+              ),
+              const SizedBox(height: 10),
+              Row(
+                children: [
+                  Expanded(
+                    child: buildTextField(
+                      ctrl: null,
+                      prefixWidget: Icon(Icons.architecture_outlined),
+                      label: "Ha today",
+                      hint: "0.00",
+                      keyboardType: TextInputType.number,
+                      inputFormatters: [
+                        FilteringTextInputFormatter.digitsOnly,
+                        CurrencyInputFormatter(),
+                      ],
+                    ),
                   ),
-                ),
-                const SizedBox(width: 15),
-                Expanded(
-                  child: buildTextField(
-                    ctrl: null,
-                    prefixWidget: Icon(Icons.group_outlined),
-                    label: "Mandays",
-                    hint: "0",
-                    keyboardType: TextInputType.number,
-                    inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                  const SizedBox(width: 15),
+                  Expanded(
+                    child: buildTextField(
+                      ctrl: null,
+                      prefixWidget: Icon(Icons.group_outlined),
+                      label: "Mandays",
+                      hint: "0",
+                      keyboardType: TextInputType.number,
+                      inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                    ),
                   ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 10),
-            buildTextField(
-              ctrl: null,
-              prefixWidget: Icon(Icons.edit_note_outlined),
-              label: "Remarks",
-              hint: "Additional observations...",
-              maxLines: 3,
-            ),
+                ],
+              ),
+              const SizedBox(height: 10),
+              buildTextField(
+                ctrl: null,
+                prefixWidget: Icon(Icons.edit_note_outlined),
+                label: "Remarks",
+                hint: "Additional observations...",
+                maxLines: 3,
+              ),
 
-            const Divider(height: 40),
+              const Divider(height: 40),
 
-            Row(
-              children: [
-                Icon(
-                  Icons.calculate_outlined,
-                  color: Colors.orange[800],
-                  size: 20,
-                ),
-                const SizedBox(width: 8),
-                const Text(
-                  "Cost Calculation",
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                ),
-              ],
-            ),
-            const SizedBox(height: 15),
-            _buildCostSummaryCard(),
+              Row(
+                children: [
+                  Icon(
+                    Icons.calculate_outlined,
+                    color: Colors.orange[800],
+                    size: 20,
+                  ),
+                  const SizedBox(width: 8),
+                  const Text(
+                    "Cost Calculation",
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 15),
+              _buildCostSummaryCard(),
 
-            const SizedBox(height: 25),
-            _buildTotalCostRow(),
+              const SizedBox(height: 25),
+              _buildTotalCostRow(),
 
-            const SizedBox(height: 20),
-            _buildMetricCards(),
+              const SizedBox(height: 20),
+              _buildMetricCards(),
 
-            const SizedBox(height: 30),
-            _buildSubmitButton(),
-            const SizedBox(height: 20),
-          ],
+              const SizedBox(height: 30),
+              _buildSubmitButton(),
+              const SizedBox(height: 20),
+            ],
+          ),
         ),
       ),
     );
