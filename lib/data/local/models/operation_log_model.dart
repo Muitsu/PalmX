@@ -10,12 +10,13 @@ class OperationLogModel extends OperationLogsTableData {
     required super.mandays,
     super.remarks,
     required super.labourRate,
-    required super.labourOtHour,
+    required super.labourQty,
     required super.labourOtRate,
-    required super.labourPieceQty,
-    required super.labourPieceRate,
+    required super.labourOtHour,
     required super.supervisionRate,
+    required super.supervisionMandays,
     required super.driverRate,
+    required super.driverTotal,
     required super.materialType,
     required super.materialQty,
     required super.materialLitreRate,
@@ -33,12 +34,13 @@ class OperationLogModel extends OperationLogsTableData {
       mandays: data.mandays,
       remarks: data.remarks,
       labourRate: data.labourRate,
-      labourOtHour: data.labourOtHour,
+      labourQty: data.labourQty,
       labourOtRate: data.labourOtRate,
-      labourPieceQty: data.labourPieceQty,
-      labourPieceRate: data.labourPieceRate,
+      labourOtHour: data.labourOtHour,
       supervisionRate: data.supervisionRate,
+      supervisionMandays: data.supervisionMandays,
       driverRate: data.driverRate,
+      driverTotal: data.driverTotal,
       materialType: data.materialType,
       materialQty: data.materialQty,
       materialLitreRate: data.materialLitreRate,
@@ -47,18 +49,19 @@ class OperationLogModel extends OperationLogsTableData {
     );
   }
 
-  double get labourTotalCost =>
-      ((mandays * labourOtRate) +
-      (labourOtHour * labourOtRate) +
-      (labourPieceQty * labourPieceRate));
+  //Labour calculation
+  double get _normalLabourCost => ((labourRate * labourQty));
+  double get _otLabourCost => ((labourOtHour * labourOtRate));
+  double get labourTotalCost => (_normalLabourCost + _otLabourCost);
 
-  double get supervisionTotalCost => (mandays * supervisionRate);
+  double get supervisionTotalCost => (supervisionMandays * supervisionRate);
 
-  double get driverTotalCost => (mandays * driverRate);
+  double get driverTotalCost => (driverTotal * driverRate);
 
-  double get materialTotalCost => (materialQty * materialLitreRate);
+  double get materialTotalCost =>
+      ((materialQty ?? 0) * (materialLitreRate ?? 0));
 
-  double get evitTotalCost => (evitRate * evitTime);
+  double get evitTotalCost => ((evitRate ?? 0) * (evitTime ?? 0));
 
   double get totalAll =>
       labourTotalCost +

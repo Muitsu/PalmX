@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:palmx/core/widgets/calendar/calendar_utils.dart';
 import 'package:palmx/core/widgets/calendar/calendar_widget.dart';
 import 'package:palmx/data/local/datasource/operation_log_local_datasource.dart';
-import 'package:palmx/features/operation/models/operation_log_model.dart';
+import 'package:palmx/data/local/models/operation_log_model.dart';
 import 'package:palmx/features/operation/operation_log/operation_log_form_page.dart';
 
 class CalendarPage extends StatefulWidget {
@@ -108,7 +108,7 @@ class _CalendarPageState extends State<CalendarPage>
         final log = _dailyLogs[index];
         return ListTile(
           leading: const Icon(Icons.agriculture, color: Colors.green),
-          title: Text(log.activityType),
+          title: Text(log.activityType ?? "-"),
           subtitle: Text("${log.field} • ${log.hectar} Ha"),
           trailing: Text("RM ${log.labourRate}"),
         );

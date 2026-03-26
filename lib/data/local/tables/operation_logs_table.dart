@@ -4,30 +4,33 @@ class OperationLogsTable extends Table {
   IntColumn get id => integer().autoIncrement()(); // Primary key
 
   DateTimeColumn get operationDate => dateTime()();
-  TextColumn get activityType => text()();
-  TextColumn get field => text()();
-  RealColumn get hectar => real()();
-  IntColumn get mandays => integer()();
-  TextColumn get remarks =>
-      text().nullable()(); // Added nullable as remarks are often optional
-
+  TextColumn get activityType => text().nullable()();
+  TextColumn get field => text().nullable()();
+  RealColumn get hectar => real().nullable()();
+  RealColumn get hectarToDate => real().nullable()();
+  RealColumn get mandays => real().nullable()();
+  TextColumn get remarks => text().nullable()();
   // Labour details
-  RealColumn get labourRate => real().withDefault(const Constant(65.38))();
-  IntColumn get labourOtHour => integer()();
-  RealColumn get labourOtRate => real().withDefault(const Constant(13.17))();
-  IntColumn get labourPieceQty => integer()();
-  RealColumn get labourPieceRate => real()();
+  RealColumn get labourRate => real().withDefault(const Constant(0.00))();
+  RealColumn get labourQty => real().withDefault(const Constant(0.00))();
+  RealColumn get labourOtHour => real().withDefault(const Constant(0.00))();
+  RealColumn get labourOtRate => real().withDefault(const Constant(0.00))();
 
   // Supervision and Driver
-  RealColumn get supervisionRate => real().withDefault(const Constant(65.38))();
-  RealColumn get driverRate => real().withDefault(const Constant(65.38))();
+  RealColumn get supervisionRate => real().withDefault(const Constant(70.38))();
+  RealColumn get supervisionMandays =>
+      real().withDefault(const Constant(0.00))();
+  RealColumn get driverRate => real().withDefault(const Constant(70.38))();
+  RealColumn get driverTotal => real().withDefault(const Constant(0.00))();
 
   // Materials
-  TextColumn get materialType => text()();
-  IntColumn get materialQty => integer()();
-  RealColumn get materialLitreRate => real()();
+  TextColumn get materialType => text().nullable()();
+  IntColumn get materialQty => integer().nullable()();
+  RealColumn get materialLitreRate => real().nullable()();
 
   // Evit
-  RealColumn get evitTime => real()();
-  RealColumn get evitRate => real()();
+  RealColumn get evitTime =>
+      real().nullable().withDefault(const Constant(0.00))();
+  RealColumn get evitRate =>
+      real().nullable().withDefault(const Constant(0.00))();
 }
