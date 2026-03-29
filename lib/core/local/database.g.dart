@@ -1642,6 +1642,312 @@ class FieldTableCompanion extends UpdateCompanion<FieldTableData> {
   }
 }
 
+class $MaterialTableTable extends MaterialTable
+    with TableInfo<$MaterialTableTable, MaterialTableData> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $MaterialTableTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _nameMeta = const VerificationMeta('name');
+  @override
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
+    'name',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _priceMeta = const VerificationMeta('price');
+  @override
+  late final GeneratedColumn<double> price = GeneratedColumn<double>(
+    'price',
+    aliasedName,
+    false,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+    defaultValue: Constant(0.00),
+  );
+  @override
+  late final GeneratedColumnWithTypeConverter<MaterialFormat, String>
+  materialFormat = GeneratedColumn<String>(
+    'material_format',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  ).withConverter<MaterialFormat>($MaterialTableTable.$convertermaterialFormat);
+  @override
+  List<GeneratedColumn> get $columns => [id, name, price, materialFormat];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'material_table';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<MaterialTableData> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('name')) {
+      context.handle(
+        _nameMeta,
+        name.isAcceptableOrUnknown(data['name']!, _nameMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_nameMeta);
+    }
+    if (data.containsKey('price')) {
+      context.handle(
+        _priceMeta,
+        price.isAcceptableOrUnknown(data['price']!, _priceMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  MaterialTableData map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return MaterialTableData(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      name: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}name'],
+      )!,
+      price: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}price'],
+      )!,
+      materialFormat: $MaterialTableTable.$convertermaterialFormat.fromSql(
+        attachedDatabase.typeMapping.read(
+          DriftSqlType.string,
+          data['${effectivePrefix}material_format'],
+        )!,
+      ),
+    );
+  }
+
+  @override
+  $MaterialTableTable createAlias(String alias) {
+    return $MaterialTableTable(attachedDatabase, alias);
+  }
+
+  static JsonTypeConverter2<MaterialFormat, String, String>
+  $convertermaterialFormat = const EnumNameConverter<MaterialFormat>(
+    MaterialFormat.values,
+  );
+}
+
+class MaterialTableData extends DataClass
+    implements Insertable<MaterialTableData> {
+  final int id;
+  final String name;
+  final double price;
+  final MaterialFormat materialFormat;
+  const MaterialTableData({
+    required this.id,
+    required this.name,
+    required this.price,
+    required this.materialFormat,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['name'] = Variable<String>(name);
+    map['price'] = Variable<double>(price);
+    {
+      map['material_format'] = Variable<String>(
+        $MaterialTableTable.$convertermaterialFormat.toSql(materialFormat),
+      );
+    }
+    return map;
+  }
+
+  MaterialTableCompanion toCompanion(bool nullToAbsent) {
+    return MaterialTableCompanion(
+      id: Value(id),
+      name: Value(name),
+      price: Value(price),
+      materialFormat: Value(materialFormat),
+    );
+  }
+
+  factory MaterialTableData.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return MaterialTableData(
+      id: serializer.fromJson<int>(json['id']),
+      name: serializer.fromJson<String>(json['name']),
+      price: serializer.fromJson<double>(json['price']),
+      materialFormat: $MaterialTableTable.$convertermaterialFormat.fromJson(
+        serializer.fromJson<String>(json['materialFormat']),
+      ),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'name': serializer.toJson<String>(name),
+      'price': serializer.toJson<double>(price),
+      'materialFormat': serializer.toJson<String>(
+        $MaterialTableTable.$convertermaterialFormat.toJson(materialFormat),
+      ),
+    };
+  }
+
+  MaterialTableData copyWith({
+    int? id,
+    String? name,
+    double? price,
+    MaterialFormat? materialFormat,
+  }) => MaterialTableData(
+    id: id ?? this.id,
+    name: name ?? this.name,
+    price: price ?? this.price,
+    materialFormat: materialFormat ?? this.materialFormat,
+  );
+  MaterialTableData copyWithCompanion(MaterialTableCompanion data) {
+    return MaterialTableData(
+      id: data.id.present ? data.id.value : this.id,
+      name: data.name.present ? data.name.value : this.name,
+      price: data.price.present ? data.price.value : this.price,
+      materialFormat: data.materialFormat.present
+          ? data.materialFormat.value
+          : this.materialFormat,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('MaterialTableData(')
+          ..write('id: $id, ')
+          ..write('name: $name, ')
+          ..write('price: $price, ')
+          ..write('materialFormat: $materialFormat')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, name, price, materialFormat);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is MaterialTableData &&
+          other.id == this.id &&
+          other.name == this.name &&
+          other.price == this.price &&
+          other.materialFormat == this.materialFormat);
+}
+
+class MaterialTableCompanion extends UpdateCompanion<MaterialTableData> {
+  final Value<int> id;
+  final Value<String> name;
+  final Value<double> price;
+  final Value<MaterialFormat> materialFormat;
+  const MaterialTableCompanion({
+    this.id = const Value.absent(),
+    this.name = const Value.absent(),
+    this.price = const Value.absent(),
+    this.materialFormat = const Value.absent(),
+  });
+  MaterialTableCompanion.insert({
+    this.id = const Value.absent(),
+    required String name,
+    this.price = const Value.absent(),
+    required MaterialFormat materialFormat,
+  }) : name = Value(name),
+       materialFormat = Value(materialFormat);
+  static Insertable<MaterialTableData> custom({
+    Expression<int>? id,
+    Expression<String>? name,
+    Expression<double>? price,
+    Expression<String>? materialFormat,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (name != null) 'name': name,
+      if (price != null) 'price': price,
+      if (materialFormat != null) 'material_format': materialFormat,
+    });
+  }
+
+  MaterialTableCompanion copyWith({
+    Value<int>? id,
+    Value<String>? name,
+    Value<double>? price,
+    Value<MaterialFormat>? materialFormat,
+  }) {
+    return MaterialTableCompanion(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      price: price ?? this.price,
+      materialFormat: materialFormat ?? this.materialFormat,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (name.present) {
+      map['name'] = Variable<String>(name.value);
+    }
+    if (price.present) {
+      map['price'] = Variable<double>(price.value);
+    }
+    if (materialFormat.present) {
+      map['material_format'] = Variable<String>(
+        $MaterialTableTable.$convertermaterialFormat.toSql(
+          materialFormat.value,
+        ),
+      );
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('MaterialTableCompanion(')
+          ..write('id: $id, ')
+          ..write('name: $name, ')
+          ..write('price: $price, ')
+          ..write('materialFormat: $materialFormat')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
@@ -1649,6 +1955,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
       $OperationLogsTableTable(this);
   late final $ActivityTableTable activityTable = $ActivityTableTable(this);
   late final $FieldTableTable fieldTable = $FieldTableTable(this);
+  late final $MaterialTableTable materialTable = $MaterialTableTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -1657,6 +1964,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     operationLogsTable,
     activityTable,
     fieldTable,
+    materialTable,
   ];
 }
 
@@ -2484,6 +2792,189 @@ typedef $$FieldTableTableProcessedTableManager =
       FieldTableData,
       PrefetchHooks Function()
     >;
+typedef $$MaterialTableTableCreateCompanionBuilder =
+    MaterialTableCompanion Function({
+      Value<int> id,
+      required String name,
+      Value<double> price,
+      required MaterialFormat materialFormat,
+    });
+typedef $$MaterialTableTableUpdateCompanionBuilder =
+    MaterialTableCompanion Function({
+      Value<int> id,
+      Value<String> name,
+      Value<double> price,
+      Value<MaterialFormat> materialFormat,
+    });
+
+class $$MaterialTableTableFilterComposer
+    extends Composer<_$AppDatabase, $MaterialTableTable> {
+  $$MaterialTableTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get price => $composableBuilder(
+    column: $table.price,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnWithTypeConverterFilters<MaterialFormat, MaterialFormat, String>
+  get materialFormat => $composableBuilder(
+    column: $table.materialFormat,
+    builder: (column) => ColumnWithTypeConverterFilters(column),
+  );
+}
+
+class $$MaterialTableTableOrderingComposer
+    extends Composer<_$AppDatabase, $MaterialTableTable> {
+  $$MaterialTableTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get price => $composableBuilder(
+    column: $table.price,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get materialFormat => $composableBuilder(
+    column: $table.materialFormat,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$MaterialTableTableAnnotationComposer
+    extends Composer<_$AppDatabase, $MaterialTableTable> {
+  $$MaterialTableTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get name =>
+      $composableBuilder(column: $table.name, builder: (column) => column);
+
+  GeneratedColumn<double> get price =>
+      $composableBuilder(column: $table.price, builder: (column) => column);
+
+  GeneratedColumnWithTypeConverter<MaterialFormat, String> get materialFormat =>
+      $composableBuilder(
+        column: $table.materialFormat,
+        builder: (column) => column,
+      );
+}
+
+class $$MaterialTableTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $MaterialTableTable,
+          MaterialTableData,
+          $$MaterialTableTableFilterComposer,
+          $$MaterialTableTableOrderingComposer,
+          $$MaterialTableTableAnnotationComposer,
+          $$MaterialTableTableCreateCompanionBuilder,
+          $$MaterialTableTableUpdateCompanionBuilder,
+          (
+            MaterialTableData,
+            BaseReferences<
+              _$AppDatabase,
+              $MaterialTableTable,
+              MaterialTableData
+            >,
+          ),
+          MaterialTableData,
+          PrefetchHooks Function()
+        > {
+  $$MaterialTableTableTableManager(_$AppDatabase db, $MaterialTableTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$MaterialTableTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$MaterialTableTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$MaterialTableTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<String> name = const Value.absent(),
+                Value<double> price = const Value.absent(),
+                Value<MaterialFormat> materialFormat = const Value.absent(),
+              }) => MaterialTableCompanion(
+                id: id,
+                name: name,
+                price: price,
+                materialFormat: materialFormat,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                required String name,
+                Value<double> price = const Value.absent(),
+                required MaterialFormat materialFormat,
+              }) => MaterialTableCompanion.insert(
+                id: id,
+                name: name,
+                price: price,
+                materialFormat: materialFormat,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$MaterialTableTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $MaterialTableTable,
+      MaterialTableData,
+      $$MaterialTableTableFilterComposer,
+      $$MaterialTableTableOrderingComposer,
+      $$MaterialTableTableAnnotationComposer,
+      $$MaterialTableTableCreateCompanionBuilder,
+      $$MaterialTableTableUpdateCompanionBuilder,
+      (
+        MaterialTableData,
+        BaseReferences<_$AppDatabase, $MaterialTableTable, MaterialTableData>,
+      ),
+      MaterialTableData,
+      PrefetchHooks Function()
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -2494,4 +2985,6 @@ class $AppDatabaseManager {
       $$ActivityTableTableTableManager(_db, _db.activityTable);
   $$FieldTableTableTableManager get fieldTable =>
       $$FieldTableTableTableManager(_db, _db.fieldTable);
+  $$MaterialTableTableTableManager get materialTable =>
+      $$MaterialTableTableTableManager(_db, _db.materialTable);
 }

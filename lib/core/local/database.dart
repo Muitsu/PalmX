@@ -12,7 +12,9 @@ part 'database.g.dart';
 //NOTE: If you ever make changes to the table later, re-run the command.
 //dart run build_runner build --delete-conflicting-outputs
 
-@DriftDatabase(tables: [OperationLogsTable, ActivityTable, FieldTable])
+@DriftDatabase(
+  tables: [OperationLogsTable, ActivityTable, FieldTable, MaterialTable],
+)
 class AppDatabase extends _$AppDatabase {
   AppDatabase._internal() : super(_openConnection());
 
