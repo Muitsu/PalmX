@@ -26,6 +26,18 @@ class DatabaseMigration {
           );
         }).toList(),
       );
+      b.insertAll(
+        db.materialTable,
+        materialCostMap.entries.map((entry) {
+          final value = entry.value;
+
+          return MaterialTableCompanion.insert(
+            name: entry.key,
+            price: Value(value['price'] as double),
+            materialFormat: value['format'] as MaterialFormat,
+          );
+        }).toList(),
+      );
     });
   }
 }
@@ -55,4 +67,24 @@ final Map<String, ActivityCost> activityUnitMap = {
   // Cost/palm activities
   'Pruning': ActivityCost.costPALM,
   'Raking - Manual': ActivityCost.costPALM,
+};
+final Map<String, Map<String, dynamic>> materialCostMap = {
+  'Monex HC': {'price': 18.0, 'format': MaterialFormat.litre},
+  'Promax (Acephate)': {'price': 28.4, 'format': MaterialFormat.kg},
+  'Ancom Sodium Chlorate': {'price': 6.1, 'format': MaterialFormat.kg},
+  '(triester) Triclopyl Butotyl': {
+    'price': 13.45,
+    'format': MaterialFormat.litre,
+  },
+  'Adjuvant Wetting agent': {'price': 2.1, 'format': MaterialFormat.litre},
+  '(Supremo) Glyphostae Isopropylamine': {
+    'price': 8.2,
+    'format': MaterialFormat.litre,
+  },
+  '(Alion) Indaziflam': {'price': 650.0, 'format': MaterialFormat.litre},
+  '(Cyper) Cypermethrin': {'price': 5.7, 'format': MaterialFormat.litre},
+  '(Acosta) Glufosinate ammonium': {
+    'price': 6.2,
+    'format': MaterialFormat.litre,
+  },
 };
