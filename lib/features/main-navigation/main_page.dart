@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:palmx/features/calendar/calendar_page.dart';
 import 'package:palmx/features/home/home_page.dart';
 import 'package:palmx/features/operation/operation_log/operation_log_form_page.dart';
+import 'package:palmx/features/settings/setting_page.dart';
 
 class MainPage extends StatefulWidget {
   const MainPage({super.key});
@@ -37,7 +38,7 @@ class _MainPageState extends State<MainPage> {
               controller: _pageController,
               physics: NeverScrollableScrollPhysics(),
               onPageChanged: _onPageChanged,
-              children: const [HomePage(), CalendarPage()],
+              children: const [HomePage(), CalendarPage(), SettingPage()],
             ),
             Positioned(
               bottom: 30,
@@ -79,6 +80,7 @@ class _MainPageState extends State<MainPage> {
             children: [
               _navItem(Icons.home_outlined, "HOME", 0),
               _navItem(Icons.calendar_month_outlined, "CALENDAR", 1),
+              _navItem(Icons.settings, "SETTINGS", 2),
             ],
           ),
         ),

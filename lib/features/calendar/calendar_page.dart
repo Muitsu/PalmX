@@ -18,35 +18,25 @@ class _CalendarPageState extends State<CalendarPage>
   bool get wantKeepAlive => true;
 
   late ValueNotifier<DateTime> focusedDay;
-  List<OperationLogModel> _dailyLogs = []; // State to hold fetched data
-  List<OperationLogModel> _monthLogs = []; // State to hold fetched data
+  late ValueNotifier<List<OperationLogModel>> operationsForSelectedDay;
+  List<OperationLogModel> _monthLogs = [];
   bool _isLoading = false;
 
   @override
   void initState() {
     super.initState();
     focusedDay = ValueNotifier(DateTime.now());
-    _fetchLogs(focusedDay.value); // Initial fetch
+    operationsForSelectedDay = ValueNotifier([]);
+    _fetchMonthlyLogs(focusedDay.value); // Initial fetch
   }
 
   // --- Database Logic ---
-  Future<void> _fetchLogs(DateTime date) async {
-    setState(() => _isLoading = true);
-
-    final logs = await OperationLogsLocalDatasource().getAllByDate(date);
-
-    _dailyLogs = logs.map((e) => OperationLogModel.fromDrift(e)).toList();
-    _isLoading = false;
-  }
-
   Future<void> _fetchMonthlyLogs(DateTime monthDate) async {
     setState(() => _isLoading = true);
-
     // Call the new monthly method
     final logs = await OperationLogsLocalDatasource().getByMonth(monthDate);
-
     _monthLogs = logs.map((e) => OperationLogModel.fromDrift(e)).toList();
-    _isLoading = false;
+    setState(() => _isLoading = false);
   }
 
   @override
@@ -65,16 +55,13 @@ class _CalendarPageState extends State<CalendarPage>
               ),
               onPageChanged: (newMonthDate) {
                 focusedDay.value = newMonthDate;
-                // When the user swipes to a new month, fetch all logs for that month
                 _fetchMonthlyLogs(newMonthDate);
               },
               onDaySelected: (operations, selectedDay) {
                 focusedDay.value = selectedDay;
-                // If you only want day-specific data when clicking a day:
-                _fetchLogs(selectedDay);
+                operationsForSelectedDay.value = operations;
               },
             ),
-            _buildLegend(),
 
             // Logic to show loading, list, or empty state
             if (_isLoading)
@@ -82,7 +69,7 @@ class _CalendarPageState extends State<CalendarPage>
                 padding: EdgeInsets.all(20.0),
                 child: CircularProgressIndicator(),
               )
-            else if (_dailyLogs.isEmpty)
+            else if (_monthLogs.isEmpty)
               _buildEmptyState()
             else
               _buildLogsList(), // New widget to show the data
@@ -96,17 +83,22 @@ class _CalendarPageState extends State<CalendarPage>
 
   // New widget to display the fetched logs
   Widget _buildLogsList() {
-    return ListView.builder(
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      itemCount: _dailyLogs.length,
-      itemBuilder: (context, index) {
-        final log = _dailyLogs[index];
-        return ListTile(
-          leading: const Icon(Icons.agriculture, color: Colors.green),
-          title: Text(log.activityType ?? "-"),
-          subtitle: Text("${log.field} • ${log.hectar} Ha"),
-          trailing: Text("RM ${log.labourRate}"),
+    return ValueListenableBuilder(
+      valueListenable: operationsForSelectedDay,
+      builder: (context, value, _) {
+        return ListView.builder(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          itemCount: value.length,
+          itemBuilder: (context, index) {
+            final log = value[index];
+            return ListTile(
+              leading: const Icon(Icons.agriculture, color: Colors.green),
+              title: Text(log.activityType ?? "-"),
+              subtitle: Text("${log.field} • ${log.hectar} Ha"),
+              trailing: Text("RM ${log.labourRate}"),
+            );
+          },
         );
       },
     );
@@ -124,42 +116,6 @@ class _CalendarPageState extends State<CalendarPage>
           ),
           Icon(Icons.account_circle_outlined, color: Colors.orange[800]),
         ],
-      ),
-    );
-  }
-
-  Widget _buildLegend() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-      child: Row(
-        children: [
-          const Text(
-            "Less",
-            style: TextStyle(color: Colors.grey, fontSize: 12),
-          ),
-          const SizedBox(width: 4),
-          _legendBox(Colors.orange.shade50),
-          _legendBox(Colors.orange.shade100),
-          _legendBox(Colors.orange.shade400),
-          _legendBox(Colors.orange.shade800),
-          const SizedBox(width: 4),
-          const Text(
-            "More",
-            style: TextStyle(color: Colors.grey, fontSize: 12),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _legendBox(Color color) {
-    return Container(
-      width: 12,
-      height: 12,
-      margin: const EdgeInsets.symmetric(horizontal: 2),
-      decoration: BoxDecoration(
-        color: color,
-        borderRadius: BorderRadius.circular(2),
       ),
     );
   }

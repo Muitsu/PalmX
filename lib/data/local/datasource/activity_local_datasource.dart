@@ -1,5 +1,6 @@
 import 'package:drift/drift.dart';
 import 'package:palmx/core/local/database.dart';
+import 'package:palmx/data/local/models/activity_model.dart';
 
 class ActivityLocalDatasource {
   static final ActivityLocalDatasource _instance =
@@ -30,10 +31,11 @@ class ActivityLocalDatasource {
   // --- READ ---
 
   /// Fetches all fields alphabetically by code
-  Future<List<ActivityTableData>> getAll() async {
-    return await (_db.select(
-      _db.activityTable,
-    )..orderBy([(t) => OrderingTerm(expression: t.name)])).get();
+  Future<List<ActivityModel>> getAll() async {
+    return await (_db.select(_db.activityTable)
+          ..orderBy([(t) => OrderingTerm(expression: t.name)]))
+        .get()
+        .then((rows) => rows.map((e) => ActivityModel.fromDrift(e)).toList());
   }
 
   /// Watch fields for real-time UI updates (e.g., in a dropdown)
@@ -44,18 +46,19 @@ class ActivityLocalDatasource {
   }
 
   /// Fetch a single field by ID
-  Future<ActivityTableData?> getById(int id) async {
-    return await (_db.select(
-      _db.activityTable,
-    )..where((t) => t.id.equals(id))).getSingleOrNull();
+  Future<ActivityModel?> getById(int id) async {
+    return await (_db.select(_db.activityTable)..where((t) => t.id.equals(id)))
+        .getSingleOrNull()
+        .then((data) => data != null ? ActivityModel.fromDrift(data) : null);
   }
 
   /// Search fields by code or description
-  Future<List<ActivityTableData>> searchFields(String query) async {
+  Future<List<ActivityModel>> searchFields(String query) async {
     return await (_db.select(_db.activityTable)..where(
           (t) => t.name.contains(query) | t.activityCost.contains(query),
         ))
-        .get();
+        .get()
+        .then((rows) => rows.map((e) => ActivityModel.fromDrift(e)).toList());
   }
 
   // --- DELETE ---

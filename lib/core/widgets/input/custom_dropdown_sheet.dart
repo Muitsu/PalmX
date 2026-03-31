@@ -9,6 +9,7 @@ class CustomDropdownSheet<T> extends StatefulWidget {
   final T? Function(List<T> data)? onFindGroupValue;
   final List<T> Function(List<T> data, String? query)? onQuery;
   final void Function(T? data) onChange;
+  final void Function(T? data)? onLongPress;
   final double initialChildSize;
   final double maxChildSize;
   final double minChildSize;
@@ -33,6 +34,7 @@ class CustomDropdownSheet<T> extends StatefulWidget {
     this.accentColor,
     this.emptyMessage,
     this.customEmptyWidget,
+    this.onLongPress,
   });
 
   static Future<T?> show<T>(
@@ -51,6 +53,7 @@ class CustomDropdownSheet<T> extends StatefulWidget {
     Color? accentColor,
     String? emptyMessage,
     Widget? customEmptyWidget,
+    void Function(T? data)? onLongPress,
   }) async {
     return await showModalBottomSheet<T>(
       context: context,
@@ -77,6 +80,7 @@ class CustomDropdownSheet<T> extends StatefulWidget {
         accentColor: accentColor,
         emptyMessage: emptyMessage,
         customEmptyWidget: customEmptyWidget,
+        onLongPress: onLongPress,
       ),
     );
   }
@@ -301,6 +305,7 @@ class _CustomDropdownSheetState<T> extends State<CustomDropdownSheet<T>>
                               ),
                         ),
                       ),
+
                       if (shownItems.isNotEmpty)
                         Container(
                           padding: const EdgeInsets.symmetric(
@@ -320,6 +325,24 @@ class _CustomDropdownSheetState<T> extends State<CustomDropdownSheet<T>>
                             ),
                           ),
                         ),
+                      SizedBox(width: 12),
+                      ElevatedButton(
+                        onPressed: () {
+                          widget.onLongPress?.call(null);
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: _accentColor,
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 20,
+                            vertical: 10,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                        child: Text("Add"),
+                      ),
                     ],
                   ),
                 ),
@@ -382,6 +405,7 @@ class _CustomDropdownSheetState<T> extends State<CustomDropdownSheet<T>>
                           accentColor: _accentColor,
                           animationController: _listAnimController,
                           scrollController: sc,
+                          onLongPress: widget.onLongPress,
                           onChanged: (val) async {
                             widget.onChange(val);
                             Navigator.of(context).pop();
@@ -412,6 +436,7 @@ class _AnimatedDropdownList<T> extends StatelessWidget {
   final AnimationController animationController;
   final ScrollController scrollController;
   final void Function(T?) onChanged;
+  final void Function(T?)? onLongPress;
 
   const _AnimatedDropdownList({
     super.key,
@@ -422,6 +447,7 @@ class _AnimatedDropdownList<T> extends StatelessWidget {
     required this.animationController,
     required this.scrollController,
     required this.onChanged,
+    this.onLongPress,
   });
 
   @override
@@ -446,6 +472,7 @@ class _AnimatedDropdownList<T> extends StatelessWidget {
           animationController: animationController,
           delay: delay,
           onChanged: onChanged,
+          onLongPress: onLongPress,
         );
       },
     );
@@ -462,6 +489,7 @@ class _AnimatedDropdownItem<T> extends StatefulWidget {
   final AnimationController animationController;
   final int delay;
   final void Function(T?) onChanged;
+  final void Function(T?)? onLongPress;
 
   const _AnimatedDropdownItem({
     required this.item,
@@ -472,6 +500,7 @@ class _AnimatedDropdownItem<T> extends StatefulWidget {
     required this.animationController,
     required this.delay,
     required this.onChanged,
+    this.onLongPress,
   });
 
   @override
@@ -545,6 +574,9 @@ class _AnimatedDropdownItemState<T> extends State<_AnimatedDropdownItem<T>>
       child: Material(
         color: Colors.transparent,
         child: InkWell(
+          onLongPress: widget.onLongPress != null
+              ? () => widget.onLongPress!(widget.item)
+              : null,
           onTap: () => widget.onChanged(widget.item),
           borderRadius: BorderRadius.circular(12),
           child: Padding(
