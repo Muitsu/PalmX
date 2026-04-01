@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_animate/flutter_animate.dart'; // Ensure this is imported
-import 'package:palmx/core/widgets/input/custom_dropdown_sheet.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:palmx/core/widgets/input_formatter/currency_input_formatter.dart';
 import 'package:palmx/core/widgets/utils.dart';
+import 'package:palmx/data/local/models/material_model.dart';
+import 'package:palmx/features/operation/operation_log/dropdown_service.dart';
 
 class MaterialCostSheet extends StatefulWidget {
   final ScrollController? sc;
@@ -17,7 +18,7 @@ class _MaterialCostSheetState extends State<MaterialCostSheet> {
   final materialTypeController = TextEditingController(text: "");
   final materialCostController = TextEditingController(text: "65.38");
   final materialQtyController = TextEditingController(text: "12");
-
+  MaterialModel? _selectedMaterial;
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -94,14 +95,17 @@ class _MaterialCostSheetState extends State<MaterialCostSheet> {
                     hint: "Choose material",
                     isDropdown: true,
                     onTap: () {
-                      CustomDropdownSheet.show<String>(
+                      DropdownService.showMaterial(
                         context,
-                        label: "Material type",
-                        accentColor: Colors.deepOrange,
-                        items: ["A", "B", "C"],
-                        groupValue: "A",
-                        getTitle: (item) => item,
-                        onChange: (item) {},
+                        initialValue: _selectedMaterial,
+                        onSelected: (material) {
+                          setState(() => _selectedMaterial = material);
+                          if (material != null) {
+                            materialTypeController.text = material.name;
+                            materialCostController.text = material.price
+                                .toStringAsFixed(2);
+                          }
+                        },
                       );
                     },
                   )

@@ -19,12 +19,12 @@ class ActivityModel extends ActivityTableData {
   }
 
   static ActivityTableCompanion toInsert({
-    int? id,
+    int? ids,
     required String name,
     required ActivityCost activityCost,
   }) {
     return ActivityTableCompanion.insert(
-      id: id == null ? Value.absent() : Value(id),
+      id: ids == null ? Value.absent() : Value(ids),
       name: name,
       activityCost: activityCost,
     );

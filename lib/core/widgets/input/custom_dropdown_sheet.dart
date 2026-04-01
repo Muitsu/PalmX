@@ -3,7 +3,8 @@ import 'dart:async';
 
 class CustomDropdownSheet<T> extends StatefulWidget {
   final String label;
-  final List<T> items;
+  final List<T>? items; // Changed to optional to allow Stream usage
+  final Stream<List<T>>? itemsStream; // Added Stream parameter
   final String Function(T data) getTitle;
   final T? groupValue;
   final T? Function(List<T> data)? onFindGroupValue;
@@ -21,8 +22,9 @@ class CustomDropdownSheet<T> extends StatefulWidget {
   const CustomDropdownSheet({
     super.key,
     this.groupValue,
+    this.items,
+    this.itemsStream, // Added
     required this.label,
-    required this.items,
     required this.getTitle,
     required this.onChange,
     this.keyboardType = TextInputType.text,
@@ -35,12 +37,16 @@ class CustomDropdownSheet<T> extends StatefulWidget {
     this.emptyMessage,
     this.customEmptyWidget,
     this.onLongPress,
-  });
+  }) : assert(
+         items != null || itemsStream != null,
+         'Either items or itemsStream must be provided',
+       );
 
   static Future<T?> show<T>(
     BuildContext context, {
     required String label,
-    required List<T> items,
+    List<T>? items,
+    Stream<List<T>>? itemsStream, // Added
     required String Function(T data) getTitle,
     required void Function(T? data) onChange,
     T? groupValue,
@@ -68,6 +74,7 @@ class CustomDropdownSheet<T> extends StatefulWidget {
       builder: (_) => CustomDropdownSheet<T>(
         label: label,
         items: items,
+        itemsStream: itemsStream, // Added
         getTitle: getTitle,
         onChange: onChange,
         groupValue: groupValue,
@@ -98,11 +105,13 @@ class _CustomDropdownSheetState<T> extends State<CustomDropdownSheet<T>>
   final searchController = TextEditingController();
   final scrollController = ScrollController();
 
+  // Animation Controllers
   late AnimationController _headerAnimController;
   late AnimationController _searchAnimController;
   late AnimationController _listAnimController;
   late AnimationController _emptyAnimController;
 
+  // Animations
   late Animation<double> _headerFadeAnim;
   late Animation<double> _headerSlideAnim;
   late Animation<double> _searchFadeAnim;
@@ -112,14 +121,30 @@ class _CustomDropdownSheetState<T> extends State<CustomDropdownSheet<T>>
 
   bool showEmpty = false;
   Timer? _debounce;
+  StreamSubscription<List<T>>? _streamSubscription; // Added for Stream
 
   @override
   void initState() {
     super.initState();
-    currValue = _setGroupValue();
-    shownItems = List.of(widget.items);
-    backupItems = List.of(widget.items);
 
+    // Initialize lists
+    shownItems = [];
+    backupItems = [];
+
+    // Initialize with static items if provided
+    if (widget.items != null) {
+      backupItems = List.of(widget.items!);
+      shownItems = List.of(widget.items!);
+    }
+
+    currValue = _setGroupValue(backupItems);
+
+    _initAnimations();
+    _startAnimations();
+    _listenToStream(); // Start listening to stream
+  }
+
+  void _initAnimations() {
     _headerAnimController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 350),
@@ -172,8 +197,30 @@ class _CustomDropdownSheetState<T> extends State<CustomDropdownSheet<T>>
     _emptyScaleAnim = Tween<double>(begin: 0.8, end: 1.0).animate(
       CurvedAnimation(parent: _emptyAnimController, curve: Curves.easeOutBack),
     );
+  }
 
-    _startAnimations();
+  void _listenToStream() {
+    if (widget.itemsStream == null) return;
+
+    _streamSubscription = widget.itemsStream!.listen((data) {
+      if (mounted) {
+        _updateData(data);
+      }
+    });
+  }
+
+  // Centralized data update logic
+  void _updateData(List<T> data) {
+    setState(() {
+      backupItems = List.of(data);
+      // Re-apply current search query to new data
+      _applySearch(searchController.text, initialLoad: false);
+
+      // Update group value based on new data if needed
+      if (widget.onFindGroupValue != null) {
+        currValue = widget.onFindGroupValue!(backupItems);
+      }
+    });
   }
 
   void _startAnimations() async {
@@ -186,6 +233,10 @@ class _CustomDropdownSheetState<T> extends State<CustomDropdownSheet<T>>
     }
 
     await Future.delayed(const Duration(milliseconds: 200));
+    _checkEmptyOrShowList();
+  }
+
+  void _checkEmptyOrShowList() {
     if (shownItems.isEmpty) {
       showEmpty = true;
       _emptyAnimController.forward();
@@ -196,6 +247,7 @@ class _CustomDropdownSheetState<T> extends State<CustomDropdownSheet<T>>
 
   @override
   void dispose() {
+    _streamSubscription?.cancel(); // Cancel stream subscription
     searchController.dispose();
     scrollController.dispose();
     _headerAnimController.dispose();
@@ -206,9 +258,9 @@ class _CustomDropdownSheetState<T> extends State<CustomDropdownSheet<T>>
     super.dispose();
   }
 
-  T? _setGroupValue() {
+  T? _setGroupValue(List<T> currentList) {
     if (widget.onFindGroupValue != null) {
-      return widget.onFindGroupValue!(widget.items);
+      return widget.onFindGroupValue!(currentList);
     }
     return widget.groupValue;
   }
@@ -218,24 +270,31 @@ class _CustomDropdownSheetState<T> extends State<CustomDropdownSheet<T>>
 
     if (_debounce?.isActive ?? false) _debounce!.cancel();
     _debounce = Timer(const Duration(milliseconds: 300), () {
-      final sendItems = List.of(backupItems);
-      final queryList = val.isEmpty
-          ? sendItems
-          : widget.onQuery!(sendItems, val);
+      _applySearch(val);
+    });
+  }
 
-      setState(() {
-        shownItems = queryList;
-        showEmpty = queryList.isEmpty;
-      });
+  void _applySearch(String query, {bool initialLoad = false}) {
+    final sendItems = List.of(backupItems);
+    final queryList = query.isEmpty
+        ? sendItems
+        : widget.onQuery!(sendItems, query);
 
-      if (queryList.isEmpty) {
-        _listAnimController.reverse();
-        _emptyAnimController.forward(from: 0);
-      } else {
-        _emptyAnimController.reverse();
+    setState(() {
+      shownItems = queryList;
+      showEmpty = queryList.isEmpty;
+    });
+
+    // Handle animations
+    if (queryList.isEmpty) {
+      _listAnimController.reverse();
+      _emptyAnimController.forward(from: 0);
+    } else {
+      _emptyAnimController.reverse();
+      if (!initialLoad) {
         _listAnimController.forward(from: 0);
       }
-    });
+    }
   }
 
   Color get _accentColor => widget.accentColor ?? const Color(0xFF6C63FF);
@@ -325,7 +384,7 @@ class _CustomDropdownSheetState<T> extends State<CustomDropdownSheet<T>>
                             ),
                           ),
                         ),
-                      SizedBox(width: 12),
+                      const SizedBox(width: 12),
                       ElevatedButton(
                         onPressed: () {
                           widget.onLongPress?.call(null);
@@ -341,7 +400,7 @@ class _CustomDropdownSheetState<T> extends State<CustomDropdownSheet<T>>
                             borderRadius: BorderRadius.circular(12),
                           ),
                         ),
-                        child: Text("Add"),
+                        child: const Text("Add"),
                       ),
                     ],
                   ),
@@ -427,7 +486,8 @@ class _CustomDropdownSheetState<T> extends State<CustomDropdownSheet<T>>
   }
 }
 
-// Animated List Widget
+// ... (Rest of the helper classes remain the same: _AnimatedDropdownList, _AnimatedDropdownItem, _SearchField, _EmptyState)
+
 class _AnimatedDropdownList<T> extends StatelessWidget {
   final List<T> items;
   final T? groupValue;
@@ -479,7 +539,6 @@ class _AnimatedDropdownList<T> extends StatelessWidget {
   }
 }
 
-// Animated Individual Item
 class _AnimatedDropdownItem<T> extends StatefulWidget {
   final T item;
   final int index;
@@ -636,7 +695,6 @@ class _AnimatedDropdownItemState<T> extends State<_AnimatedDropdownItem<T>>
   }
 }
 
-// Search Field Widget
 class _SearchField extends StatefulWidget {
   final TextEditingController controller;
   final TextInputType keyboardType;
@@ -733,7 +791,6 @@ class _SearchFieldState extends State<_SearchField> {
   }
 }
 
-// Empty State Widget
 class _EmptyState extends StatelessWidget {
   final String message;
   final Animation<double> fadeAnim;

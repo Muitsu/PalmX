@@ -29,7 +29,7 @@ class _ActivityFormPageState extends State<ActivityFormPage> {
     if (_formKey.currentState!.validate()) {
       // Logic to save to your database/provider
       final data = ActivityModel.toInsert(
-        id: widget.record?.id,
+        ids: widget.record?.id,
         name: _titleController.text,
         activityCost: _selectedCost,
       );

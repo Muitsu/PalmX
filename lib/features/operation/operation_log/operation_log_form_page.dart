@@ -1,18 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:palmx/core/widgets/input/custom_date_picker.dart';
-import 'package:palmx/core/widgets/input/custom_dropdown_sheet.dart';
 import 'package:palmx/core/widgets/input_formatter/currency_input_formatter.dart';
 import 'package:palmx/core/widgets/modal/custom_draggable_sheet.dart';
 import 'package:palmx/core/widgets/utils.dart';
-import 'package:palmx/data/local/datasource/activity_local_datasource.dart';
 import 'package:palmx/data/local/models/activity_model.dart';
+import 'package:palmx/data/local/models/field_model.dart';
 import 'package:palmx/features/operation/cost_table/driver_cost_sheet.dart';
 import 'package:palmx/features/operation/cost_table/evit_cost_sheet.dart';
 import 'package:palmx/features/operation/cost_table/labour_cost_sheet.dart';
 import 'package:palmx/features/operation/cost_table/material_cost_sheet.dart';
 import 'package:palmx/features/operation/cost_table/supervision_cost_sheet.dart';
-import 'package:palmx/features/settings/activity_form_page.dart';
+import 'package:palmx/features/operation/operation_log/dropdown_service.dart';
 
 class OperationLogFormPage extends StatefulWidget {
   const OperationLogFormPage({super.key});
@@ -23,18 +22,11 @@ class OperationLogFormPage extends StatefulWidget {
 
 class _OperationLogFormPageState extends State<OperationLogFormPage> {
   ActivityModel? _selectedActivity;
-  List<ActivityModel> _activities = [];
+  FieldModel? _selectedField;
+
   @override
   void initState() {
     super.initState();
-    _loadActivities();
-  }
-
-  Future<void> _loadActivities() async {
-    final data = await ActivityLocalDatasource().getAll();
-    setState(() {
-      _activities = data.map((e) => ActivityModel.fromDrift(e)).toList();
-    });
   }
 
   @override
@@ -92,27 +84,12 @@ class _OperationLogFormPageState extends State<OperationLogFormPage> {
                 label: "Activity Type",
                 hint: "Harvesting & Collection",
                 isDropdown: true,
-                onTap: () async {
-                  CustomDropdownSheet.show<ActivityModel>(
-                    // ignore: use_build_context_synchronously
+                onTap: () {
+                  DropdownService.showActivity(
                     context,
-                    label: "Activity",
-                    accentColor: Colors.deepOrange,
-                    items: _activities,
-                    groupValue: _selectedActivity,
-                    getTitle: (item) => item.name,
-                    onChange: (item) {
+                    initialValue: _selectedActivity,
+                    onSelected: (item) {
                       setState(() => _selectedActivity = item);
-                    },
-                    onLongPress: (item) async {
-                      await Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => ActivityFormPage(record: item),
-                        ),
-                      );
-
-                      await _loadActivities();
                     },
                   );
                 },
@@ -126,14 +103,12 @@ class _OperationLogFormPageState extends State<OperationLogFormPage> {
                 hint: "Division A - Block 12",
                 isDropdown: true,
                 onTap: () {
-                  CustomDropdownSheet.show<String>(
+                  DropdownService.showField(
                     context,
-                    label: "Field",
-                    accentColor: Colors.deepOrange,
-                    items: ["A", "B", "C"],
-                    groupValue: "A",
-                    getTitle: (item) => item,
-                    onChange: (item) {},
+                    initialValue: _selectedField,
+                    onSelected: (item) {
+                      setState(() => _selectedField = item);
+                    },
                   );
                 },
               ),

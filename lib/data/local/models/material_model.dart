@@ -1,4 +1,6 @@
+import 'package:drift/drift.dart';
 import 'package:palmx/core/local/database.dart';
+import 'package:palmx/data/local/tables/material_table.dart';
 
 class MaterialModel extends MaterialTableData {
   MaterialModel({
@@ -15,6 +17,20 @@ class MaterialModel extends MaterialTableData {
       name: data.name,
       price: data.price,
       materialFormat: data.materialFormat,
+    );
+  }
+
+  static MaterialTableCompanion toInsert({
+    int? ids,
+    required String name,
+    required double price,
+    required MaterialFormat materialFormat,
+  }) {
+    return MaterialTableCompanion.insert(
+      id: ids == null ? Value.absent() : Value(ids),
+      name: name,
+      price: Value(price),
+      materialFormat: materialFormat,
     );
   }
 }
