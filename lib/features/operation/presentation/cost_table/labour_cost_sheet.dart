@@ -3,7 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:palmx/core/widgets/utils.dart';
 
-import '../../../core/widgets/input_formatter/currency_input_formatter.dart';
+import '../../../../core/widgets/input_formatter/currency_input_formatter.dart';
 
 class LabourCostSheet extends StatefulWidget {
   final ScrollController? sc;

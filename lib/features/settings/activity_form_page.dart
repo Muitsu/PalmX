@@ -29,7 +29,7 @@ class _ActivityFormPageState extends State<ActivityFormPage> {
     if (_formKey.currentState!.validate()) {
       // Logic to save to your database/provider
       final data = ActivityModel.toInsert(
-        ids: widget.record?.id,
+        id: widget.record?.id,
         name: _titleController.text,
         activityCost: _selectedCost,
       );
@@ -45,7 +45,7 @@ class _ActivityFormPageState extends State<ActivityFormPage> {
 
   void _delete() {
     // Logic to delete from your database
-    ActivityLocalDatasource().deleteById(widget.record!.id);
+    ActivityLocalDatasource().deleteById(widget.record!.id!);
     Navigator.pop(context, "delete");
   }
 

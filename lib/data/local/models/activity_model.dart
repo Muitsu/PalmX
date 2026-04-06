@@ -2,14 +2,18 @@ import 'package:drift/drift.dart';
 import 'package:palmx/core/local/database.dart';
 import 'package:palmx/data/local/tables/activity_table.dart';
 
-class ActivityModel extends ActivityTableData {
-  ActivityModel({
-    required super.id,
-    required super.name,
-    required super.activityCost,
-  });
+import 'package:equatable/equatable.dart';
 
-  /// Factory to convert raw Drift data to our Model
+class ActivityModel extends Equatable {
+  final int? id;
+  final String? name;
+  final ActivityCost? activityCost;
+
+  const ActivityModel({this.id, this.name, this.activityCost});
+
+  @override
+  List<Object?> get props => [id, name, activityCost];
+
   factory ActivityModel.fromDrift(ActivityTableData data) {
     return ActivityModel(
       id: data.id,
@@ -18,15 +22,33 @@ class ActivityModel extends ActivityTableData {
     );
   }
 
+  ActivityTableCompanion toCompanion() {
+    return ActivityTableCompanion(
+      id: id == null ? const Value.absent() : Value(id!),
+      name: name == null ? const Value.absent() : Value(name!),
+      activityCost: activityCost == null
+          ? const Value.absent()
+          : Value(activityCost!),
+    );
+  }
+
+  ActivityModel copyWith({int? id, String? name, ActivityCost? activityCost}) {
+    return ActivityModel(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      activityCost: activityCost ?? this.activityCost,
+    );
+  }
+
   static ActivityTableCompanion toInsert({
-    int? ids,
-    required String name,
-    required ActivityCost activityCost,
+    int? id,
+    String? name,
+    ActivityCost? activityCost,
   }) {
     return ActivityTableCompanion.insert(
-      id: ids == null ? Value.absent() : Value(ids),
-      name: name,
-      activityCost: activityCost,
+      id: id == null ? const Value.absent() : Value(id),
+      name: name!,
+      activityCost: activityCost!,
     );
   }
 }

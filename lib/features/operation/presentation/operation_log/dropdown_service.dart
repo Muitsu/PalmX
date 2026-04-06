@@ -23,7 +23,7 @@ class DropdownService {
         (rows) => rows.map((e) => ActivityModel.fromDrift(e)).toList(),
       ),
       groupValue: initialValue,
-      getTitle: (item) => item.name,
+      getTitle: (item) => item.name ?? "-",
       onChange: onSelected,
       onLongPress: (item) {
         Navigator.push(

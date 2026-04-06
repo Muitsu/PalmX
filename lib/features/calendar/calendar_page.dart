@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:palmx/features/calendar/provider/calendar_provider.dart';
+import 'package:provider/provider.dart';
 import 'package:palmx/core/widgets/calendar/calendar_utils.dart';
 import 'package:palmx/core/widgets/calendar/calendar_widget.dart';
-import 'package:palmx/data/local/datasource/operation_log_local_datasource.dart';
-import 'package:palmx/data/local/models/operation_log_model.dart';
-import 'package:palmx/features/operation/operation_log/operation_log_form_page.dart';
+import 'package:palmx/features/operation/presentation/operation_log/operation_log_form_page.dart';
 
 class CalendarPage extends StatefulWidget {
   const CalendarPage({super.key});
@@ -17,62 +17,43 @@ class _CalendarPageState extends State<CalendarPage>
   @override
   bool get wantKeepAlive => true;
 
-  late ValueNotifier<DateTime> focusedDay;
-  late ValueNotifier<List<OperationLogModel>> operationsForSelectedDay;
-  List<OperationLogModel> _monthLogs = [];
-  bool _isLoading = false;
-
   @override
   void initState() {
     super.initState();
-    focusedDay = ValueNotifier(DateTime.now());
-    operationsForSelectedDay = ValueNotifier([]);
-    _fetchMonthlyLogs(focusedDay.value); // Initial fetch
-  }
-
-  // --- Database Logic ---
-  Future<void> _fetchMonthlyLogs(DateTime monthDate) async {
-    setState(() => _isLoading = true);
-    // Call the new monthly method
-    final logs = await OperationLogsLocalDatasource().getByMonth(monthDate);
-    _monthLogs = logs.map((e) => OperationLogModel.fromDrift(e)).toList();
-    setState(() => _isLoading = false);
+    context.read<CalendarProvider>().init();
   }
 
   @override
   Widget build(BuildContext context) {
     super.build(context);
+
+    final provider = context.watch<CalendarProvider>();
+
     return SafeArea(
       child: SingleChildScrollView(
         child: Column(
           children: [
             _buildHeader(),
-            CalendarWidget<OperationLogModel>(
-              focusedDay: focusedDay.value,
+
+            CalendarWidget(
+              focusedDay: provider.focusedDay.value,
               eventData: CalendarUtils.groupEventDates(
-                eventList: _monthLogs,
+                eventList: provider.monthLogs,
                 dateNormalizer: (val) => val.operationDate,
               ),
-              onPageChanged: (newMonthDate) {
-                focusedDay.value = newMonthDate;
-                _fetchMonthlyLogs(newMonthDate);
-              },
-              onDaySelected: (operations, selectedDay) {
-                focusedDay.value = selectedDay;
-                operationsForSelectedDay.value = operations;
-              },
+              onPageChanged: provider.onPageChanged,
+              onDaySelected: provider.onDaySelected,
             ),
 
-            // Logic to show loading, list, or empty state
-            if (_isLoading)
+            if (provider.isLoading)
               const Padding(
-                padding: EdgeInsets.all(20.0),
+                padding: EdgeInsets.all(20),
                 child: CircularProgressIndicator(),
               )
-            else if (_monthLogs.isEmpty)
+            else if (provider.monthLogs.isEmpty)
               _buildEmptyState()
             else
-              _buildLogsList(), // New widget to show the data
+              _buildLogsList(provider),
 
             const SizedBox(height: kBottomNavigationBarHeight + 60),
           ],
@@ -81,10 +62,9 @@ class _CalendarPageState extends State<CalendarPage>
     );
   }
 
-  // New widget to display the fetched logs
-  Widget _buildLogsList() {
+  Widget _buildLogsList(CalendarProvider provider) {
     return ValueListenableBuilder(
-      valueListenable: operationsForSelectedDay,
+      valueListenable: provider.operationsForSelectedDay,
       builder: (context, value, _) {
         return ListView.builder(
           shrinkWrap: true,
@@ -123,20 +103,13 @@ class _CalendarPageState extends State<CalendarPage>
   Widget _buildEmptyState() {
     return Column(
       children: [
-        const Icon(
-          Icons.calendar_today_outlined,
-          size: 50,
-          color: Color(0xFFE0E0E0),
-        ),
+        const Icon(Icons.calendar_today_outlined, size: 50),
         const SizedBox(height: 16),
         const Text(
           "No operations for today",
           style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
         ),
-        const Text(
-          "You haven't recorded any data for this date.",
-          style: TextStyle(color: Colors.grey),
-        ),
+        const Text("You haven't recorded any data."),
         const SizedBox(height: 24),
         ElevatedButton.icon(
           onPressed: () {
@@ -145,18 +118,8 @@ class _CalendarPageState extends State<CalendarPage>
               MaterialPageRoute(builder: (context) => OperationLogFormPage()),
             );
           },
-          icon: const Icon(Icons.add, color: Colors.white),
-          label: const Text(
-            "Create New Operation",
-            style: TextStyle(color: Colors.white),
-          ),
-          style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.orange[800],
-            padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
-          ),
+          icon: const Icon(Icons.add),
+          label: const Text("Create New Operation"),
         ),
       ],
     );

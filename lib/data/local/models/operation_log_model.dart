@@ -1,27 +1,28 @@
+import 'package:drift/drift.dart';
 import 'package:palmx/core/local/database.dart';
 
 class OperationLogModel extends OperationLogsTableData {
   OperationLogModel({
     required super.id,
     required super.operationDate,
-    required super.activityType,
-    required super.field,
-    required super.hectar,
-    required super.mandays,
+    super.activityType,
+    super.field,
+    super.hectar,
+    super.mandays,
     super.remarks,
-    required super.labourRate,
-    required super.labourQty,
-    required super.labourOtRate,
-    required super.labourOtHour,
-    required super.supervisionRate,
-    required super.supervisionMandays,
-    required super.driverRate,
-    required super.driverTotal,
-    required super.materialType,
-    required super.materialQty,
-    required super.materialLitreRate,
-    required super.evitTime,
-    required super.evitRate,
+    super.labourRate = 0.0,
+    super.labourQty = 0.0,
+    super.labourOtRate = 0.0,
+    super.labourOtHour = 0.0,
+    super.supervisionRate = 0.0,
+    super.supervisionMandays = 0.0,
+    super.driverRate = 0.0,
+    super.driverTotal = 0.0,
+    super.materialType,
+    super.materialQty,
+    super.materialLitreRate,
+    super.evitTime,
+    super.evitRate,
   });
 
   factory OperationLogModel.fromDrift(OperationLogsTableData data) {
@@ -46,6 +47,79 @@ class OperationLogModel extends OperationLogsTableData {
       materialLitreRate: data.materialLitreRate,
       evitTime: data.evitTime,
       evitRate: data.evitRate,
+    );
+  }
+
+  OperationLogModel copyData({
+    int? id,
+    DateTime? operationDate,
+    String? activityType,
+    String? field,
+    double? hectar,
+    double? mandays,
+    String? remarks,
+    double? labourRate,
+    double? labourQty,
+    double? labourOtRate,
+    double? labourOtHour,
+    double? supervisionRate,
+    double? supervisionMandays,
+    double? driverRate,
+    double? driverTotal,
+    String? materialType,
+    int? materialQty,
+    double? materialLitreRate,
+    double? evitTime,
+    double? evitRate,
+  }) {
+    return OperationLogModel(
+      id: id ?? this.id,
+      operationDate: operationDate ?? this.operationDate,
+      activityType: activityType ?? this.activityType,
+      field: field ?? this.field,
+      hectar: hectar ?? this.hectar,
+      mandays: mandays ?? this.mandays,
+      remarks: remarks ?? this.remarks,
+      labourRate: labourRate ?? this.labourRate,
+      labourQty: labourQty ?? this.labourQty,
+      labourOtRate: labourOtRate ?? this.labourOtRate,
+      labourOtHour: labourOtHour ?? this.labourOtHour,
+      supervisionRate: supervisionRate ?? this.supervisionRate,
+      supervisionMandays:
+          supervisionMandays ?? this.supervisionMandays, // Fixed here
+      driverRate: driverRate ?? this.driverRate,
+      driverTotal: driverTotal ?? this.driverTotal, // Fixed here
+      materialType: materialType ?? this.materialType,
+      materialQty: materialQty ?? this.materialQty, // Fixed here
+      materialLitreRate:
+          materialLitreRate ?? this.materialLitreRate, // Fixed here
+      evitTime: evitTime ?? this.evitTime, // Fixed here
+      evitRate: evitRate ?? this.evitRate, // Fixed here
+    );
+  }
+
+  OperationLogsTableCompanion toInsert({required int? ids}) {
+    return OperationLogsTableCompanion.insert(
+      id: ids == null ? Value.absent() : Value(ids),
+      operationDate: operationDate,
+      activityType: Value(activityType),
+      field: Value(field),
+      hectar: Value(hectar),
+      mandays: Value(mandays),
+      remarks: Value(remarks),
+      labourRate: Value(labourRate),
+      labourQty: Value(labourQty),
+      labourOtRate: Value(labourOtRate),
+      labourOtHour: Value(labourOtHour),
+      supervisionRate: Value(supervisionRate),
+      supervisionMandays: Value(supervisionMandays),
+      driverRate: Value(driverRate),
+      driverTotal: Value(driverTotal),
+      materialType: Value(materialType),
+      materialQty: Value(materialQty),
+      materialLitreRate: Value(materialLitreRate),
+      evitTime: Value(evitTime),
+      evitRate: Value(evitRate),
     );
   }
 

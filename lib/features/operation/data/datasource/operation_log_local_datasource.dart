@@ -1,18 +1,12 @@
 import 'package:drift/drift.dart';
+import 'package:injectable/injectable.dart';
 import 'package:palmx/core/local/database.dart';
 
+@lazySingleton
 class OperationLogsLocalDatasource {
-  static final OperationLogsLocalDatasource _instance =
-      OperationLogsLocalDatasource._internal();
+  final AppDatabase _db;
 
-  factory OperationLogsLocalDatasource() => _instance;
-
-  late final AppDatabase _db;
-
-  OperationLogsLocalDatasource._internal() {
-    _db = AppDatabase();
-  }
-
+  OperationLogsLocalDatasource(this._db);
   // --- CREATE / UPDATE ---
 
   /// Inserts or updates a single log.

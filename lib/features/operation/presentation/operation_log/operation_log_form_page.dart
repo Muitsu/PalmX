@@ -6,12 +6,12 @@ import 'package:palmx/core/widgets/modal/custom_draggable_sheet.dart';
 import 'package:palmx/core/widgets/utils.dart';
 import 'package:palmx/data/local/models/activity_model.dart';
 import 'package:palmx/data/local/models/field_model.dart';
-import 'package:palmx/features/operation/cost_table/driver_cost_sheet.dart';
-import 'package:palmx/features/operation/cost_table/evit_cost_sheet.dart';
-import 'package:palmx/features/operation/cost_table/labour_cost_sheet.dart';
-import 'package:palmx/features/operation/cost_table/material_cost_sheet.dart';
-import 'package:palmx/features/operation/cost_table/supervision_cost_sheet.dart';
-import 'package:palmx/features/operation/operation_log/dropdown_service.dart';
+import 'package:palmx/features/operation/presentation/cost_table/driver_cost_sheet.dart';
+import 'package:palmx/features/operation/presentation/cost_table/evit_cost_sheet.dart';
+import 'package:palmx/features/operation/presentation/cost_table/labour_cost_sheet.dart';
+import 'package:palmx/features/operation/presentation/cost_table/material_cost_sheet.dart';
+import 'package:palmx/features/operation/presentation/cost_table/supervision_cost_sheet.dart';
+import 'package:palmx/features/operation/presentation/operation_log/dropdown_service.dart';
 
 class OperationLogFormPage extends StatefulWidget {
   const OperationLogFormPage({super.key});

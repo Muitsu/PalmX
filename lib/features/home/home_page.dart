@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:palmx/features/operation/operation_log/operation_log_summary_page.dart';
+import 'package:palmx/features/operation/presentation/operation_log/operation_log_summary_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
