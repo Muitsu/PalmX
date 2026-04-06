@@ -1,17 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:palmx/core/externsions/datetime_extension.dart';
 import 'package:palmx/core/widgets/input/custom_date_picker.dart';
 import 'package:palmx/core/widgets/input_formatter/currency_input_formatter.dart';
 import 'package:palmx/core/widgets/modal/custom_draggable_sheet.dart';
 import 'package:palmx/core/widgets/utils.dart';
-import 'package:palmx/data/local/models/activity_model.dart';
-import 'package:palmx/data/local/models/field_model.dart';
 import 'package:palmx/features/operation/presentation/cost_table/driver_cost_sheet.dart';
 import 'package:palmx/features/operation/presentation/cost_table/evit_cost_sheet.dart';
 import 'package:palmx/features/operation/presentation/cost_table/labour_cost_sheet.dart';
 import 'package:palmx/features/operation/presentation/cost_table/material_cost_sheet.dart';
 import 'package:palmx/features/operation/presentation/cost_table/supervision_cost_sheet.dart';
 import 'package:palmx/features/operation/presentation/operation_log/dropdown_service.dart';
+import 'package:palmx/features/operation/presentation/provider/operation_provider.dart';
+import 'package:provider/provider.dart';
 
 class OperationLogFormPage extends StatefulWidget {
   const OperationLogFormPage({super.key});
@@ -21,16 +22,33 @@ class OperationLogFormPage extends StatefulWidget {
 }
 
 class _OperationLogFormPageState extends State<OperationLogFormPage> {
-  ActivityModel? _selectedActivity;
-  FieldModel? _selectedField;
+  late OperationProvider _operationProvider;
+  final _dateCtrl = TextEditingController();
+  final _haCtrl = TextEditingController();
+  final _acitivityCtrl = TextEditingController();
+  final _fieldCtrl = TextEditingController();
 
   @override
   void initState() {
     super.initState();
+    _operationProvider = context.read<OperationProvider>();
+    _operationProvider.init();
+  }
+
+  @override
+  void dispose() {
+    _dateCtrl.dispose();
+    _haCtrl.dispose();
+    _acitivityCtrl.dispose();
+    _fieldCtrl.dispose();
+
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    final provider = context.watch<OperationProvider>();
+
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -64,22 +82,25 @@ class _OperationLogFormPageState extends State<OperationLogFormPage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               buildTextField(
-                ctrl: null,
+                ctrl: _dateCtrl,
                 prefixWidget: Icon(Icons.calendar_today_outlined),
                 label: "Date",
                 hint: "Choose date",
                 isDropdown: true,
                 onTap: () async {
-                  await CustomDatePicker.show(
+                  final date = await CustomDatePicker.show(
                     context: context,
+                    initialDate: provider.currentOperation?.operationDate,
                     type: DatePickerType.single,
                   );
+                  _dateCtrl.text = date?.singleDate?.previewDate() ?? "";
+                  _operationProvider.setDate(date?.singleDate);
                 },
               ),
               const SizedBox(height: 10),
               //Dropdown
               buildTextField(
-                ctrl: null,
+                ctrl: _acitivityCtrl,
                 prefixWidget: Icon(Icons.shopping_bag_outlined),
                 label: "Activity Type",
                 hint: "Harvesting & Collection",
@@ -87,9 +108,10 @@ class _OperationLogFormPageState extends State<OperationLogFormPage> {
                 onTap: () {
                   DropdownService.showActivity(
                     context,
-                    initialValue: _selectedActivity,
+                    initialValue: provider.selectedActivity,
                     onSelected: (item) {
-                      setState(() => _selectedActivity = item);
+                      _acitivityCtrl.text = item?.name ?? "";
+                      _operationProvider.setActivityType(item);
                     },
                   );
                 },
@@ -97,7 +119,7 @@ class _OperationLogFormPageState extends State<OperationLogFormPage> {
               const SizedBox(height: 10),
               //Dropdown
               buildTextField(
-                ctrl: null,
+                ctrl: _fieldCtrl,
                 prefixWidget: Icon(Icons.location_on_outlined),
                 label: "Field",
                 hint: "Division A - Block 12",
@@ -105,9 +127,10 @@ class _OperationLogFormPageState extends State<OperationLogFormPage> {
                 onTap: () {
                   DropdownService.showField(
                     context,
-                    initialValue: _selectedField,
+                    initialValue: provider.selectedField,
                     onSelected: (item) {
-                      setState(() => _selectedField = item);
+                      _fieldCtrl.text = item?.name ?? "";
+                      _operationProvider.setField(item);
                     },
                   );
                 },
@@ -380,7 +403,25 @@ class _OperationLogFormPageState extends State<OperationLogFormPage> {
       width: double.infinity,
       height: 55,
       child: ElevatedButton.icon(
-        onPressed: () {},
+        onPressed: () {
+          _operationProvider.submit(context).then((success) {
+            if (success) {
+              showSuccess(
+                // ignore: use_build_context_synchronously
+                context,
+                message: "Operation log submitted successfully!",
+              );
+              // ignore: use_build_context_synchronously
+              Navigator.pop(context);
+            } else {
+              showError(
+                // ignore: use_build_context_synchronously
+                context,
+                message: "Failed to submit operation log.",
+              );
+            }
+          });
+        },
         icon: const Icon(Icons.send_rounded, color: Colors.white),
         label: const Text(
           "Submit Log",

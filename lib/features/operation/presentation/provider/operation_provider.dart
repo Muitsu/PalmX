@@ -3,7 +3,9 @@ import 'package:injectable/injectable.dart';
 import 'package:palmx/data/local/models/activity_model.dart';
 import 'package:palmx/data/local/models/field_model.dart';
 import 'package:palmx/data/local/models/operation_log_model.dart';
+import 'package:palmx/features/calendar/provider/calendar_provider.dart';
 import 'package:palmx/features/operation/domain/usecase/save_operation.dart';
+import 'package:provider/provider.dart';
 
 @injectable
 class OperationProvider extends ChangeNotifier {
@@ -111,5 +113,23 @@ class OperationProvider extends ChangeNotifier {
       evitTime: evitTime,
     );
     notifyListeners();
+  }
+
+  Future<bool> submit(BuildContext context) async {
+    final results = await saveOperation.call(
+      entry: _currentOperation!.toInsert(ids: null),
+    );
+    bool success = false;
+    results.fold((l) => debugPrint("Error saving operation: ${l.message}"), (
+      r,
+    ) {
+      debugPrint("Operation saved with ID: $r");
+      success = true;
+    });
+    if (success) {
+      // ignore: use_build_context_synchronously
+      context.read<CalendarProvider>().refresh();
+    }
+    return success;
   }
 }

@@ -16,10 +16,10 @@ class CalendarProvider extends ChangeNotifier {
   void init() {
     focusedDay = ValueNotifier(DateTime.now());
     operationsForSelectedDay = ValueNotifier([]);
-    fetchMonthlyLogs(focusedDay.value);
+    _fetchMonthlyLogs(focusedDay.value);
   }
 
-  Future<void> fetchMonthlyLogs(DateTime monthDate) async {
+  Future<void> _fetchMonthlyLogs(DateTime monthDate) async {
     setLoading(true);
 
     final result = await getOperationByMonth.call(monthDate);
@@ -30,9 +30,13 @@ class CalendarProvider extends ChangeNotifier {
     setLoading(false);
   }
 
+  Future<void> refresh() async {
+    _fetchMonthlyLogs(focusedDay.value);
+  }
+
   void onPageChanged(DateTime newMonthDate) {
     focusedDay.value = newMonthDate;
-    fetchMonthlyLogs(newMonthDate);
+    _fetchMonthlyLogs(newMonthDate);
   }
 
   void onDaySelected(List<OperationLogModel> operations, DateTime selectedDay) {

@@ -30,6 +30,7 @@ class _EditFieldPageState extends State<EditFieldPage> {
   Widget build(BuildContext context) {
     // You can customize this screen's UI if needed, but its main purpose is functional.
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         title: Text("Edit ${widget.title}"),
         backgroundColor: Colors.white, // Match the main screen's look

@@ -50,8 +50,6 @@ class _CalendarPageState extends State<CalendarPage>
                 padding: EdgeInsets.all(20),
                 child: CircularProgressIndicator(),
               )
-            else if (provider.monthLogs.isEmpty)
-              _buildEmptyState()
             else
               _buildLogsList(provider),
 
@@ -66,6 +64,9 @@ class _CalendarPageState extends State<CalendarPage>
     return ValueListenableBuilder(
       valueListenable: provider.operationsForSelectedDay,
       builder: (context, value, _) {
+        if (value.isEmpty) {
+          return _buildEmptyState();
+        }
         return ListView.builder(
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
