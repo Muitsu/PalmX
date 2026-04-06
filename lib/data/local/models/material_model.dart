@@ -21,13 +21,13 @@ class MaterialModel extends MaterialTableData {
   }
 
   static MaterialTableCompanion toInsert({
-    int? ids,
+    int? id,
     required String name,
     required double price,
     required MaterialFormat materialFormat,
   }) {
     return MaterialTableCompanion.insert(
-      id: ids == null ? Value.absent() : Value(ids),
+      id: id == null ? Value.absent() : Value(id),
       name: name,
       price: Value(price),
       materialFormat: materialFormat,

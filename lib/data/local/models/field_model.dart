@@ -9,7 +9,10 @@ class FieldModel extends FieldTableData {
     return FieldModel(id: data.id, name: data.name);
   }
 
-  FieldTableCompanion toInsert(int? ids) {
-    return FieldTableCompanion.insert(id: Value(ids ?? id), name: name);
+  static FieldTableCompanion toInsert({int? id, required String name}) {
+    return FieldTableCompanion.insert(
+      id: id == null ? const Value.absent() : Value(id),
+      name: name,
+    );
   }
 }
