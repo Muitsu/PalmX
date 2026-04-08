@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:palmx/core/widgets/utils.dart';
+import 'package:palmx/features/operation/presentation/provider/operation_provider.dart';
+import 'package:provider/provider.dart';
 
 import '../../../../core/widgets/input_formatter/currency_input_formatter.dart';
 
@@ -14,12 +16,40 @@ class LabourCostSheet extends StatefulWidget {
 }
 
 class _LabourCostSheetState extends State<LabourCostSheet> {
-  final mandaysController = TextEditingController(text: "0");
-  final basicRateController = TextEditingController(text: "0.00");
-  final otHoursController = TextEditingController(text: "0");
-  final otRateController = TextEditingController(text: "0.00");
-  final quantityController = TextEditingController(text: "0");
-  final unitRateController = TextEditingController(text: "0.00");
+  late OperationProvider _operationProvider;
+
+  late TextEditingController mandaysCtrl;
+  late TextEditingController basicRateCtrl;
+  late TextEditingController otHoursCtrl;
+  late TextEditingController otRateCtrl;
+  late TextEditingController quantityCtrl;
+  late TextEditingController unitRateCtrl;
+  @override
+  void initState() {
+    super.initState();
+
+    _operationProvider = context.read<OperationProvider>();
+
+    mandaysCtrl = TextEditingController(text: "0");
+    basicRateCtrl = TextEditingController(text: "0.00");
+    otHoursCtrl = TextEditingController(text: "0");
+    otRateCtrl = TextEditingController(text: "0.00");
+    quantityCtrl = TextEditingController(text: "0");
+    unitRateCtrl = TextEditingController(text: "0.00");
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    mandaysCtrl.dispose();
+    basicRateCtrl.dispose();
+    otHoursCtrl.dispose();
+    otRateCtrl.dispose();
+    quantityCtrl.dispose();
+    unitRateCtrl.dispose();
+  }
+
+  double _stringToDouble(String val) => double.tryParse(val) ?? 0.0;
 
   @override
   Widget build(BuildContext context) {
@@ -101,7 +131,7 @@ class _LabourCostSheetState extends State<LabourCostSheet> {
                       child: buildTextField(
                         label: 'Mandays',
                         hint: "",
-                        ctrl: mandaysController,
+                        ctrl: mandaysCtrl,
                         readOnly: true,
                         inputFormatters: [
                           FilteringTextInputFormatter.digitsOnly,
@@ -115,7 +145,7 @@ class _LabourCostSheetState extends State<LabourCostSheet> {
                       child: buildTextField(
                         label: 'Rate (Flat)',
                         hint: "",
-                        ctrl: basicRateController,
+                        ctrl: basicRateCtrl,
                         keyboardType: TextInputType.number,
                         inputFormatters: [
                           FilteringTextInputFormatter.digitsOnly,
@@ -148,7 +178,7 @@ class _LabourCostSheetState extends State<LabourCostSheet> {
                           FilteringTextInputFormatter.digitsOnly,
                           CurrencyInputFormatter(),
                         ],
-                        ctrl: otHoursController,
+                        ctrl: otHoursCtrl,
                       ),
                     ),
                     _multiplier(),
@@ -156,7 +186,7 @@ class _LabourCostSheetState extends State<LabourCostSheet> {
                       child: buildTextField(
                         label: 'OT Rate',
                         hint: "",
-                        ctrl: otRateController,
+                        ctrl: otRateCtrl,
                         keyboardType: TextInputType.number,
                         inputFormatters: [
                           FilteringTextInputFormatter.digitsOnly,
@@ -184,7 +214,7 @@ class _LabourCostSheetState extends State<LabourCostSheet> {
                       child: buildTextField(
                         label: 'Quantity',
                         hint: "",
-                        ctrl: quantityController,
+                        ctrl: quantityCtrl,
                         textAlign: TextAlign.center,
                         keyboardType: TextInputType.number,
                       ),
@@ -194,7 +224,7 @@ class _LabourCostSheetState extends State<LabourCostSheet> {
                       child: buildTextField(
                         label: 'Unit Rate',
                         hint: "",
-                        ctrl: unitRateController,
+                        ctrl: unitRateCtrl,
                         keyboardType: TextInputType.number,
                         inputFormatters: [
                           FilteringTextInputFormatter.digitsOnly,
@@ -274,7 +304,14 @@ class _LabourCostSheetState extends State<LabourCostSheet> {
             width: double.infinity,
             height: 56,
             child: ElevatedButton(
-              onPressed: () {},
+              onPressed: () {
+                _operationProvider.setLabourCost(
+                  labourOtHour: _stringToDouble(otHoursCtrl.text),
+                  labourOtRate: _stringToDouble(otRateCtrl.text),
+                  labourRate: _stringToDouble(otHoursCtrl.text),
+                  labourQty: _stringToDouble(otHoursCtrl.text),
+                );
+              },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.orange[800],
                 shape: RoundedRectangleBorder(

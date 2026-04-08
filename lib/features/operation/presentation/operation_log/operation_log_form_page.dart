@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:palmx/core/externsions/datetime_extension.dart';
-import 'package:palmx/core/widgets/input/custom_date_picker.dart';
 import 'package:palmx/core/widgets/input_formatter/currency_input_formatter.dart';
 import 'package:palmx/core/widgets/modal/custom_draggable_sheet.dart';
 import 'package:palmx/core/widgets/utils.dart';
@@ -23,10 +21,6 @@ class OperationLogFormPage extends StatefulWidget {
 
 class _OperationLogFormPageState extends State<OperationLogFormPage> {
   late OperationProvider _operationProvider;
-  final _dateCtrl = TextEditingController();
-  final _haCtrl = TextEditingController();
-  final _acitivityCtrl = TextEditingController();
-  final _fieldCtrl = TextEditingController();
 
   @override
   void initState() {
@@ -37,11 +31,7 @@ class _OperationLogFormPageState extends State<OperationLogFormPage> {
 
   @override
   void dispose() {
-    _dateCtrl.dispose();
-    _haCtrl.dispose();
-    _acitivityCtrl.dispose();
-    _fieldCtrl.dispose();
-
+    _operationProvider.clear();
     super.dispose();
   }
 
@@ -82,25 +72,19 @@ class _OperationLogFormPageState extends State<OperationLogFormPage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               buildTextField(
-                ctrl: _dateCtrl,
+                ctrl: _operationProvider.dateCtrl,
                 prefixWidget: Icon(Icons.calendar_today_outlined),
                 label: "Date",
                 hint: "Choose date",
                 isDropdown: true,
                 onTap: () async {
-                  final date = await CustomDatePicker.show(
-                    context: context,
-                    initialDate: provider.currentOperation?.operationDate,
-                    type: DatePickerType.single,
-                  );
-                  _dateCtrl.text = date?.singleDate?.previewDate() ?? "";
-                  _operationProvider.setDate(date?.singleDate);
+                  _operationProvider.setDate(context);
                 },
               ),
               const SizedBox(height: 10),
               //Dropdown
               buildTextField(
-                ctrl: _acitivityCtrl,
+                ctrl: _operationProvider.acitivityCtrl,
                 prefixWidget: Icon(Icons.shopping_bag_outlined),
                 label: "Activity Type",
                 hint: "Harvesting & Collection",
@@ -110,7 +94,6 @@ class _OperationLogFormPageState extends State<OperationLogFormPage> {
                     context,
                     initialValue: provider.selectedActivity,
                     onSelected: (item) {
-                      _acitivityCtrl.text = item?.name ?? "";
                       _operationProvider.setActivityType(item);
                     },
                   );
@@ -119,7 +102,7 @@ class _OperationLogFormPageState extends State<OperationLogFormPage> {
               const SizedBox(height: 10),
               //Dropdown
               buildTextField(
-                ctrl: _fieldCtrl,
+                ctrl: _operationProvider.fieldCtrl,
                 prefixWidget: Icon(Icons.location_on_outlined),
                 label: "Field",
                 hint: "Division A - Block 12",
@@ -129,7 +112,6 @@ class _OperationLogFormPageState extends State<OperationLogFormPage> {
                     context,
                     initialValue: provider.selectedField,
                     onSelected: (item) {
-                      _fieldCtrl.text = item?.name ?? "";
                       _operationProvider.setField(item);
                     },
                   );
@@ -140,7 +122,7 @@ class _OperationLogFormPageState extends State<OperationLogFormPage> {
                 children: [
                   Expanded(
                     child: buildTextField(
-                      ctrl: null,
+                      ctrl: _operationProvider.haTodayCtrl,
                       prefixWidget: Icon(Icons.architecture_outlined),
                       label: "Ha today",
                       hint: "0.00",
@@ -154,7 +136,7 @@ class _OperationLogFormPageState extends State<OperationLogFormPage> {
                   const SizedBox(width: 15),
                   Expanded(
                     child: buildTextField(
-                      ctrl: null,
+                      ctrl: _operationProvider.mandaysCtrl,
                       prefixWidget: Icon(Icons.group_outlined),
                       label: "Mandays",
                       hint: "0",
@@ -166,7 +148,7 @@ class _OperationLogFormPageState extends State<OperationLogFormPage> {
               ),
               const SizedBox(height: 10),
               buildTextField(
-                ctrl: null,
+                ctrl: _operationProvider.remarksCtrl,
                 prefixWidget: Icon(Icons.edit_note_outlined),
                 label: "Remarks",
                 hint: "Additional observations...",

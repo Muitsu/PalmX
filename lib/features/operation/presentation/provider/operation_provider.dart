@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:injectable/injectable.dart';
+import 'package:palmx/core/externsions/datetime_extension.dart';
+import 'package:palmx/core/widgets/input/custom_date_picker.dart';
 import 'package:palmx/data/local/models/activity_model.dart';
 import 'package:palmx/data/local/models/field_model.dart';
 import 'package:palmx/data/local/models/operation_log_model.dart';
@@ -17,23 +19,54 @@ class OperationProvider extends ChangeNotifier {
   ActivityModel? selectedActivity;
   FieldModel? selectedField;
 
+  late TextEditingController dateCtrl;
+  late TextEditingController haCtrl;
+  late TextEditingController acitivityCtrl;
+  late TextEditingController fieldCtrl;
+  late TextEditingController haTodayCtrl;
+  late TextEditingController mandaysCtrl;
+  late TextEditingController remarksCtrl;
+
   void init() {
     _currentOperation = OperationLogModel(id: 0, operationDate: DateTime.now());
+    dateCtrl = TextEditingController();
+    haCtrl = TextEditingController();
+    acitivityCtrl = TextEditingController();
+    fieldCtrl = TextEditingController();
+    haTodayCtrl = TextEditingController();
+    mandaysCtrl = TextEditingController();
+    remarksCtrl = TextEditingController();
     WidgetsBinding.instance.addPostFrameCallback((_) => notifyListeners());
   }
 
   void clear() {
     _currentOperation = null;
+    dateCtrl.dispose();
+    haCtrl.dispose();
+    acitivityCtrl.dispose();
+    fieldCtrl.dispose();
+    haTodayCtrl.dispose();
+    mandaysCtrl.dispose();
+    remarksCtrl.dispose();
   }
 
-  void setDate(DateTime? val) {
-    _currentOperation = _currentOperation!.copyData(operationDate: val);
+  Future<void> setDate(BuildContext context) async {
+    final result = await CustomDatePicker.show(
+      context: context,
+      initialDate: currentOperation?.operationDate,
+      type: DatePickerType.single,
+    );
+    final date = result?.singleDate;
+    if (date == null) return;
+    _currentOperation = _currentOperation!.copyData(operationDate: date);
+    dateCtrl.text = date.previewDate();
     notifyListeners();
   }
 
   void setActivityType(ActivityModel? val) {
     if (val == null) return;
     _currentOperation = _currentOperation!.copyData(activityType: val.name);
+    acitivityCtrl.text = val.name ?? "";
     selectedActivity = val;
     notifyListeners();
   }
@@ -41,6 +74,7 @@ class OperationProvider extends ChangeNotifier {
   void setField(FieldModel? val) {
     if (val == null) return;
     _currentOperation = _currentOperation!.copyData(field: val.name);
+    fieldCtrl.text = val.name;
     selectedField = val;
     notifyListeners();
   }
