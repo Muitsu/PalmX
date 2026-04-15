@@ -1,3 +1,4 @@
+import 'package:easy_debounce/easy_debounce.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
@@ -18,38 +19,78 @@ class LabourCostSheet extends StatefulWidget {
 class _LabourCostSheetState extends State<LabourCostSheet> {
   late OperationProvider _operationProvider;
 
-  late TextEditingController mandaysCtrl;
-  late TextEditingController basicRateCtrl;
+  late TextEditingController labourRateCtrl;
+  late TextEditingController labourWorkerCtrl;
   late TextEditingController otHoursCtrl;
   late TextEditingController otRateCtrl;
-  late TextEditingController quantityCtrl;
-  late TextEditingController unitRateCtrl;
+  late TextEditingController pieceUnitCtrl;
+  late TextEditingController pieceRateCtrl;
+  late TextEditingController harvestUnitCtrl;
+  late TextEditingController harvestRateCtrl;
   @override
   void initState() {
     super.initState();
 
     _operationProvider = context.read<OperationProvider>();
-
-    mandaysCtrl = TextEditingController(text: "0");
-    basicRateCtrl = TextEditingController(text: "0.00");
-    otHoursCtrl = TextEditingController(text: "0");
-    otRateCtrl = TextEditingController(text: "0.00");
-    quantityCtrl = TextEditingController(text: "0");
-    unitRateCtrl = TextEditingController(text: "0.00");
+    final data = _operationProvider.currentOperation;
+    labourWorkerCtrl = TextEditingController(
+      text: data?.labourQty.toString() ?? "0",
+    );
+    labourRateCtrl = TextEditingController(
+      text: data?.labourRate.toString() ?? "0.00",
+    );
+    otHoursCtrl = TextEditingController(
+      text: data?.labourOtHour.toString() ?? "0",
+    );
+    otRateCtrl = TextEditingController(
+      text: data?.labourOtRate.toString() ?? "0.00",
+    );
+    pieceUnitCtrl = TextEditingController(
+      text: data?.labourPieceUnit.toString() ?? "0",
+    );
+    pieceRateCtrl = TextEditingController(
+      text: data?.labourPieceRate.toString() ?? "0.00",
+    );
+    harvestUnitCtrl = TextEditingController(
+      text: data?.labourHarvestUnit.toString() ?? "0",
+    );
+    harvestRateCtrl = TextEditingController(
+      text: data?.labourHarvestRate.toString() ?? "0.00",
+    );
   }
 
   @override
   void dispose() {
     super.dispose();
-    mandaysCtrl.dispose();
-    basicRateCtrl.dispose();
+    labourRateCtrl.dispose();
+    labourWorkerCtrl.dispose();
     otHoursCtrl.dispose();
     otRateCtrl.dispose();
-    quantityCtrl.dispose();
-    unitRateCtrl.dispose();
+    pieceUnitCtrl.dispose();
+    pieceRateCtrl.dispose();
+    harvestUnitCtrl.dispose();
+    harvestRateCtrl.dispose();
   }
 
   double _stringToDouble(String val) => double.tryParse(val) ?? 0.0;
+  void _onSave() {
+    EasyDebounce.debounce(
+      "save-data",
+      Duration(milliseconds: 500), // <-- The debounce duration
+      () {
+        _operationProvider.setLabourCost(
+          labourRate: _stringToDouble(labourRateCtrl.text),
+          labourQty: _stringToDouble(labourWorkerCtrl.text),
+          labourOtHour: _stringToDouble(labourRateCtrl.text),
+          labourOtRate: _stringToDouble(labourWorkerCtrl.text),
+          labourPieceUnit: _stringToDouble(pieceUnitCtrl.text),
+          labourPieceRate: _stringToDouble(pieceRateCtrl.text),
+          labourHarvestUnit: _stringToDouble(harvestUnitCtrl.text),
+          labourHarvestRate: _stringToDouble(harvestRateCtrl.text),
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -125,37 +166,86 @@ class _LabourCostSheetState extends State<LabourCostSheet> {
               _buildAnimatedSection(
                 delay: 100.ms,
                 title: 'BASIC LABOR',
-                child: Row(
+                child: Column(
                   children: [
-                    Expanded(
-                      child: buildTextField(
-                        label: 'Mandays',
-                        hint: "",
-                        ctrl: mandaysCtrl,
-                        readOnly: true,
-                        inputFormatters: [
-                          FilteringTextInputFormatter.digitsOnly,
-                          CurrencyInputFormatter(),
-                        ],
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
-                    _multiplier(),
-                    Expanded(
-                      child: buildTextField(
-                        label: 'Rate (Flat)',
-                        hint: "",
-                        ctrl: basicRateCtrl,
-                        keyboardType: TextInputType.number,
-                        inputFormatters: [
-                          FilteringTextInputFormatter.digitsOnly,
-                          CurrencyInputFormatter(),
-                        ],
-                        prefixWidget: const Padding(
-                          padding: EdgeInsets.only(top: 14, left: 10),
-                          child: Text("RM "),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: buildTextField(
+                            label: 'Mandays',
+                            hint: "",
+                            ctrl: labourRateCtrl,
+                            onChanged: (val) {
+                              _onSave();
+                            },
+                            inputFormatters: [
+                              FilteringTextInputFormatter.digitsOnly,
+                            ],
+                            keyboardType: TextInputType.number,
+                            textAlign: TextAlign.center,
+                          ),
                         ),
-                      ),
+                        _multiplier(),
+                        Expanded(
+                          child: buildTextField(
+                            label: 'Rate (Flat)',
+                            hint: "",
+                            ctrl: labourWorkerCtrl,
+                            onChanged: (val) {
+                              _onSave();
+                            },
+                            keyboardType: TextInputType.number,
+                            inputFormatters: [
+                              FilteringTextInputFormatter.digitsOnly,
+                              CurrencyInputFormatter(),
+                            ],
+                            prefixWidget: const Padding(
+                              padding: EdgeInsets.only(top: 14, left: 10),
+                              child: Text("RM "),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 10),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: buildTextField(
+                            label: 'OT Hours',
+                            hint: "",
+                            ctrl: otHoursCtrl,
+                            onChanged: (val) {
+                              _onSave();
+                            },
+                            inputFormatters: [
+                              FilteringTextInputFormatter.digitsOnly,
+                            ],
+                            keyboardType: TextInputType.number,
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                        _multiplier(),
+                        Expanded(
+                          child: buildTextField(
+                            label: 'OT Rate (Flat)',
+                            hint: "",
+                            ctrl: otRateCtrl,
+                            onChanged: (val) {
+                              _onSave();
+                            },
+                            keyboardType: TextInputType.number,
+                            inputFormatters: [
+                              FilteringTextInputFormatter.digitsOnly,
+                              CurrencyInputFormatter(),
+                            ],
+                            prefixWidget: const Padding(
+                              padding: EdgeInsets.only(top: 14, left: 10),
+                              child: Text("RM "),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),
@@ -166,27 +256,33 @@ class _LabourCostSheetState extends State<LabourCostSheet> {
               // Overtime Section
               _buildAnimatedSection(
                 delay: 250.ms,
-                title: 'OVERTIME',
+                title: 'PIECE RARED',
                 child: Row(
                   children: [
                     Expanded(
                       child: buildTextField(
-                        label: 'Hours',
+                        label: 'Unit',
                         hint: "",
                         textAlign: TextAlign.center,
+                        onChanged: (val) {
+                          _onSave();
+                        },
+                        keyboardType: TextInputType.number,
                         inputFormatters: [
                           FilteringTextInputFormatter.digitsOnly,
-                          CurrencyInputFormatter(),
                         ],
-                        ctrl: otHoursCtrl,
+                        ctrl: pieceUnitCtrl,
                       ),
                     ),
                     _multiplier(),
                     Expanded(
                       child: buildTextField(
-                        label: 'OT Rate',
+                        label: 'Rate',
                         hint: "",
-                        ctrl: otRateCtrl,
+                        ctrl: pieceRateCtrl,
+                        onChanged: (val) {
+                          _onSave();
+                        },
                         keyboardType: TextInputType.number,
                         inputFormatters: [
                           FilteringTextInputFormatter.digitsOnly,
@@ -207,14 +303,20 @@ class _LabourCostSheetState extends State<LabourCostSheet> {
               // Output Based Section
               _buildAnimatedSection(
                 delay: 400.ms,
-                title: 'PIECE RATE',
+                title: 'HARVESTING RATE',
                 child: Row(
                   children: [
                     Expanded(
                       child: buildTextField(
-                        label: 'Quantity',
+                        label: 'Total Unit',
                         hint: "",
-                        ctrl: quantityCtrl,
+                        onChanged: (val) {
+                          _onSave();
+                        },
+                        inputFormatters: [
+                          FilteringTextInputFormatter.digitsOnly,
+                        ],
+                        ctrl: harvestUnitCtrl,
                         textAlign: TextAlign.center,
                         keyboardType: TextInputType.number,
                       ),
@@ -224,7 +326,10 @@ class _LabourCostSheetState extends State<LabourCostSheet> {
                       child: buildTextField(
                         label: 'Unit Rate',
                         hint: "",
-                        ctrl: unitRateCtrl,
+                        ctrl: harvestRateCtrl,
+                        onChanged: (val) {
+                          _onSave();
+                        },
                         keyboardType: TextInputType.number,
                         inputFormatters: [
                           FilteringTextInputFormatter.digitsOnly,
@@ -269,6 +374,7 @@ class _LabourCostSheetState extends State<LabourCostSheet> {
   }
 
   Widget _bottomCalculationButton() {
+    final pWatch = context.watch<OperationProvider>();
     return Padding(
       padding: const EdgeInsets.only(left: 24, right: 24, bottom: 16),
       child: Column(
@@ -278,7 +384,7 @@ class _LabourCostSheetState extends State<LabourCostSheet> {
             padding: EdgeInsets.only(bottom: 10),
             child: Divider(color: Color(0xFFEEEEEE), thickness: 1),
           ),
-          const Row(
+          Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
@@ -290,7 +396,7 @@ class _LabourCostSheetState extends State<LabourCostSheet> {
                 ),
               ),
               Text(
-                'RM0.00',
+                'RM${pWatch.currentOperation?.labourTotalCost ?? 0.00}',
                 style: TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.w900,
@@ -305,12 +411,7 @@ class _LabourCostSheetState extends State<LabourCostSheet> {
             height: 56,
             child: ElevatedButton(
               onPressed: () {
-                _operationProvider.setLabourCost(
-                  labourOtHour: _stringToDouble(otHoursCtrl.text),
-                  labourOtRate: _stringToDouble(otRateCtrl.text),
-                  labourRate: _stringToDouble(otHoursCtrl.text),
-                  labourQty: _stringToDouble(otHoursCtrl.text),
-                );
+                Navigator.pop(context);
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.orange[800],
@@ -320,7 +421,7 @@ class _LabourCostSheetState extends State<LabourCostSheet> {
                 elevation: 0,
               ),
               child: const Text(
-                'Save Calculation',
+                'Done',
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,

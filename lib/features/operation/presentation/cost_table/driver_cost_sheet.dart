@@ -1,8 +1,11 @@
+import 'package:easy_debounce/easy_debounce.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:palmx/core/widgets/input_formatter/currency_input_formatter.dart';
 import 'package:palmx/core/widgets/utils.dart';
+import 'package:palmx/features/operation/presentation/provider/operation_provider.dart';
+import 'package:provider/provider.dart';
 
 class DriverCostSheet extends StatefulWidget {
   final ScrollController? sc;
@@ -13,8 +16,43 @@ class DriverCostSheet extends StatefulWidget {
 }
 
 class _DriverCostSheetState extends State<DriverCostSheet> {
-  final mandaysController = TextEditingController(text: "0");
-  final rateController = TextEditingController(text: "0.00");
+  late OperationProvider _operationProvider;
+
+  late TextEditingController mandaysController;
+  late TextEditingController rateController;
+  @override
+  void initState() {
+    super.initState();
+    _operationProvider = context.read<OperationProvider>();
+    final data = _operationProvider.currentOperation;
+    mandaysController = TextEditingController(
+      text: data?.driverTotal.toString() ?? "0",
+    );
+    rateController = TextEditingController(
+      text: data?.driverRate.toString() ?? "0.00",
+    );
+  }
+
+  @override
+  void dispose() {
+    mandaysController.dispose();
+    rateController.dispose();
+    super.dispose();
+  }
+
+  double _stringToDouble(String val) => double.tryParse(val) ?? 0.0;
+  void _onSave() {
+    EasyDebounce.debounce(
+      "save-data",
+      Duration(milliseconds: 500), // <-- The debounce duration
+      () {
+        _operationProvider.setDriverCost(
+          driverTotal: _stringToDouble(mandaysController.text),
+          driverRate: _stringToDouble(rateController.text),
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -97,12 +135,14 @@ class _DriverCostSheetState extends State<DriverCostSheet> {
                         label: 'Mandays',
                         hint: '',
                         ctrl: mandaysController,
-                        readOnly: true,
+                        onChanged: (val) {
+                          _onSave();
+                        },
                         inputFormatters: [
                           FilteringTextInputFormatter.digitsOnly,
-                          CurrencyInputFormatter(),
                         ],
                         textAlign: TextAlign.center,
+                        keyboardType: TextInputType.number,
                       ),
 
                       Padding(
@@ -138,6 +178,9 @@ class _DriverCostSheetState extends State<DriverCostSheet> {
                           FilteringTextInputFormatter.digitsOnly,
                           CurrencyInputFormatter(),
                         ],
+                        onChanged: (val) {
+                          _onSave();
+                        },
                         textAlign: TextAlign.center,
                         prefixWidget: const Padding(
                           padding: EdgeInsets.only(top: 14, left: 10),
@@ -164,6 +207,7 @@ class _DriverCostSheetState extends State<DriverCostSheet> {
   }
 
   Widget _bottomCalculationButton() {
+    final pWatch = context.watch<OperationProvider>();
     return Padding(
       padding: const EdgeInsets.only(left: 24, right: 24, bottom: 16),
       child: Column(
@@ -173,11 +217,11 @@ class _DriverCostSheetState extends State<DriverCostSheet> {
             padding: EdgeInsets.only(bottom: 10),
             child: Divider(color: Color(0xFFEEEEEE), thickness: 1),
           ),
-          const Row(
+          Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'Total Cost',
+                'RM ',
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
@@ -185,7 +229,7 @@ class _DriverCostSheetState extends State<DriverCostSheet> {
                 ),
               ),
               Text(
-                'RM0.00',
+                'RM${pWatch.currentOperation?.driverTotalCost ?? 0.00}',
                 style: TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.w900,
@@ -199,7 +243,9 @@ class _DriverCostSheetState extends State<DriverCostSheet> {
             width: double.infinity,
             height: 56,
             child: ElevatedButton(
-              onPressed: () {},
+              onPressed: () {
+                Navigator.pop(context);
+              },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.orange[800],
                 shape: RoundedRectangleBorder(
@@ -208,7 +254,7 @@ class _DriverCostSheetState extends State<DriverCostSheet> {
                 elevation: 0,
               ),
               child: const Text(
-                'Save Calculation',
+                'Done',
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,

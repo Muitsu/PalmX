@@ -144,6 +144,56 @@ class $OperationLogsTableTable extends OperationLogsTable
     requiredDuringInsert: false,
     defaultValue: const Constant(0.00),
   );
+  static const VerificationMeta _labourPieceUnitMeta = const VerificationMeta(
+    'labourPieceUnit',
+  );
+  @override
+  late final GeneratedColumn<double> labourPieceUnit = GeneratedColumn<double>(
+    'labour_piece_unit',
+    aliasedName,
+    false,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0.00),
+  );
+  static const VerificationMeta _labourPieceRateMeta = const VerificationMeta(
+    'labourPieceRate',
+  );
+  @override
+  late final GeneratedColumn<double> labourPieceRate = GeneratedColumn<double>(
+    'labour_piece_rate',
+    aliasedName,
+    false,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0.00),
+  );
+  static const VerificationMeta _labourHarvestUnitMeta = const VerificationMeta(
+    'labourHarvestUnit',
+  );
+  @override
+  late final GeneratedColumn<double> labourHarvestUnit =
+      GeneratedColumn<double>(
+        'labour_harvest_unit',
+        aliasedName,
+        false,
+        type: DriftSqlType.double,
+        requiredDuringInsert: false,
+        defaultValue: const Constant(0.00),
+      );
+  static const VerificationMeta _labourHarvestRateMeta = const VerificationMeta(
+    'labourHarvestRate',
+  );
+  @override
+  late final GeneratedColumn<double> labourHarvestRate =
+      GeneratedColumn<double>(
+        'labour_harvest_rate',
+        aliasedName,
+        false,
+        type: DriftSqlType.double,
+        requiredDuringInsert: false,
+        defaultValue: const Constant(0.00),
+      );
   static const VerificationMeta _supervisionRateMeta = const VerificationMeta(
     'supervisionRate',
   );
@@ -264,6 +314,10 @@ class $OperationLogsTableTable extends OperationLogsTable
     labourQty,
     labourOtHour,
     labourOtRate,
+    labourPieceUnit,
+    labourPieceRate,
+    labourHarvestUnit,
+    labourHarvestRate,
     supervisionRate,
     supervisionMandays,
     driverRate,
@@ -369,6 +423,42 @@ class $OperationLogsTableTable extends OperationLogsTable
         labourOtRate.isAcceptableOrUnknown(
           data['labour_ot_rate']!,
           _labourOtRateMeta,
+        ),
+      );
+    }
+    if (data.containsKey('labour_piece_unit')) {
+      context.handle(
+        _labourPieceUnitMeta,
+        labourPieceUnit.isAcceptableOrUnknown(
+          data['labour_piece_unit']!,
+          _labourPieceUnitMeta,
+        ),
+      );
+    }
+    if (data.containsKey('labour_piece_rate')) {
+      context.handle(
+        _labourPieceRateMeta,
+        labourPieceRate.isAcceptableOrUnknown(
+          data['labour_piece_rate']!,
+          _labourPieceRateMeta,
+        ),
+      );
+    }
+    if (data.containsKey('labour_harvest_unit')) {
+      context.handle(
+        _labourHarvestUnitMeta,
+        labourHarvestUnit.isAcceptableOrUnknown(
+          data['labour_harvest_unit']!,
+          _labourHarvestUnitMeta,
+        ),
+      );
+    }
+    if (data.containsKey('labour_harvest_rate')) {
+      context.handle(
+        _labourHarvestRateMeta,
+        labourHarvestRate.isAcceptableOrUnknown(
+          data['labour_harvest_rate']!,
+          _labourHarvestRateMeta,
         ),
       );
     }
@@ -501,6 +591,22 @@ class $OperationLogsTableTable extends OperationLogsTable
         DriftSqlType.double,
         data['${effectivePrefix}labour_ot_rate'],
       )!,
+      labourPieceUnit: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}labour_piece_unit'],
+      )!,
+      labourPieceRate: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}labour_piece_rate'],
+      )!,
+      labourHarvestUnit: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}labour_harvest_unit'],
+      )!,
+      labourHarvestRate: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}labour_harvest_rate'],
+      )!,
       supervisionRate: attachedDatabase.typeMapping.read(
         DriftSqlType.double,
         data['${effectivePrefix}supervision_rate'],
@@ -560,6 +666,10 @@ class OperationLogsTableData extends DataClass
   final double labourQty;
   final double labourOtHour;
   final double labourOtRate;
+  final double labourPieceUnit;
+  final double labourPieceRate;
+  final double labourHarvestUnit;
+  final double labourHarvestRate;
   final double supervisionRate;
   final double supervisionMandays;
   final double driverRate;
@@ -582,6 +692,10 @@ class OperationLogsTableData extends DataClass
     required this.labourQty,
     required this.labourOtHour,
     required this.labourOtRate,
+    required this.labourPieceUnit,
+    required this.labourPieceRate,
+    required this.labourHarvestUnit,
+    required this.labourHarvestRate,
     required this.supervisionRate,
     required this.supervisionMandays,
     required this.driverRate,
@@ -619,6 +733,10 @@ class OperationLogsTableData extends DataClass
     map['labour_qty'] = Variable<double>(labourQty);
     map['labour_ot_hour'] = Variable<double>(labourOtHour);
     map['labour_ot_rate'] = Variable<double>(labourOtRate);
+    map['labour_piece_unit'] = Variable<double>(labourPieceUnit);
+    map['labour_piece_rate'] = Variable<double>(labourPieceRate);
+    map['labour_harvest_unit'] = Variable<double>(labourHarvestUnit);
+    map['labour_harvest_rate'] = Variable<double>(labourHarvestRate);
     map['supervision_rate'] = Variable<double>(supervisionRate);
     map['supervision_mandays'] = Variable<double>(supervisionMandays);
     map['driver_rate'] = Variable<double>(driverRate);
@@ -667,6 +785,10 @@ class OperationLogsTableData extends DataClass
       labourQty: Value(labourQty),
       labourOtHour: Value(labourOtHour),
       labourOtRate: Value(labourOtRate),
+      labourPieceUnit: Value(labourPieceUnit),
+      labourPieceRate: Value(labourPieceRate),
+      labourHarvestUnit: Value(labourHarvestUnit),
+      labourHarvestRate: Value(labourHarvestRate),
       supervisionRate: Value(supervisionRate),
       supervisionMandays: Value(supervisionMandays),
       driverRate: Value(driverRate),
@@ -707,6 +829,10 @@ class OperationLogsTableData extends DataClass
       labourQty: serializer.fromJson<double>(json['labourQty']),
       labourOtHour: serializer.fromJson<double>(json['labourOtHour']),
       labourOtRate: serializer.fromJson<double>(json['labourOtRate']),
+      labourPieceUnit: serializer.fromJson<double>(json['labourPieceUnit']),
+      labourPieceRate: serializer.fromJson<double>(json['labourPieceRate']),
+      labourHarvestUnit: serializer.fromJson<double>(json['labourHarvestUnit']),
+      labourHarvestRate: serializer.fromJson<double>(json['labourHarvestRate']),
       supervisionRate: serializer.fromJson<double>(json['supervisionRate']),
       supervisionMandays: serializer.fromJson<double>(
         json['supervisionMandays'],
@@ -738,6 +864,10 @@ class OperationLogsTableData extends DataClass
       'labourQty': serializer.toJson<double>(labourQty),
       'labourOtHour': serializer.toJson<double>(labourOtHour),
       'labourOtRate': serializer.toJson<double>(labourOtRate),
+      'labourPieceUnit': serializer.toJson<double>(labourPieceUnit),
+      'labourPieceRate': serializer.toJson<double>(labourPieceRate),
+      'labourHarvestUnit': serializer.toJson<double>(labourHarvestUnit),
+      'labourHarvestRate': serializer.toJson<double>(labourHarvestRate),
       'supervisionRate': serializer.toJson<double>(supervisionRate),
       'supervisionMandays': serializer.toJson<double>(supervisionMandays),
       'driverRate': serializer.toJson<double>(driverRate),
@@ -763,6 +893,10 @@ class OperationLogsTableData extends DataClass
     double? labourQty,
     double? labourOtHour,
     double? labourOtRate,
+    double? labourPieceUnit,
+    double? labourPieceRate,
+    double? labourHarvestUnit,
+    double? labourHarvestRate,
     double? supervisionRate,
     double? supervisionMandays,
     double? driverRate,
@@ -785,6 +919,10 @@ class OperationLogsTableData extends DataClass
     labourQty: labourQty ?? this.labourQty,
     labourOtHour: labourOtHour ?? this.labourOtHour,
     labourOtRate: labourOtRate ?? this.labourOtRate,
+    labourPieceUnit: labourPieceUnit ?? this.labourPieceUnit,
+    labourPieceRate: labourPieceRate ?? this.labourPieceRate,
+    labourHarvestUnit: labourHarvestUnit ?? this.labourHarvestUnit,
+    labourHarvestRate: labourHarvestRate ?? this.labourHarvestRate,
     supervisionRate: supervisionRate ?? this.supervisionRate,
     supervisionMandays: supervisionMandays ?? this.supervisionMandays,
     driverRate: driverRate ?? this.driverRate,
@@ -823,6 +961,18 @@ class OperationLogsTableData extends DataClass
       labourOtRate: data.labourOtRate.present
           ? data.labourOtRate.value
           : this.labourOtRate,
+      labourPieceUnit: data.labourPieceUnit.present
+          ? data.labourPieceUnit.value
+          : this.labourPieceUnit,
+      labourPieceRate: data.labourPieceRate.present
+          ? data.labourPieceRate.value
+          : this.labourPieceRate,
+      labourHarvestUnit: data.labourHarvestUnit.present
+          ? data.labourHarvestUnit.value
+          : this.labourHarvestUnit,
+      labourHarvestRate: data.labourHarvestRate.present
+          ? data.labourHarvestRate.value
+          : this.labourHarvestRate,
       supervisionRate: data.supervisionRate.present
           ? data.supervisionRate.value
           : this.supervisionRate,
@@ -864,6 +1014,10 @@ class OperationLogsTableData extends DataClass
           ..write('labourQty: $labourQty, ')
           ..write('labourOtHour: $labourOtHour, ')
           ..write('labourOtRate: $labourOtRate, ')
+          ..write('labourPieceUnit: $labourPieceUnit, ')
+          ..write('labourPieceRate: $labourPieceRate, ')
+          ..write('labourHarvestUnit: $labourHarvestUnit, ')
+          ..write('labourHarvestRate: $labourHarvestRate, ')
           ..write('supervisionRate: $supervisionRate, ')
           ..write('supervisionMandays: $supervisionMandays, ')
           ..write('driverRate: $driverRate, ')
@@ -891,6 +1045,10 @@ class OperationLogsTableData extends DataClass
     labourQty,
     labourOtHour,
     labourOtRate,
+    labourPieceUnit,
+    labourPieceRate,
+    labourHarvestUnit,
+    labourHarvestRate,
     supervisionRate,
     supervisionMandays,
     driverRate,
@@ -917,6 +1075,10 @@ class OperationLogsTableData extends DataClass
           other.labourQty == this.labourQty &&
           other.labourOtHour == this.labourOtHour &&
           other.labourOtRate == this.labourOtRate &&
+          other.labourPieceUnit == this.labourPieceUnit &&
+          other.labourPieceRate == this.labourPieceRate &&
+          other.labourHarvestUnit == this.labourHarvestUnit &&
+          other.labourHarvestRate == this.labourHarvestRate &&
           other.supervisionRate == this.supervisionRate &&
           other.supervisionMandays == this.supervisionMandays &&
           other.driverRate == this.driverRate &&
@@ -942,6 +1104,10 @@ class OperationLogsTableCompanion
   final Value<double> labourQty;
   final Value<double> labourOtHour;
   final Value<double> labourOtRate;
+  final Value<double> labourPieceUnit;
+  final Value<double> labourPieceRate;
+  final Value<double> labourHarvestUnit;
+  final Value<double> labourHarvestRate;
   final Value<double> supervisionRate;
   final Value<double> supervisionMandays;
   final Value<double> driverRate;
@@ -964,6 +1130,10 @@ class OperationLogsTableCompanion
     this.labourQty = const Value.absent(),
     this.labourOtHour = const Value.absent(),
     this.labourOtRate = const Value.absent(),
+    this.labourPieceUnit = const Value.absent(),
+    this.labourPieceRate = const Value.absent(),
+    this.labourHarvestUnit = const Value.absent(),
+    this.labourHarvestRate = const Value.absent(),
     this.supervisionRate = const Value.absent(),
     this.supervisionMandays = const Value.absent(),
     this.driverRate = const Value.absent(),
@@ -987,6 +1157,10 @@ class OperationLogsTableCompanion
     this.labourQty = const Value.absent(),
     this.labourOtHour = const Value.absent(),
     this.labourOtRate = const Value.absent(),
+    this.labourPieceUnit = const Value.absent(),
+    this.labourPieceRate = const Value.absent(),
+    this.labourHarvestUnit = const Value.absent(),
+    this.labourHarvestRate = const Value.absent(),
     this.supervisionRate = const Value.absent(),
     this.supervisionMandays = const Value.absent(),
     this.driverRate = const Value.absent(),
@@ -1010,6 +1184,10 @@ class OperationLogsTableCompanion
     Expression<double>? labourQty,
     Expression<double>? labourOtHour,
     Expression<double>? labourOtRate,
+    Expression<double>? labourPieceUnit,
+    Expression<double>? labourPieceRate,
+    Expression<double>? labourHarvestUnit,
+    Expression<double>? labourHarvestRate,
     Expression<double>? supervisionRate,
     Expression<double>? supervisionMandays,
     Expression<double>? driverRate,
@@ -1033,6 +1211,10 @@ class OperationLogsTableCompanion
       if (labourQty != null) 'labour_qty': labourQty,
       if (labourOtHour != null) 'labour_ot_hour': labourOtHour,
       if (labourOtRate != null) 'labour_ot_rate': labourOtRate,
+      if (labourPieceUnit != null) 'labour_piece_unit': labourPieceUnit,
+      if (labourPieceRate != null) 'labour_piece_rate': labourPieceRate,
+      if (labourHarvestUnit != null) 'labour_harvest_unit': labourHarvestUnit,
+      if (labourHarvestRate != null) 'labour_harvest_rate': labourHarvestRate,
       if (supervisionRate != null) 'supervision_rate': supervisionRate,
       if (supervisionMandays != null) 'supervision_mandays': supervisionMandays,
       if (driverRate != null) 'driver_rate': driverRate,
@@ -1058,6 +1240,10 @@ class OperationLogsTableCompanion
     Value<double>? labourQty,
     Value<double>? labourOtHour,
     Value<double>? labourOtRate,
+    Value<double>? labourPieceUnit,
+    Value<double>? labourPieceRate,
+    Value<double>? labourHarvestUnit,
+    Value<double>? labourHarvestRate,
     Value<double>? supervisionRate,
     Value<double>? supervisionMandays,
     Value<double>? driverRate,
@@ -1081,6 +1267,10 @@ class OperationLogsTableCompanion
       labourQty: labourQty ?? this.labourQty,
       labourOtHour: labourOtHour ?? this.labourOtHour,
       labourOtRate: labourOtRate ?? this.labourOtRate,
+      labourPieceUnit: labourPieceUnit ?? this.labourPieceUnit,
+      labourPieceRate: labourPieceRate ?? this.labourPieceRate,
+      labourHarvestUnit: labourHarvestUnit ?? this.labourHarvestUnit,
+      labourHarvestRate: labourHarvestRate ?? this.labourHarvestRate,
       supervisionRate: supervisionRate ?? this.supervisionRate,
       supervisionMandays: supervisionMandays ?? this.supervisionMandays,
       driverRate: driverRate ?? this.driverRate,
@@ -1132,6 +1322,18 @@ class OperationLogsTableCompanion
     if (labourOtRate.present) {
       map['labour_ot_rate'] = Variable<double>(labourOtRate.value);
     }
+    if (labourPieceUnit.present) {
+      map['labour_piece_unit'] = Variable<double>(labourPieceUnit.value);
+    }
+    if (labourPieceRate.present) {
+      map['labour_piece_rate'] = Variable<double>(labourPieceRate.value);
+    }
+    if (labourHarvestUnit.present) {
+      map['labour_harvest_unit'] = Variable<double>(labourHarvestUnit.value);
+    }
+    if (labourHarvestRate.present) {
+      map['labour_harvest_rate'] = Variable<double>(labourHarvestRate.value);
+    }
     if (supervisionRate.present) {
       map['supervision_rate'] = Variable<double>(supervisionRate.value);
     }
@@ -1177,6 +1379,10 @@ class OperationLogsTableCompanion
           ..write('labourQty: $labourQty, ')
           ..write('labourOtHour: $labourOtHour, ')
           ..write('labourOtRate: $labourOtRate, ')
+          ..write('labourPieceUnit: $labourPieceUnit, ')
+          ..write('labourPieceRate: $labourPieceRate, ')
+          ..write('labourHarvestUnit: $labourHarvestUnit, ')
+          ..write('labourHarvestRate: $labourHarvestRate, ')
           ..write('supervisionRate: $supervisionRate, ')
           ..write('supervisionMandays: $supervisionMandays, ')
           ..write('driverRate: $driverRate, ')
@@ -1982,6 +2188,10 @@ typedef $$OperationLogsTableTableCreateCompanionBuilder =
       Value<double> labourQty,
       Value<double> labourOtHour,
       Value<double> labourOtRate,
+      Value<double> labourPieceUnit,
+      Value<double> labourPieceRate,
+      Value<double> labourHarvestUnit,
+      Value<double> labourHarvestRate,
       Value<double> supervisionRate,
       Value<double> supervisionMandays,
       Value<double> driverRate,
@@ -2006,6 +2216,10 @@ typedef $$OperationLogsTableTableUpdateCompanionBuilder =
       Value<double> labourQty,
       Value<double> labourOtHour,
       Value<double> labourOtRate,
+      Value<double> labourPieceUnit,
+      Value<double> labourPieceRate,
+      Value<double> labourHarvestUnit,
+      Value<double> labourHarvestRate,
       Value<double> supervisionRate,
       Value<double> supervisionMandays,
       Value<double> driverRate,
@@ -2083,6 +2297,26 @@ class $$OperationLogsTableTableFilterComposer
 
   ColumnFilters<double> get labourOtRate => $composableBuilder(
     column: $table.labourOtRate,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get labourPieceUnit => $composableBuilder(
+    column: $table.labourPieceUnit,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get labourPieceRate => $composableBuilder(
+    column: $table.labourPieceRate,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get labourHarvestUnit => $composableBuilder(
+    column: $table.labourHarvestUnit,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get labourHarvestRate => $composableBuilder(
+    column: $table.labourHarvestRate,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -2201,6 +2435,26 @@ class $$OperationLogsTableTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<double> get labourPieceUnit => $composableBuilder(
+    column: $table.labourPieceUnit,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get labourPieceRate => $composableBuilder(
+    column: $table.labourPieceRate,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get labourHarvestUnit => $composableBuilder(
+    column: $table.labourHarvestUnit,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get labourHarvestRate => $composableBuilder(
+    column: $table.labourHarvestRate,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<double> get supervisionRate => $composableBuilder(
     column: $table.supervisionRate,
     builder: (column) => ColumnOrderings(column),
@@ -2304,6 +2558,26 @@ class $$OperationLogsTableTableAnnotationComposer
     builder: (column) => column,
   );
 
+  GeneratedColumn<double> get labourPieceUnit => $composableBuilder(
+    column: $table.labourPieceUnit,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<double> get labourPieceRate => $composableBuilder(
+    column: $table.labourPieceRate,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<double> get labourHarvestUnit => $composableBuilder(
+    column: $table.labourHarvestUnit,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<double> get labourHarvestRate => $composableBuilder(
+    column: $table.labourHarvestRate,
+    builder: (column) => column,
+  );
+
   GeneratedColumn<double> get supervisionRate => $composableBuilder(
     column: $table.supervisionRate,
     builder: (column) => column,
@@ -2398,6 +2672,10 @@ class $$OperationLogsTableTableTableManager
                 Value<double> labourQty = const Value.absent(),
                 Value<double> labourOtHour = const Value.absent(),
                 Value<double> labourOtRate = const Value.absent(),
+                Value<double> labourPieceUnit = const Value.absent(),
+                Value<double> labourPieceRate = const Value.absent(),
+                Value<double> labourHarvestUnit = const Value.absent(),
+                Value<double> labourHarvestRate = const Value.absent(),
                 Value<double> supervisionRate = const Value.absent(),
                 Value<double> supervisionMandays = const Value.absent(),
                 Value<double> driverRate = const Value.absent(),
@@ -2420,6 +2698,10 @@ class $$OperationLogsTableTableTableManager
                 labourQty: labourQty,
                 labourOtHour: labourOtHour,
                 labourOtRate: labourOtRate,
+                labourPieceUnit: labourPieceUnit,
+                labourPieceRate: labourPieceRate,
+                labourHarvestUnit: labourHarvestUnit,
+                labourHarvestRate: labourHarvestRate,
                 supervisionRate: supervisionRate,
                 supervisionMandays: supervisionMandays,
                 driverRate: driverRate,
@@ -2444,6 +2726,10 @@ class $$OperationLogsTableTableTableManager
                 Value<double> labourQty = const Value.absent(),
                 Value<double> labourOtHour = const Value.absent(),
                 Value<double> labourOtRate = const Value.absent(),
+                Value<double> labourPieceUnit = const Value.absent(),
+                Value<double> labourPieceRate = const Value.absent(),
+                Value<double> labourHarvestUnit = const Value.absent(),
+                Value<double> labourHarvestRate = const Value.absent(),
                 Value<double> supervisionRate = const Value.absent(),
                 Value<double> supervisionMandays = const Value.absent(),
                 Value<double> driverRate = const Value.absent(),
@@ -2466,6 +2752,10 @@ class $$OperationLogsTableTableTableManager
                 labourQty: labourQty,
                 labourOtHour: labourOtHour,
                 labourOtRate: labourOtRate,
+                labourPieceUnit: labourPieceUnit,
+                labourPieceRate: labourPieceRate,
+                labourHarvestUnit: labourHarvestUnit,
+                labourHarvestRate: labourHarvestRate,
                 supervisionRate: supervisionRate,
                 supervisionMandays: supervisionMandays,
                 driverRate: driverRate,

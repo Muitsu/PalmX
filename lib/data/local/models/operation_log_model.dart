@@ -14,15 +14,19 @@ class OperationLogModel extends OperationLogsTableData {
     super.labourQty = 0.0,
     super.labourOtRate = 0.0,
     super.labourOtHour = 0.0,
+    super.labourPieceUnit = 0.0,
+    super.labourPieceRate = 0.0,
+    super.labourHarvestUnit = 0.0,
+    super.labourHarvestRate = 0.0,
     super.supervisionRate = 0.0,
     super.supervisionMandays = 0.0,
     super.driverRate = 0.0,
     super.driverTotal = 0.0,
     super.materialType,
-    super.materialQty,
-    super.materialLitreRate,
-    super.evitTime,
-    super.evitRate,
+    super.materialQty = 0,
+    super.materialLitreRate = 0.0,
+    super.evitTime = 0,
+    super.evitRate = 0.0,
   });
 
   factory OperationLogModel.fromDrift(OperationLogsTableData data) {
@@ -38,6 +42,10 @@ class OperationLogModel extends OperationLogsTableData {
       labourQty: data.labourQty,
       labourOtRate: data.labourOtRate,
       labourOtHour: data.labourOtHour,
+      labourPieceUnit: data.labourPieceUnit,
+      labourPieceRate: data.labourPieceRate,
+      labourHarvestUnit: data.labourHarvestUnit,
+      labourHarvestRate: data.labourHarvestRate,
       supervisionRate: data.supervisionRate,
       supervisionMandays: data.supervisionMandays,
       driverRate: data.driverRate,
@@ -62,6 +70,10 @@ class OperationLogModel extends OperationLogsTableData {
     double? labourQty,
     double? labourOtRate,
     double? labourOtHour,
+    double? labourPieceUnit,
+    double? labourPieceRate,
+    double? labourHarvestUnit,
+    double? labourHarvestRate,
     double? supervisionRate,
     double? supervisionMandays,
     double? driverRate,
@@ -84,6 +96,10 @@ class OperationLogModel extends OperationLogsTableData {
       labourQty: labourQty ?? this.labourQty,
       labourOtRate: labourOtRate ?? this.labourOtRate,
       labourOtHour: labourOtHour ?? this.labourOtHour,
+      labourPieceUnit: labourPieceUnit ?? this.labourPieceUnit,
+      labourPieceRate: labourPieceRate ?? this.labourPieceRate,
+      labourHarvestUnit: labourHarvestUnit ?? this.labourHarvestUnit,
+      labourHarvestRate: labourHarvestRate ?? this.labourHarvestRate,
       supervisionRate: supervisionRate ?? this.supervisionRate,
       supervisionMandays:
           supervisionMandays ?? this.supervisionMandays, // Fixed here
@@ -111,6 +127,10 @@ class OperationLogModel extends OperationLogsTableData {
       labourQty: Value(labourQty),
       labourOtRate: Value(labourOtRate),
       labourOtHour: Value(labourOtHour),
+      labourPieceUnit: Value(labourPieceUnit),
+      labourPieceRate: Value(labourPieceRate),
+      labourHarvestUnit: Value(labourHarvestUnit),
+      labourHarvestRate: Value(labourHarvestRate),
       supervisionRate: Value(supervisionRate),
       supervisionMandays: Value(supervisionMandays),
       driverRate: Value(driverRate),
@@ -124,9 +144,16 @@ class OperationLogModel extends OperationLogsTableData {
   }
 
   //Labour calculation
-  double get _normalLabourCost => ((labourRate * labourQty));
-  double get _otLabourCost => ((labourOtHour * labourOtRate));
-  double get labourTotalCost => (_normalLabourCost + _otLabourCost);
+  //Basic
+  double get _basicLabourCost => ((labourRate * labourQty));
+  double get _basicOtLabourCost => ((labourOtHour * labourOtRate));
+  double get totalBasicLabourCost => (_basicLabourCost + _basicOtLabourCost);
+  //Piece Rate
+  double get _pieceLabourCost => ((labourPieceUnit * labourPieceRate));
+  //Harvesting Rate
+  double get _harvestingLabourCost => ((labourHarvestUnit * labourHarvestRate));
+  double get labourTotalCost =>
+      (totalBasicLabourCost + _pieceLabourCost + _harvestingLabourCost);
 
   double get supervisionTotalCost => (supervisionMandays * supervisionRate);
 

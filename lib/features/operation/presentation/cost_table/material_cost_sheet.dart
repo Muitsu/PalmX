@@ -1,3 +1,4 @@
+import 'package:easy_debounce/easy_debounce.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
@@ -5,6 +6,8 @@ import 'package:palmx/core/widgets/input_formatter/currency_input_formatter.dart
 import 'package:palmx/core/widgets/utils.dart';
 import 'package:palmx/data/local/models/material_model.dart';
 import 'package:palmx/features/operation/presentation/operation_log/dropdown_service.dart';
+import 'package:palmx/features/operation/presentation/provider/operation_provider.dart';
+import 'package:provider/provider.dart';
 
 class MaterialCostSheet extends StatefulWidget {
   final ScrollController? sc;
@@ -15,9 +18,50 @@ class MaterialCostSheet extends StatefulWidget {
 }
 
 class _MaterialCostSheetState extends State<MaterialCostSheet> {
-  final materialTypeController = TextEditingController(text: "");
-  final materialCostController = TextEditingController(text: "65.38");
-  final materialQtyController = TextEditingController(text: "12");
+  late OperationProvider _operationProvider;
+  late TextEditingController materialTypeController;
+  late TextEditingController materialCostController;
+  late TextEditingController materialQtyController;
+
+  @override
+  void initState() {
+    super.initState();
+    _operationProvider = context.read<OperationProvider>();
+    final data = _operationProvider.currentOperation;
+    materialTypeController = TextEditingController(
+      text: data?.materialType?.toString() ?? "",
+    );
+    materialCostController = TextEditingController(
+      text: data?.materialLitreRate?.toString() ?? "0.00",
+    );
+    materialQtyController = TextEditingController(
+      text: data?.materialQty?.toString() ?? "0",
+    );
+  }
+
+  @override
+  dispose() {
+    materialTypeController.dispose();
+    materialCostController.dispose();
+    materialQtyController.dispose();
+    super.dispose();
+  }
+
+  double _stringToDouble(String val) => double.tryParse(val) ?? 0.0;
+  void _onSave() {
+    EasyDebounce.debounce(
+      "save-data",
+      Duration(milliseconds: 500), // <-- The debounce duration
+      () {
+        _operationProvider.setMaterialCost(
+          materialType: materialTypeController.text,
+          materialQty: int.tryParse(materialQtyController.text) ?? 0,
+          materialLitreRate: _stringToDouble(materialCostController.text),
+        );
+      },
+    );
+  }
+
   MaterialModel? _selectedMaterial;
   @override
   Widget build(BuildContext context) {
@@ -129,6 +173,12 @@ class _MaterialCostSheetState extends State<MaterialCostSheet> {
                           ctrl: materialQtyController,
                           keyboardType: TextInputType.number,
                           textAlign: TextAlign.center,
+                          inputFormatters: [
+                            FilteringTextInputFormatter.digitsOnly,
+                          ],
+                          onChanged: (val) {
+                            _onSave();
+                          },
                         ),
                       ),
                       _multiplier(),
@@ -142,6 +192,9 @@ class _MaterialCostSheetState extends State<MaterialCostSheet> {
                             FilteringTextInputFormatter.digitsOnly,
                             CurrencyInputFormatter(),
                           ],
+                          onChanged: (val) {
+                            _onSave();
+                          },
                           prefixWidget: const Padding(
                             padding: EdgeInsets.only(top: 14, left: 10),
                             child: Text("RM "),
@@ -167,6 +220,7 @@ class _MaterialCostSheetState extends State<MaterialCostSheet> {
   }
 
   Widget _bottomCalculationButton() {
+    final pWatch = context.watch<OperationProvider>();
     return Padding(
       padding: const EdgeInsets.only(left: 24, right: 24, bottom: 16),
       child: Column(
@@ -176,7 +230,7 @@ class _MaterialCostSheetState extends State<MaterialCostSheet> {
             padding: EdgeInsets.only(bottom: 10),
             child: Divider(color: Color(0xFFEEEEEE), thickness: 1),
           ),
-          const Row(
+          Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
@@ -188,7 +242,7 @@ class _MaterialCostSheetState extends State<MaterialCostSheet> {
                 ),
               ),
               Text(
-                'RM0.00',
+                'RM${pWatch.currentOperation?.materialTotalCost ?? 0.00}',
                 style: TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.w900,
@@ -202,7 +256,9 @@ class _MaterialCostSheetState extends State<MaterialCostSheet> {
             width: double.infinity,
             height: 56,
             child: ElevatedButton(
-              onPressed: () {},
+              onPressed: () {
+                Navigator.pop(context);
+              },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.orange[800],
                 shape: RoundedRectangleBorder(
@@ -211,7 +267,7 @@ class _MaterialCostSheetState extends State<MaterialCostSheet> {
                 elevation: 0,
               ),
               child: const Text(
-                'Save Calculation',
+                'Done',
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,

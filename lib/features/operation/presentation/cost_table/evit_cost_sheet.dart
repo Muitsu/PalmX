@@ -1,8 +1,11 @@
+import 'package:easy_debounce/easy_debounce.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart'; // Make sure this is in your pubspec
 import 'package:palmx/core/widgets/input_formatter/currency_input_formatter.dart';
 import 'package:palmx/core/widgets/utils.dart';
+import 'package:palmx/features/operation/presentation/provider/operation_provider.dart';
+import 'package:provider/provider.dart';
 
 class EvitCostSheet extends StatefulWidget {
   final ScrollController? sc;
@@ -13,8 +16,42 @@ class EvitCostSheet extends StatefulWidget {
 }
 
 class _EvitCostSheetState extends State<EvitCostSheet> {
-  final workingHoursController = TextEditingController(text: "7.5");
-  final rateController = TextEditingController(text: "65.38");
+  late OperationProvider _operationProvider;
+  late TextEditingController workingHoursController;
+  late TextEditingController rateController;
+  @override
+  void initState() {
+    super.initState();
+    _operationProvider = context.read<OperationProvider>();
+    final data = _operationProvider.currentOperation;
+    workingHoursController = TextEditingController(
+      text: data?.evitTime?.toString() ?? "0",
+    );
+    rateController = TextEditingController(
+      text: data?.evitRate?.toString() ?? "0.00",
+    );
+  }
+
+  @override
+  void dispose() {
+    workingHoursController.dispose();
+    rateController.dispose();
+    super.dispose();
+  }
+
+  double _stringToDouble(String val) => double.tryParse(val) ?? 0.0;
+  void _onSave() {
+    EasyDebounce.debounce(
+      "save-data",
+      Duration(milliseconds: 500), // <-- The debounce duration
+      () {
+        _operationProvider.setEvitCost(
+          evitTime: _stringToDouble(workingHoursController.text),
+          evitRate: _stringToDouble(rateController.text),
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -99,6 +136,12 @@ class _EvitCostSheetState extends State<EvitCostSheet> {
                         ctrl: workingHoursController,
                         keyboardType: TextInputType.number,
                         textAlign: TextAlign.center,
+                        onChanged: (val) {
+                          _onSave();
+                        },
+                        inputFormatters: [
+                          FilteringTextInputFormatter.digitsOnly,
+                        ],
                       ),
 
                       // The Divider with the "X" gets a special pop/bounce effect
@@ -142,6 +185,9 @@ class _EvitCostSheetState extends State<EvitCostSheet> {
                           FilteringTextInputFormatter.digitsOnly,
                           CurrencyInputFormatter(),
                         ],
+                        onChanged: (val) {
+                          _onSave();
+                        },
                         textAlign: TextAlign.center,
                         prefixWidget: const Padding(
                           padding: EdgeInsets.only(top: 14, left: 10),
@@ -168,6 +214,7 @@ class _EvitCostSheetState extends State<EvitCostSheet> {
   }
 
   Widget _bottomCalculationButton() {
+    final pWatch = context.watch<OperationProvider>();
     return Padding(
       padding: const EdgeInsets.only(left: 24, right: 24, bottom: 16),
       child: Column(
@@ -189,8 +236,8 @@ class _EvitCostSheetState extends State<EvitCostSheet> {
                 ),
               ),
               // We can even animate the number slightly when it first appears
-              const Text(
-                    'RM0.00',
+              Text(
+                    'RM${pWatch.currentOperation?.evitTotalCost ?? 0.00}',
                     style: TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.w900,
@@ -209,7 +256,9 @@ class _EvitCostSheetState extends State<EvitCostSheet> {
             width: double.infinity,
             height: 56,
             child: ElevatedButton(
-              onPressed: () {},
+              onPressed: () {
+                Navigator.pop(context);
+              },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.orange[800],
                 shape: RoundedRectangleBorder(
@@ -218,7 +267,7 @@ class _EvitCostSheetState extends State<EvitCostSheet> {
                 elevation: 0,
               ),
               child: const Text(
-                'Save Calculation',
+                'Done',
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,

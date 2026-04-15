@@ -53,6 +53,7 @@ Widget buildTextField({
   bool? isDropdown,
   List<TextInputFormatter>? inputFormatters,
   TextAlign textAlign = TextAlign.start,
+  void Function(String)? onChanged,
 }) {
   return CustomTextField(
     title: label,
@@ -77,6 +78,7 @@ Widget buildTextField({
       borderSide: BorderSide(color: AppColorPalettes.light.primary),
     ),
     maxLines: maxLines,
+    onChanged: onChanged,
     onTapOutside: (PointerDownEvent event) {
       FocusManager.instance.primaryFocus?.unfocus();
     },

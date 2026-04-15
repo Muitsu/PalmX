@@ -1,8 +1,11 @@
+import 'package:easy_debounce/easy_debounce.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:palmx/core/widgets/input_formatter/currency_input_formatter.dart';
 import 'package:palmx/core/widgets/utils.dart';
+import 'package:palmx/features/operation/presentation/provider/operation_provider.dart';
+import 'package:provider/provider.dart';
 
 class SupervisionCostSheet extends StatefulWidget {
   final ScrollController? sc;
@@ -13,8 +16,44 @@ class SupervisionCostSheet extends StatefulWidget {
 }
 
 class _SupervisionCostSheetState extends State<SupervisionCostSheet> {
-  final mandaysController = TextEditingController(text: "12");
-  final rateController = TextEditingController(text: "65.38");
+  late OperationProvider _operationProvider;
+
+  late TextEditingController mandaysController;
+  late TextEditingController rateController;
+
+  @override
+  void initState() {
+    super.initState();
+    _operationProvider = context.read<OperationProvider>();
+    final data = _operationProvider.currentOperation;
+    mandaysController = TextEditingController(
+      text: data?.supervisionMandays.toString() ?? "0",
+    );
+    rateController = TextEditingController(
+      text: data?.supervisionRate.toString() ?? "0.00",
+    );
+  }
+
+  @override
+  void dispose() {
+    mandaysController.dispose();
+    rateController.dispose();
+    super.dispose();
+  }
+
+  double _stringToDouble(String val) => double.tryParse(val) ?? 0.0;
+  void _onSave() {
+    EasyDebounce.debounce(
+      "save-data",
+      Duration(milliseconds: 500), // <-- The debounce duration
+      () {
+        _operationProvider.setSupervisionCost(
+          supervisionMandays: _stringToDouble(mandaysController.text),
+          supervisionRate: _stringToDouble(rateController.text),
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -100,6 +139,12 @@ class _SupervisionCostSheetState extends State<SupervisionCostSheet> {
                         ctrl: mandaysController,
                         keyboardType: TextInputType.number,
                         textAlign: TextAlign.center,
+                        onChanged: (val) {
+                          _onSave();
+                        },
+                        inputFormatters: [
+                          FilteringTextInputFormatter.digitsOnly,
+                        ],
                       ),
 
                       // Divider with "X" (Multiplication) - Custom Pop effect
@@ -144,6 +189,9 @@ class _SupervisionCostSheetState extends State<SupervisionCostSheet> {
                           FilteringTextInputFormatter.digitsOnly,
                           CurrencyInputFormatter(),
                         ],
+                        onChanged: (val) {
+                          _onSave();
+                        },
                         textAlign: TextAlign.center,
                         prefixWidget: const Padding(
                           padding: EdgeInsets.only(top: 14, left: 10),
@@ -170,6 +218,7 @@ class _SupervisionCostSheetState extends State<SupervisionCostSheet> {
   }
 
   Widget _bottomCalculationButton() {
+    final pWatch = context.watch<OperationProvider>();
     return Padding(
       padding: const EdgeInsets.only(left: 24, right: 24, bottom: 16),
       child: Column(
@@ -191,8 +240,8 @@ class _SupervisionCostSheetState extends State<SupervisionCostSheet> {
                   color: Color(0xFF1A233A),
                 ),
               ),
-              const Text(
-                    'RM0.00',
+              Text(
+                    'RM${pWatch.currentOperation?.supervisionTotalCost ?? 0.00}',
                     style: TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.w900,
@@ -213,7 +262,9 @@ class _SupervisionCostSheetState extends State<SupervisionCostSheet> {
             width: double.infinity,
             height: 56,
             child: ElevatedButton(
-              onPressed: () {},
+              onPressed: () {
+                Navigator.pop(context);
+              },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.orange[800],
                 shape: RoundedRectangleBorder(
@@ -222,7 +273,7 @@ class _SupervisionCostSheetState extends State<SupervisionCostSheet> {
                 elevation: 0,
               ),
               child: const Text(
-                'Save Calculation',
+                'Done',
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,

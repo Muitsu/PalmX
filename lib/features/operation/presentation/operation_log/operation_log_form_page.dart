@@ -38,152 +38,174 @@ class _OperationLogFormPageState extends State<OperationLogFormPage> {
   @override
   Widget build(BuildContext context) {
     final provider = context.watch<OperationProvider>();
+    final formKey = provider.formKey;
 
-    return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(
-        scrolledUnderElevation: 0,
-
+    return Form(
+      key: formKey,
+      child: Scaffold(
         backgroundColor: Colors.white,
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
-          onPressed: () => Navigator.pop(context),
-        ),
-        title: const Text(
-          "Operation Log",
-          style: TextStyle(
-            color: Color(0xFF1A2B47),
-            fontWeight: FontWeight.bold,
+        appBar: AppBar(
+          scrolledUnderElevation: 0,
+
+          backgroundColor: Colors.white,
+          elevation: 0,
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back, color: Colors.black),
+            onPressed: () => Navigator.pop(context),
           ),
-        ),
-        centerTitle: true,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.more_vert, color: Colors.black),
-            onPressed: () {},
+          title: const Text(
+            "Operation Log",
+            style: TextStyle(
+              color: Color(0xFF1A2B47),
+              fontWeight: FontWeight.bold,
+            ),
           ),
-        ],
-      ),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(20),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              buildTextField(
-                ctrl: _operationProvider.dateCtrl,
-                prefixWidget: Icon(Icons.calendar_today_outlined),
-                label: "Date",
-                hint: "Choose date",
-                isDropdown: true,
-                onTap: () async {
-                  _operationProvider.setDate(context);
-                },
-              ),
-              const SizedBox(height: 10),
-              //Dropdown
-              buildTextField(
-                ctrl: _operationProvider.acitivityCtrl,
-                prefixWidget: Icon(Icons.shopping_bag_outlined),
-                label: "Activity Type",
-                hint: "Harvesting & Collection",
-                isDropdown: true,
-                onTap: () {
-                  DropdownService.showActivity(
-                    context,
-                    initialValue: provider.selectedActivity,
-                    onSelected: (item) {
-                      _operationProvider.setActivityType(item);
-                    },
-                  );
-                },
-              ),
-              const SizedBox(height: 10),
-              //Dropdown
-              buildTextField(
-                ctrl: _operationProvider.fieldCtrl,
-                prefixWidget: Icon(Icons.location_on_outlined),
-                label: "Field",
-                hint: "Division A - Block 12",
-                isDropdown: true,
-                onTap: () {
-                  DropdownService.showField(
-                    context,
-                    initialValue: provider.selectedField,
-                    onSelected: (item) {
-                      _operationProvider.setField(item);
-                    },
-                  );
-                },
-              ),
-              const SizedBox(height: 10),
-              Row(
-                children: [
-                  Expanded(
-                    child: buildTextField(
-                      ctrl: _operationProvider.haTodayCtrl,
-                      prefixWidget: Icon(Icons.architecture_outlined),
-                      label: "Ha today",
-                      hint: "0.00",
-                      keyboardType: TextInputType.number,
-                      inputFormatters: [
-                        FilteringTextInputFormatter.digitsOnly,
-                        CurrencyInputFormatter(),
-                      ],
+          centerTitle: true,
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.more_vert, color: Colors.black),
+              onPressed: () {},
+            ),
+          ],
+        ),
+        body: SafeArea(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                buildTextField(
+                  ctrl: _operationProvider.dateCtrl,
+                  prefixWidget: Icon(Icons.calendar_today_outlined),
+                  label: "Date",
+                  hint: "Choose date",
+                  isDropdown: true,
+                  validator: (val) =>
+                      val == null || val.isEmpty ? "Please choose date" : null,
+                  onTap: () async {
+                    _operationProvider.setDate(context);
+                  },
+                ),
+                const SizedBox(height: 10),
+                //Dropdown
+                buildTextField(
+                  ctrl: _operationProvider.acitivityCtrl,
+                  prefixWidget: Icon(Icons.shopping_bag_outlined),
+                  label: "Activity Type",
+                  hint: "Harvesting & Collection",
+                  validator: (val) => val == null || val.isEmpty
+                      ? "Please choose activity"
+                      : null,
+                  isDropdown: true,
+                  onTap: () {
+                    DropdownService.showActivity(
+                      context,
+                      initialValue: provider.selectedActivity,
+                      onSelected: (item) {
+                        _operationProvider.setActivityType(item);
+                      },
+                    );
+                  },
+                ),
+                const SizedBox(height: 10),
+                //Dropdown
+                buildTextField(
+                  ctrl: _operationProvider.fieldCtrl,
+                  prefixWidget: Icon(Icons.location_on_outlined),
+                  label: "Field",
+                  hint: "Division A - Block 12",
+                  validator: (val) =>
+                      val == null || val.isEmpty ? "Please choose field" : null,
+                  isDropdown: true,
+                  onTap: () {
+                    DropdownService.showField(
+                      context,
+                      initialValue: provider.selectedField,
+                      onSelected: (item) {
+                        _operationProvider.setField(item);
+                      },
+                    );
+                  },
+                ),
+                const SizedBox(height: 10),
+                Row(
+                  children: [
+                    Expanded(
+                      child: buildTextField(
+                        ctrl: _operationProvider.haTodayCtrl,
+                        prefixWidget: Icon(Icons.architecture_outlined),
+                        label: "Ha today",
+                        hint: "0.00",
+                        validator: (val) => val == null || val.isEmpty
+                            ? "Please choose ha today"
+                            : null,
+                        keyboardType: TextInputType.number,
+                        inputFormatters: [
+                          FilteringTextInputFormatter.digitsOnly,
+                          CurrencyInputFormatter(),
+                        ],
+                      ),
                     ),
-                  ),
-                  const SizedBox(width: 15),
-                  Expanded(
-                    child: buildTextField(
-                      ctrl: _operationProvider.mandaysCtrl,
-                      prefixWidget: Icon(Icons.group_outlined),
-                      label: "Mandays",
-                      hint: "0",
-                      keyboardType: TextInputType.number,
-                      inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                    const SizedBox(width: 15),
+                    Expanded(
+                      child: buildTextField(
+                        ctrl: _operationProvider.mandaysCtrl,
+                        prefixWidget: Icon(Icons.group_outlined),
+                        label: "Mandays",
+                        hint: "0",
+                        validator: (val) => val == null || val.isEmpty
+                            ? "Please choose mandays"
+                            : null,
+                        keyboardType: TextInputType.number,
+                        inputFormatters: [
+                          FilteringTextInputFormatter.digitsOnly,
+                        ],
+                      ),
                     ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 10),
-              buildTextField(
-                ctrl: _operationProvider.remarksCtrl,
-                prefixWidget: Icon(Icons.edit_note_outlined),
-                label: "Remarks",
-                hint: "Additional observations...",
-                maxLines: 3,
-              ),
+                  ],
+                ),
+                const SizedBox(height: 10),
+                buildTextField(
+                  ctrl: _operationProvider.remarksCtrl,
+                  prefixWidget: Icon(Icons.edit_note_outlined),
+                  label: "Remarks",
+                  hint: "Additional observations...",
+                  maxLines: 3,
+                ),
 
-              const Divider(height: 40),
+                const Divider(height: 40),
 
-              Row(
-                children: [
-                  Icon(
-                    Icons.calculate_outlined,
-                    color: Colors.orange[800],
-                    size: 20,
-                  ),
-                  const SizedBox(width: 8),
-                  const Text(
-                    "Cost Calculation",
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 15),
-              _buildCostSummaryCard(),
+                Row(
+                  children: [
+                    Icon(
+                      Icons.calculate_outlined,
+                      color: Colors.orange[800],
+                      size: 20,
+                    ),
+                    const SizedBox(width: 8),
+                    const Text(
+                      "Cost Calculation",
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 15),
+                _buildCostSummaryCard(),
 
-              const SizedBox(height: 25),
-              _buildTotalCostRow(),
+                const SizedBox(height: 25),
+                _buildTotalCostRow(),
 
-              const SizedBox(height: 20),
-              _buildMetricCards(),
+                const SizedBox(height: 20),
+                _buildMetricCards(),
 
-              const SizedBox(height: 30),
-              _buildSubmitButton(),
-              const SizedBox(height: 20),
-            ],
+                const SizedBox(height: 30),
+                _buildSubmitButton(),
+                const SizedBox(height: 20),
+              ],
+            ),
           ),
         ),
       ),
@@ -191,6 +213,8 @@ class _OperationLogFormPageState extends State<OperationLogFormPage> {
   }
 
   Widget _buildCostSummaryCard() {
+    final pWatch = context.watch<OperationProvider>();
+    final data = pWatch.currentOperation;
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -203,7 +227,7 @@ class _OperationLogFormPageState extends State<OperationLogFormPage> {
           _costItem(
             "Labour cost",
             "12 workers x RM65.00",
-            "780.00",
+            (data?.labourTotalCost ?? 0.00).toStringAsFixed(2),
             onTap: () {
               CustomDraggableSheet.show(
                 context: context,
@@ -217,7 +241,7 @@ class _OperationLogFormPageState extends State<OperationLogFormPage> {
           _costItem(
             "Supervision cost",
             "2 units x RM85.00",
-            "170.00",
+            (data?.supervisionTotalCost ?? 0.00).toStringAsFixed(2),
             onTap: () {
               CustomDraggableSheet.show(
                 context: context,
@@ -228,7 +252,7 @@ class _OperationLogFormPageState extends State<OperationLogFormPage> {
           _costItem(
             "Driver cost",
             "4 units x RM55.00",
-            "220.00",
+            (data?.driverTotalCost ?? 0.00).toStringAsFixed(2),
             onTap: () {
               CustomDraggableSheet.show(
                 context: context,
@@ -239,7 +263,7 @@ class _OperationLogFormPageState extends State<OperationLogFormPage> {
           _costItem(
             "Material cost",
             "50 bags x RM45.50",
-            "2,275.00",
+            (data?.materialTotalCost ?? 0.00).toStringAsFixed(2),
             onTap: () {
               CustomDraggableSheet.show(
                 context: context,
@@ -250,7 +274,7 @@ class _OperationLogFormPageState extends State<OperationLogFormPage> {
           _costItem(
             "Evit cost",
             "System overhead 10%",
-            "344.50",
+            (data?.evitTotalCost ?? 0.00).toStringAsFixed(2),
             isLast: true,
             onTap: () {
               CustomDraggableSheet.show(
@@ -318,6 +342,8 @@ class _OperationLogFormPageState extends State<OperationLogFormPage> {
   }
 
   Widget _buildTotalCostRow() {
+    final pWatch = context.watch<OperationProvider>();
+    final data = pWatch.currentOperation;
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -330,7 +356,7 @@ class _OperationLogFormPageState extends State<OperationLogFormPage> {
           ),
         ),
         Text(
-          "RM 3,789.50",
+          "RM ${(data?.totalAll ?? 0.00).toStringAsFixed(2)}",
           style: TextStyle(
             color: Colors.orange[900],
             fontWeight: FontWeight.bold,

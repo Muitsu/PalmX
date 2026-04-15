@@ -26,10 +26,10 @@ class OperationProvider extends ChangeNotifier {
   late TextEditingController haTodayCtrl;
   late TextEditingController mandaysCtrl;
   late TextEditingController remarksCtrl;
-
+  final formKey = GlobalKey<FormState>();
   void init() {
     _currentOperation = OperationLogModel(id: 0, operationDate: DateTime.now());
-    dateCtrl = TextEditingController();
+    dateCtrl = TextEditingController(text: DateTime.now().previewDate());
     haCtrl = TextEditingController();
     acitivityCtrl = TextEditingController();
     fieldCtrl = TextEditingController();
@@ -40,6 +40,8 @@ class OperationProvider extends ChangeNotifier {
   }
 
   void clear() {
+    selectedActivity = null;
+    selectedField = null;
     _currentOperation = null;
     dateCtrl.dispose();
     haCtrl.dispose();
@@ -99,12 +101,20 @@ class OperationProvider extends ChangeNotifier {
     double? labourOtRate,
     double? labourRate,
     double? labourQty,
+    double? labourPieceUnit,
+    double? labourPieceRate,
+    double? labourHarvestUnit,
+    double? labourHarvestRate,
   }) {
     _currentOperation = _currentOperation!.copyData(
-      labourOtHour: labourOtHour,
-      labourOtRate: labourOtRate,
       labourRate: labourRate,
       labourQty: labourQty,
+      labourOtHour: labourOtHour,
+      labourOtRate: labourOtRate,
+      labourPieceUnit: labourPieceUnit,
+      labourPieceRate: labourPieceRate,
+      labourHarvestUnit: labourHarvestUnit,
+      labourHarvestRate: labourHarvestRate,
     );
     notifyListeners();
   }
@@ -150,6 +160,10 @@ class OperationProvider extends ChangeNotifier {
   }
 
   Future<bool> submit(BuildContext context) async {
+    if (!formKey.currentState!.validate()) {
+      return false;
+    }
+
     final results = await saveOperation.call(
       entry: _currentOperation!.toInsert(ids: null),
     );

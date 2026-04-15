@@ -15,6 +15,12 @@ class OperationLogsTable extends Table {
   RealColumn get labourQty => real().withDefault(const Constant(0.00))();
   RealColumn get labourOtHour => real().withDefault(const Constant(0.00))();
   RealColumn get labourOtRate => real().withDefault(const Constant(0.00))();
+  RealColumn get labourPieceUnit => real().withDefault(const Constant(0.00))();
+  RealColumn get labourPieceRate => real().withDefault(const Constant(0.00))();
+  RealColumn get labourHarvestUnit =>
+      real().withDefault(const Constant(0.00))();
+  RealColumn get labourHarvestRate =>
+      real().withDefault(const Constant(0.00))();
 
   // Supervision and Driver
   RealColumn get supervisionRate => real().withDefault(const Constant(70.38))();
