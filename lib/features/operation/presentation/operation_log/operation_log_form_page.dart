@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:palmx/core/widgets/input_formatter/currency_input_formatter.dart';
 import 'package:palmx/core/widgets/modal/custom_draggable_sheet.dart';
 import 'package:palmx/core/widgets/utils.dart';
+import 'package:palmx/data/local/models/operation_log_model.dart';
 import 'package:palmx/features/operation/presentation/cost_table/driver_cost_sheet.dart';
 import 'package:palmx/features/operation/presentation/cost_table/evit_cost_sheet.dart';
 import 'package:palmx/features/operation/presentation/cost_table/labour_cost_sheet.dart';
@@ -13,7 +14,9 @@ import 'package:palmx/features/operation/presentation/provider/operation_provide
 import 'package:provider/provider.dart';
 
 class OperationLogFormPage extends StatefulWidget {
-  const OperationLogFormPage({super.key});
+  final DateTime? date;
+  final OperationLogModel? operationData;
+  const OperationLogFormPage({super.key, this.date, this.operationData});
 
   @override
   State<OperationLogFormPage> createState() => _OperationLogFormPageState();
@@ -26,7 +29,10 @@ class _OperationLogFormPageState extends State<OperationLogFormPage> {
   void initState() {
     super.initState();
     _operationProvider = context.read<OperationProvider>();
-    _operationProvider.init();
+    _operationProvider.init(
+      date: widget.date,
+      operationData: widget.operationData,
+    );
   }
 
   @override
@@ -431,8 +437,8 @@ class _OperationLogFormPageState extends State<OperationLogFormPage> {
           });
         },
         icon: const Icon(Icons.send_rounded, color: Colors.white),
-        label: const Text(
-          "Submit Log",
+        label: Text(
+          widget.operationData == null ? "Submit Log" : "Update Log",
           style: TextStyle(
             color: Colors.white,
             fontSize: 16,

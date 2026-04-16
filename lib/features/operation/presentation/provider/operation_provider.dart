@@ -1,3 +1,5 @@
+import 'dart:developer' as dev;
+
 import 'package:flutter/material.dart';
 import 'package:injectable/injectable.dart';
 import 'package:palmx/core/externsions/datetime_extension.dart';
@@ -20,22 +22,30 @@ class OperationProvider extends ChangeNotifier {
   FieldModel? selectedField;
 
   late TextEditingController dateCtrl;
-  late TextEditingController haCtrl;
+
   late TextEditingController acitivityCtrl;
   late TextEditingController fieldCtrl;
   late TextEditingController haTodayCtrl;
   late TextEditingController mandaysCtrl;
   late TextEditingController remarksCtrl;
   final formKey = GlobalKey<FormState>();
-  void init() {
-    _currentOperation = OperationLogModel(id: 0, operationDate: DateTime.now());
-    dateCtrl = TextEditingController(text: DateTime.now().previewDate());
-    haCtrl = TextEditingController();
-    acitivityCtrl = TextEditingController();
-    fieldCtrl = TextEditingController();
-    haTodayCtrl = TextEditingController();
-    mandaysCtrl = TextEditingController();
-    remarksCtrl = TextEditingController();
+  bool isUpdate = false;
+  void init({OperationLogModel? operationData, DateTime? date}) {
+    final defaultDate = date ?? DateTime.now();
+    isUpdate = operationData != null;
+    _currentOperation =
+        operationData ?? OperationLogModel(id: 0, operationDate: defaultDate);
+    dateCtrl = TextEditingController(text: defaultDate.previewDate());
+
+    acitivityCtrl = TextEditingController(text: operationData?.activityType);
+    fieldCtrl = TextEditingController(text: operationData?.field);
+    haTodayCtrl = TextEditingController(
+      text: operationData?.hectar?.toString(),
+    );
+    mandaysCtrl = TextEditingController(
+      text: operationData?.mandays?.toString(),
+    );
+    remarksCtrl = TextEditingController(text: operationData?.remarks);
     WidgetsBinding.instance.addPostFrameCallback((_) => notifyListeners());
   }
 
@@ -44,7 +54,6 @@ class OperationProvider extends ChangeNotifier {
     selectedField = null;
     _currentOperation = null;
     dateCtrl.dispose();
-    haCtrl.dispose();
     acitivityCtrl.dispose();
     fieldCtrl.dispose();
     haTodayCtrl.dispose();
@@ -159,23 +168,34 @@ class OperationProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  double _stringToDouble(String val) => double.tryParse(val) ?? 0.0;
   Future<bool> submit(BuildContext context) async {
     if (!formKey.currentState!.validate()) {
       return false;
     }
-
+    _currentOperation = _currentOperation!.copyData(
+      hectar: _stringToDouble(haTodayCtrl.text),
+      mandays: _stringToDouble(mandaysCtrl.text),
+      remarks: remarksCtrl.text,
+    );
     final results = await saveOperation.call(
-      entry: _currentOperation!.toInsert(ids: null),
+      entry: _currentOperation!.toInsert(
+        ids: isUpdate ? _currentOperation!.id : null,
+      ),
     );
     bool success = false;
-    results.fold((l) => debugPrint("Error saving operation: ${l.message}"), (
-      r,
-    ) {
-      debugPrint("Operation saved with ID: $r");
-      success = true;
-    });
+    results.fold(
+      (l) {
+        dev.log("Error saving operation: ${l.message}");
+      },
+      (r) {
+        dev.log("Operation saved with ID: $r");
+        success = true;
+      },
+    );
     if (success) {
-      // ignore: use_build_context_synchronously
+      if (!context.mounted) return false;
+      context.read<CalendarProvider>().setViewData(data: _currentOperation!);
       context.read<CalendarProvider>().refresh();
     }
     return success;

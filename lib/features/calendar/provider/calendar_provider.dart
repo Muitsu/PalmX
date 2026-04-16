@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:injectable/injectable.dart';
+import 'package:palmx/core/widgets/calendar/calendar_utils.dart';
 import 'package:palmx/data/local/models/operation_log_model.dart';
 import 'package:palmx/features/operation/domain/usecase/get_operation_by_month.dart';
+import 'package:palmx/features/operation/presentation/operation_log/operation_log_summary_page.dart';
 
 @injectable
 class CalendarProvider extends ChangeNotifier {
@@ -13,10 +15,13 @@ class CalendarProvider extends ChangeNotifier {
   List<OperationLogModel> monthLogs = [];
   bool isLoading = false;
   String? error;
-  void init() {
+  void init() async {
     focusedDay = ValueNotifier(DateTime.now());
     operationsForSelectedDay = ValueNotifier([]);
-    _fetchMonthlyLogs(focusedDay.value);
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await _fetchMonthlyLogs(focusedDay.value);
+      _reFetchEvents();
+    });
   }
 
   Future<void> _fetchMonthlyLogs(DateTime monthDate) async {
@@ -31,7 +36,19 @@ class CalendarProvider extends ChangeNotifier {
   }
 
   Future<void> refresh() async {
-    _fetchMonthlyLogs(focusedDay.value);
+    await _fetchMonthlyLogs(focusedDay.value);
+    _reFetchEvents();
+    notifyListeners();
+  }
+
+  void _reFetchEvents() {
+    final selectedDate = focusedDay.value;
+    final linkHashMap = CalendarUtils.groupEventDates(
+      eventList: monthLogs,
+      dateNormalizer: (val) => val.operationDate,
+    );
+    final operations = linkHashMap[selectedDate] ?? [];
+    operationsForSelectedDay.value = operations;
   }
 
   void onPageChanged(DateTime newMonthDate) {
@@ -46,6 +63,21 @@ class CalendarProvider extends ChangeNotifier {
 
   void setLoading(bool val) {
     isLoading = val;
-    WidgetsBinding.instance.addPostFrameCallback((_) => notifyListeners());
+    notifyListeners();
+  }
+
+  OperationLogModel? viewData;
+  void viewDetails(BuildContext context, {required OperationLogModel data}) {
+    viewData = data;
+    notifyListeners();
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => OperationLogSummaryPage()),
+    );
+  }
+
+  void setViewData({required OperationLogModel data}) {
+    viewData = data;
+    notifyListeners();
   }
 }

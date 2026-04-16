@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:palmx/core/externsions/datetime_extension.dart';
+import 'package:palmx/data/local/models/operation_log_model.dart';
+import 'package:palmx/features/calendar/provider/calendar_provider.dart';
+import 'package:provider/provider.dart';
 import 'operation_log_form_page.dart';
 
 class OperationLogSummaryPage extends StatefulWidget {
@@ -12,12 +16,12 @@ class OperationLogSummaryPage extends StatefulWidget {
 class _OperationLogSummaryPageState extends State<OperationLogSummaryPage> {
   late ScrollController _scrollController;
   bool _showTitle = false;
-
+  OperationLogModel? viewData;
   @override
   void initState() {
     super.initState();
     _scrollController = ScrollController();
-
+    viewData = context.read<CalendarProvider>().viewData;
     // Listen to scroll changes to toggle the AppBar title
     _scrollController.addListener(() {
       if (_scrollController.offset > 120 && !_showTitle) {
@@ -74,7 +78,8 @@ class _OperationLogSummaryPageState extends State<OperationLogSummaryPage> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (_) => const OperationLogFormPage(),
+                        builder: (_) =>
+                            OperationLogFormPage(operationData: viewData!),
                       ),
                     );
                   },
@@ -114,8 +119,8 @@ class _OperationLogSummaryPageState extends State<OperationLogSummaryPage> {
                               color: Color(0xFF1A2B47),
                             ),
                           ),
-                          const Text(
-                            "Ref ID: #OPS-9942-2024",
+                          Text(
+                            "Ref ID:${viewData!.id}",
                             style: TextStyle(
                               color: Colors.blueGrey,
                               fontSize: 14,
@@ -140,24 +145,30 @@ class _OperationLogSummaryPageState extends State<OperationLogSummaryPage> {
                     ),
                     const SizedBox(height: 16),
                     _buildStatementItem(
-                      Icons.inventory_2_outlined,
-                      "Materials & Supplies",
-                      "RM 1,240.00",
+                      Icons.group_outlined,
+                      "Labor",
+                      "RM ${viewData!.labourTotalCost.toStringAsFixed(2)}",
                     ),
                     _buildStatementItem(
-                      Icons.group_outlined,
-                      "Labor (42.5 hrs)",
-                      "RM 850.00",
+                      Icons.inventory_2_outlined,
+                      "Supervision ",
+                      "RM ${viewData!.supervisionTotalCost.toStringAsFixed(2)}",
                     ),
+
                     _buildStatementItem(
                       Icons.handyman_outlined,
-                      "Equipment Rental",
-                      "RM 300.00",
+                      "Driver ",
+                      "RM ${viewData!.driverTotalCost.toStringAsFixed(2)}",
                     ),
                     _buildStatementItem(
                       Icons.local_shipping_outlined,
-                      "Logistics & Transport",
-                      "RM 125.50",
+                      "Material",
+                      "RM ${viewData!.materialTotalCost.toStringAsFixed(2)}",
+                    ),
+                    _buildStatementItem(
+                      Icons.local_shipping_outlined,
+                      "Evit",
+                      "RM ${viewData!.evitTotalCost.toStringAsFixed(2)}",
                     ),
                     const SizedBox(height: 24),
                     _buildTotalCard(),
@@ -183,20 +194,21 @@ class _OperationLogSummaryPageState extends State<OperationLogSummaryPage> {
         border: Border.all(color: Colors.blue.shade50),
       ),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _infoRow("OPERATION AREA", "Zone 4 - Manufacturing Plant"),
+          _infoRow("OPERATION AREA", viewData!.field ?? "-"),
+          // const Divider(height: 30),
+          // _infoRow("LEAD SUPERVISOR", "Sarah Jenkins"),
           const Divider(height: 30),
-          _infoRow("LEAD SUPERVISOR", "Sarah Jenkins"),
-          const Divider(height: 30),
-          _infoRow("COMPLETION DATE", "Oct 24, 2023"),
+          _infoRow("COMPLETION DATE", viewData!.operationDate.previewDate()),
         ],
       ),
     );
   }
 
   Widget _infoRow(String label, String value) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
@@ -209,15 +221,13 @@ class _OperationLogSummaryPageState extends State<OperationLogSummaryPage> {
           ),
         ),
         const SizedBox(width: 20),
-        Expanded(
-          child: Text(
-            value,
-            textAlign: TextAlign.right,
-            style: const TextStyle(
-              color: Color(0xFF1A2B47),
-              fontWeight: FontWeight.bold,
-              fontSize: 14,
-            ),
+        Text(
+          value,
+          textAlign: TextAlign.right,
+          style: const TextStyle(
+            color: Color(0xFF1A2B47),
+            fontWeight: FontWeight.bold,
+            fontSize: 14,
           ),
         ),
       ],
@@ -256,14 +266,14 @@ class _OperationLogSummaryPageState extends State<OperationLogSummaryPage> {
 
   Widget _buildTotalCard() {
     return Container(
+      width: double.infinity,
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
         color: const Color(0xFFFFF4ED),
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: const Color(0xFFFFE5D9)),
       ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      child: Column(
         children: [
           const Text(
             "GRAND TOTAL",
@@ -275,8 +285,11 @@ class _OperationLogSummaryPageState extends State<OperationLogSummaryPage> {
               letterSpacing: 1,
             ),
           ),
-          const Text(
-            "RM 2,515.50",
+          Text(
+            "RM ${viewData!.totalAll.toStringAsFixed(2)}",
+            textAlign: TextAlign.right,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
             style: TextStyle(
               fontSize: 28,
               fontWeight: FontWeight.bold,

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:palmx/features/operation/presentation/operation_log/operation_log_summary_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -170,10 +169,10 @@ class _HomePageState extends State<HomePage>
   ) {
     return ListTile(
       onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (_) => OperationLogSummaryPage()),
-        );
+        // Navigator.push(
+        //   context,
+        //   MaterialPageRoute(builder: (_) => OperationLogSummaryPage()),
+        // );
       },
       contentPadding: EdgeInsets.zero,
       leading: CircleAvatar(

@@ -1,3 +1,5 @@
+import 'dart:developer' as dev;
+
 import 'package:fpdart/fpdart.dart';
 import 'package:injectable/injectable.dart';
 import 'package:palmx/core/error/failure.dart';
@@ -18,6 +20,7 @@ class OperationLocalRepositoryImpl extends OperationRepository {
       final result = await remote.upsert(entry);
       return right(result);
     } catch (e) {
+      dev.log(e.toString());
       return left(Failure('Something went wrong'));
     }
   }
@@ -30,6 +33,7 @@ class OperationLocalRepositoryImpl extends OperationRepository {
       final result = await remote.getByMonth(date);
       return right(result);
     } catch (e) {
+      dev.log(e.toString());
       return left(Failure('Something went wrong'));
     }
   }

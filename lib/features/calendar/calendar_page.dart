@@ -16,11 +16,12 @@ class _CalendarPageState extends State<CalendarPage>
     with AutomaticKeepAliveClientMixin {
   @override
   bool get wantKeepAlive => true;
-
+  late CalendarProvider _providerRead;
   @override
   void initState() {
     super.initState();
-    context.read<CalendarProvider>().init();
+    _providerRead = context.read<CalendarProvider>();
+    _providerRead.init();
   }
 
   @override
@@ -65,21 +66,63 @@ class _CalendarPageState extends State<CalendarPage>
       valueListenable: provider.operationsForSelectedDay,
       builder: (context, value, _) {
         if (value.isEmpty) {
-          return _buildEmptyState();
+          return _buildEmptyState(provider);
         }
-        return ListView.builder(
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          itemCount: value.length,
-          itemBuilder: (context, index) {
-            final log = value[index];
-            return ListTile(
-              leading: const Icon(Icons.agriculture, color: Colors.green),
-              title: Text(log.activityType ?? "-"),
-              subtitle: Text("${log.field} • ${log.hectar} Ha"),
-              trailing: Text("RM ${log.labourRate}"),
-            );
-          },
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 12),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    "Operations",
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  ),
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => OperationLogFormPage(
+                            date: provider.focusedDay.value,
+                          ),
+                        ),
+                      );
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.deepOrange,
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 20,
+                        vertical: 10,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    child: const Text("Add"),
+                  ),
+                ],
+              ),
+            ),
+            ListView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: value.length,
+              itemBuilder: (context, index) {
+                final log = value[index];
+                return ListTile(
+                  onTap: () => _providerRead.viewDetails(context, data: log),
+                  leading: const Icon(Icons.agriculture, color: Colors.green),
+                  title: Text(log.activityType ?? "-"),
+                  subtitle: Text("${log.field} • ${log.hectar} Ha"),
+                  trailing: Text("RM ${log.labourRate}"),
+                );
+              },
+            ),
+          ],
         );
       },
     );
@@ -101,28 +144,46 @@ class _CalendarPageState extends State<CalendarPage>
     );
   }
 
-  Widget _buildEmptyState() {
-    return Column(
-      children: [
-        const Icon(Icons.calendar_today_outlined, size: 50),
-        const SizedBox(height: 16),
-        const Text(
-          "No operations for today",
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-        ),
-        const Text("You haven't recorded any data."),
-        const SizedBox(height: 24),
-        ElevatedButton.icon(
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => OperationLogFormPage()),
-            );
-          },
-          icon: const Icon(Icons.add),
-          label: const Text("Create New Operation"),
-        ),
-      ],
+  Widget _buildEmptyState(CalendarProvider provider) {
+    return ValueListenableBuilder(
+      valueListenable: provider.focusedDay,
+      builder: (context, value, _) {
+        return Column(
+          children: [
+            const Icon(Icons.calendar_today_outlined, size: 50),
+            const SizedBox(height: 16),
+            const Text(
+              "No operations for today",
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            const Text("You haven't recorded any data."),
+            const SizedBox(height: 24),
+            ElevatedButton.icon(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => OperationLogFormPage(date: value),
+                  ),
+                );
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.deepOrange,
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 10,
+                ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+              icon: const Icon(Icons.add),
+              label: const Text("Create New Operation"),
+            ),
+          ],
+        );
+      },
     );
   }
 }
