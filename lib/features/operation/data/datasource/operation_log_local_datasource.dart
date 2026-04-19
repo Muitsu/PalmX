@@ -85,4 +85,72 @@ class OperationLogsLocalDatasource {
   Future<int> deleteAll() async {
     return await _db.delete(_db.operationLogsTable).go();
   }
+
+  /// Returns a real-time Stream of the 4 most recent operation logs.
+  /// Sorted by operationDate descending.
+  Stream<List<OperationLogsTableData>> watchRecentOperations({int limit = 4}) {
+    return (_db.select(_db.operationLogsTable)
+          ..orderBy([
+            (tbl) => OrderingTerm(
+              expression: tbl.operationDate,
+              mode: OrderingMode.desc,
+            ),
+          ])
+          ..limit(limit))
+        .watch();
+  }
+
+  // --- COUNTING ---
+
+  /// Returns a one-time total count of all operation logs.
+  Future<int> getTotalCount() async {
+    final countExp = _db.operationLogsTable.id.count();
+    final query = _db.selectOnly(_db.operationLogsTable)
+      ..addColumns([countExp]);
+
+    return await query.map((row) => row.read(countExp) ?? 0).getSingle();
+  }
+
+  /// Returns a real-time Stream of the total count.
+  /// This will emit a new value every time a row is added or deleted.
+  Stream<int> watchTotalCount() {
+    final countExp = _db.operationLogsTable.id.count();
+    final query = _db.selectOnly(_db.operationLogsTable)
+      ..addColumns([countExp]);
+
+    return query.map((row) => row.read(countExp) ?? 0).watchSingle();
+  }
+
+  Stream<double> watchMonthlyTotalCost(DateTime date) {
+    final firstDay = DateTime(date.year, date.month, 1);
+    final lastDay = DateTime(date.year, date.month + 1, 1);
+
+    final tbl = _db.operationLogsTable;
+
+    // Drift uses the top-level coalesce() function for nullable columns
+    final rowTotal =
+        (
+        // Labour (Non-nullable due to defaults in your table)
+        (tbl.labourRate * tbl.labourQty) +
+        (tbl.labourOtHour * tbl.labourOtRate) +
+        (tbl.labourPieceUnit * tbl.labourPieceRate) +
+        (tbl.labourHarvestUnit * tbl.labourHarvestRate) +
+        // Supervision & Driver (Non-nullable due to defaults)
+        (tbl.supervisionMandays * tbl.supervisionRate) +
+        (tbl.driverTotal * tbl.driverRate) +
+        // Materials (Nullable: wrap with coalesce)
+        (coalesce<int>([tbl.materialQty, const Constant(0)]).cast<double>() *
+            coalesce<double>([tbl.materialLitreRate, const Constant(0.0)])) +
+        // Evit (Nullable: wrap with coalesce)
+        (coalesce<double>([tbl.evitRate, const Constant(0.0)]) *
+            coalesce<double>([tbl.evitTime, const Constant(0.0)])));
+
+    final totalSum = rowTotal.sum();
+
+    final query = _db.selectOnly(tbl)
+      ..addColumns([totalSum])
+      ..where(tbl.operationDate.isBetweenValues(firstDay, lastDay));
+
+    return query.map((row) => row.read(totalSum) ?? 0.0).watchSingle();
+  }
 }

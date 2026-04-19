@@ -1,5 +1,5 @@
 import 'package:palmx/features/calendar/provider/calendar_provider.dart';
-import 'package:palmx/features/home/home_provider.dart';
+import 'package:palmx/features/home/presentations/provider/home_provider.dart';
 import 'package:palmx/features/operation/presentation/provider/operation_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:provider/single_child_widget.dart';

@@ -37,4 +37,16 @@ class OperationLocalRepositoryImpl extends OperationRepository {
       return left(Failure('Something went wrong'));
     }
   }
+
+  @override
+  Stream<List<OperationLogsTableData>> streamRecent({int limit = 4}) {
+    return remote.watchRecentOperations(limit: limit);
+  }
+
+  @override
+  Stream<int> streamCount() => remote.watchTotalCount();
+
+  @override
+  Stream<double> streamMonthlyTotalCost({required DateTime date}) =>
+      remote.watchMonthlyTotalCost(date);
 }

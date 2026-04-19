@@ -9,4 +9,7 @@ abstract class OperationRepository {
   Future<Either<Failure, List<OperationLogsTableData>>> getByMonth(
     DateTime date,
   );
+  Stream<List<OperationLogsTableData>> streamRecent({int limit = 4});
+  Stream<int> streamCount();
+  Stream<double> streamMonthlyTotalCost({required DateTime date});
 }
