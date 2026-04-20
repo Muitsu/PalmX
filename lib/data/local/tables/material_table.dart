@@ -7,4 +7,4 @@ class MaterialTable extends Table {
   TextColumn get materialFormat => textEnum<MaterialFormat>()();
 }
 
-enum MaterialFormat { litre, kg }
+enum MaterialFormat { litre, kg, box, bag }

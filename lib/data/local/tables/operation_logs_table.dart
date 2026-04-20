@@ -7,6 +7,7 @@ class OperationLogsTable extends Table {
   TextColumn get activityType => text().nullable()();
   TextColumn get field => text().nullable()();
   RealColumn get hectar => real().nullable()();
+  RealColumn get mt => real().nullable()();
   RealColumn get hectarToDate => real().nullable()();
   RealColumn get mandays => real().nullable()();
   TextColumn get remarks => text().nullable()();

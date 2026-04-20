@@ -50,7 +50,11 @@ class _FieldFormPageState extends State<FieldFormPage> {
     bool isEdit = widget.record != null;
 
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
+        elevation: 0,
+        scrolledUnderElevation: 0,
+        backgroundColor: Colors.white,
         title: Text(isEdit ? "Edit Field" : "Add Field"),
         actions: [
           if (isEdit)

@@ -26,6 +26,9 @@ class OperationProvider extends ChangeNotifier {
   late TextEditingController acitivityCtrl;
   late TextEditingController fieldCtrl;
   late TextEditingController haTodayCtrl;
+  late TextEditingController haAvrgCtrl;
+  late TextEditingController mtTodayCtrl;
+  late TextEditingController mtAvrgCtrl;
   late TextEditingController mandaysCtrl;
   late TextEditingController remarksCtrl;
   final formKey = GlobalKey<FormState>();
@@ -39,14 +42,59 @@ class OperationProvider extends ChangeNotifier {
 
     acitivityCtrl = TextEditingController(text: operationData?.activityType);
     fieldCtrl = TextEditingController(text: operationData?.field);
-    haTodayCtrl = TextEditingController(
-      text: operationData?.hectar?.toString(),
-    );
+    //Mandays
     mandaysCtrl = TextEditingController(
-      text: operationData?.mandays?.toString(),
+      text: operationData?.mandays?.toString() ?? '0',
     );
+    //HA Today
+    haTodayCtrl = TextEditingController(
+      text: operationData?.hectar?.toString() ?? '0',
+    );
+    haAvrgCtrl = TextEditingController(text: _calcHaAvrg());
+    //HA Today Avrg = HA Today / Mandays
+    haTodayCtrl.addListener(() {
+      haAvrgCtrl.text = _calcHaAvrg();
+      notifyListeners();
+    });
+    //MT Today
+    mtTodayCtrl = TextEditingController(
+      text: operationData?.mt?.toString() ?? '0',
+    );
+    mtAvrgCtrl = TextEditingController(text: _calcMtAvrg());
+    //Mt Today Avrg = Mt Today / Mandays
+    mtTodayCtrl.addListener(() {
+      mtAvrgCtrl.text = _calcMtAvrg();
+      notifyListeners();
+    });
+
     remarksCtrl = TextEditingController(text: operationData?.remarks);
+
     WidgetsBinding.instance.addPostFrameCallback((_) => notifyListeners());
+  }
+
+  String _calcHaAvrg() {
+    final ha = _stringToDouble(haTodayCtrl.text);
+    final man = _stringToDouble(mandaysCtrl.text);
+    return _safeDivide(ha, man);
+  }
+
+  String _calcMtAvrg() {
+    final mt = _stringToDouble(mtTodayCtrl.text);
+    final man = _stringToDouble(mandaysCtrl.text);
+    return _safeDivide(mt, man);
+  }
+
+  String _safeDivide(double numerator, double denominator) {
+    if (denominator == 0) return "0"; // Quick exit for divide by zero
+
+    final result = numerator / denominator;
+
+    // Check if the result is invalid (NaN or Infinity)
+    if (result.isNaN || result.isInfinite) {
+      return "0";
+    }
+
+    return result.toString();
   }
 
   void clear() {
@@ -57,6 +105,9 @@ class OperationProvider extends ChangeNotifier {
     acitivityCtrl.dispose();
     fieldCtrl.dispose();
     haTodayCtrl.dispose();
+    haAvrgCtrl.dispose();
+    mtTodayCtrl.dispose();
+    mtAvrgCtrl.dispose();
     mandaysCtrl.dispose();
     remarksCtrl.dispose();
   }
@@ -168,13 +219,14 @@ class OperationProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  double _stringToDouble(String val) => double.tryParse(val) ?? 0.0;
+  double _stringToDouble(String val) => double.tryParse(val) ?? 0.00;
   Future<bool> submit(BuildContext context) async {
     if (!formKey.currentState!.validate()) {
       return false;
     }
     _currentOperation = _currentOperation!.copyData(
       hectar: _stringToDouble(haTodayCtrl.text),
+      mt: _stringToDouble(mtTodayCtrl.text),
       mandays: _stringToDouble(mandaysCtrl.text),
       remarks: remarksCtrl.text,
     );

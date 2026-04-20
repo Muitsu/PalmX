@@ -61,7 +61,11 @@ class _MaterialFormPageState extends State<MaterialFormPage> {
     bool isEdit = widget.record != null;
 
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
+        elevation: 0,
+        scrolledUnderElevation: 0,
+        backgroundColor: Colors.white,
         title: Text(isEdit ? "Edit Material" : "Add Material"),
         actions: [
           if (isEdit)

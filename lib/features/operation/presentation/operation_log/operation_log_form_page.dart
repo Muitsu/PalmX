@@ -134,41 +134,94 @@ class _OperationLogFormPageState extends State<OperationLogFormPage> {
                   },
                 ),
                 const SizedBox(height: 10),
-                Row(
-                  children: [
-                    Expanded(
-                      child: buildTextField(
-                        ctrl: _operationProvider.haTodayCtrl,
-                        prefixWidget: Icon(Icons.architecture_outlined),
-                        label: "Ha today",
-                        hint: "0.00",
-                        validator: (val) => val == null || val.isEmpty
-                            ? "Please choose ha today"
-                            : null,
-                        keyboardType: TextInputType.number,
-                        inputFormatters: [
-                          FilteringTextInputFormatter.digitsOnly,
-                          CurrencyInputFormatter(),
-                        ],
+                buildTextField(
+                  ctrl: _operationProvider.mandaysCtrl,
+                  prefixWidget: Icon(Icons.group_outlined),
+                  label: "Mandays",
+                  hint: "0",
+                  validator: (val) => val == null || val.isEmpty
+                      ? "Please choose mandays"
+                      : null,
+                  keyboardType: TextInputType.number,
+                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                ),
+                const SizedBox(height: 16),
+                Container(
+                  padding: EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: Colors.black12),
+                  ),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: buildTextField(
+                          ctrl: _operationProvider.haTodayCtrl,
+                          prefixWidget: Icon(Icons.architecture_outlined),
+                          label: "Ha today",
+                          hint: "0.00",
+                          validator: (val) => val == null || val.isEmpty
+                              ? "Please choose ha today"
+                              : null,
+                          keyboardType: TextInputType.number,
+                          inputFormatters: [
+                            FilteringTextInputFormatter.digitsOnly,
+                            CurrencyInputFormatter(),
+                          ],
+                        ),
                       ),
-                    ),
-                    const SizedBox(width: 15),
-                    Expanded(
-                      child: buildTextField(
-                        ctrl: _operationProvider.mandaysCtrl,
-                        prefixWidget: Icon(Icons.group_outlined),
-                        label: "Mandays",
-                        hint: "0",
-                        validator: (val) => val == null || val.isEmpty
-                            ? "Please choose mandays"
-                            : null,
-                        keyboardType: TextInputType.number,
-                        inputFormatters: [
-                          FilteringTextInputFormatter.digitsOnly,
-                        ],
+                      const SizedBox(width: 15),
+                      Expanded(
+                        child: buildTextField(
+                          ctrl: _operationProvider.haAvrgCtrl,
+                          prefixWidget: Icon(Icons.percent),
+                          label: "Avrg Hectar",
+                          hint: "0",
+                          readOnly: true,
+                          keyboardType: TextInputType.number,
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Container(
+                  padding: EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: Colors.black12),
+                  ),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: buildTextField(
+                          ctrl: _operationProvider.mtTodayCtrl,
+                          prefixWidget: Icon(Icons.architecture_outlined),
+                          label: "Mt today",
+                          hint: "0.00",
+                          validator: (val) => val == null || val.isEmpty
+                              ? "Please choose ha today"
+                              : null,
+                          keyboardType: TextInputType.number,
+                          inputFormatters: [
+                            FilteringTextInputFormatter.digitsOnly,
+                            CurrencyInputFormatter(),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(width: 15),
+                      Expanded(
+                        child: buildTextField(
+                          ctrl: _operationProvider.mtAvrgCtrl,
+                          prefixWidget: Icon(Icons.percent),
+                          label: "Avrg Mt",
+                          hint: "0",
+                          readOnly: true,
+                          keyboardType: TextInputType.number,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
                 const SizedBox(height: 10),
                 buildTextField(
@@ -375,11 +428,12 @@ class _OperationLogFormPageState extends State<OperationLogFormPage> {
 
   Widget _buildMetricCards() {
     return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      mainAxisAlignment: MainAxisAlignment.start,
       children: [
         _metricCard("COST / HA", "RM 473"),
+        SizedBox(width: 16),
         _metricCard("COST / MT", "RM 15.2"),
-        _metricCard("COST / PALM", "RM 3.40"),
+        // _metricCard("COST / PALM", "RM 3.40"),
       ],
     );
   }

@@ -11,9 +11,8 @@ class SettingPage extends StatefulWidget {
 
 class _SettingPageState extends State<SettingPage> {
   // Your user data state variables
-  String userFullName = "Ahmad Muizzuddin";
-  String userEmail = "ahmad@example.com";
-  String userPhone = "+60123456789";
+  String userFullName = "Asnawi";
+  String userEmail = "asnawi@gmail.com";
 
   // Reusable function to handle navigation to the edit screen
   void _editField(
@@ -121,19 +120,14 @@ class _SettingPageState extends State<SettingPage> {
 
             // Reusable editable ListTiles (This is where your logic is integrated)
             _buildEditableInfoTile(
-              "FullName",
+              "Import Data",
               userFullName,
               (val) => setState(() => userFullName = val),
             ),
             _buildEditableInfoTile(
-              "Email",
+              "Export Data",
               userEmail,
               (val) => setState(() => userEmail = val),
-            ),
-            _buildEditableInfoTile(
-              "Phone",
-              userPhone,
-              (val) => setState(() => userPhone = val),
             ),
 
             const SizedBox(height: kToolbarHeight + 20),

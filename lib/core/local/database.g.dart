@@ -63,6 +63,15 @@ class $OperationLogsTableTable extends OperationLogsTable
     type: DriftSqlType.double,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _mtMeta = const VerificationMeta('mt');
+  @override
+  late final GeneratedColumn<double> mt = GeneratedColumn<double>(
+    'mt',
+    aliasedName,
+    true,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+  );
   static const VerificationMeta _hectarToDateMeta = const VerificationMeta(
     'hectarToDate',
   );
@@ -307,6 +316,7 @@ class $OperationLogsTableTable extends OperationLogsTable
     activityType,
     field,
     hectar,
+    mt,
     hectarToDate,
     mandays,
     remarks,
@@ -374,6 +384,9 @@ class $OperationLogsTableTable extends OperationLogsTable
         _hectarMeta,
         hectar.isAcceptableOrUnknown(data['hectar']!, _hectarMeta),
       );
+    }
+    if (data.containsKey('mt')) {
+      context.handle(_mtMeta, mt.isAcceptableOrUnknown(data['mt']!, _mtMeta));
     }
     if (data.containsKey('hectar_to_date')) {
       context.handle(
@@ -563,6 +576,10 @@ class $OperationLogsTableTable extends OperationLogsTable
         DriftSqlType.double,
         data['${effectivePrefix}hectar'],
       ),
+      mt: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}mt'],
+      ),
       hectarToDate: attachedDatabase.typeMapping.read(
         DriftSqlType.double,
         data['${effectivePrefix}hectar_to_date'],
@@ -659,6 +676,7 @@ class OperationLogsTableData extends DataClass
   final String? activityType;
   final String? field;
   final double? hectar;
+  final double? mt;
   final double? hectarToDate;
   final double? mandays;
   final String? remarks;
@@ -685,6 +703,7 @@ class OperationLogsTableData extends DataClass
     this.activityType,
     this.field,
     this.hectar,
+    this.mt,
     this.hectarToDate,
     this.mandays,
     this.remarks,
@@ -719,6 +738,9 @@ class OperationLogsTableData extends DataClass
     }
     if (!nullToAbsent || hectar != null) {
       map['hectar'] = Variable<double>(hectar);
+    }
+    if (!nullToAbsent || mt != null) {
+      map['mt'] = Variable<double>(mt);
     }
     if (!nullToAbsent || hectarToDate != null) {
       map['hectar_to_date'] = Variable<double>(hectarToDate);
@@ -772,6 +794,7 @@ class OperationLogsTableData extends DataClass
       hectar: hectar == null && nullToAbsent
           ? const Value.absent()
           : Value(hectar),
+      mt: mt == null && nullToAbsent ? const Value.absent() : Value(mt),
       hectarToDate: hectarToDate == null && nullToAbsent
           ? const Value.absent()
           : Value(hectarToDate),
@@ -822,6 +845,7 @@ class OperationLogsTableData extends DataClass
       activityType: serializer.fromJson<String?>(json['activityType']),
       field: serializer.fromJson<String?>(json['field']),
       hectar: serializer.fromJson<double?>(json['hectar']),
+      mt: serializer.fromJson<double?>(json['mt']),
       hectarToDate: serializer.fromJson<double?>(json['hectarToDate']),
       mandays: serializer.fromJson<double?>(json['mandays']),
       remarks: serializer.fromJson<String?>(json['remarks']),
@@ -857,6 +881,7 @@ class OperationLogsTableData extends DataClass
       'activityType': serializer.toJson<String?>(activityType),
       'field': serializer.toJson<String?>(field),
       'hectar': serializer.toJson<double?>(hectar),
+      'mt': serializer.toJson<double?>(mt),
       'hectarToDate': serializer.toJson<double?>(hectarToDate),
       'mandays': serializer.toJson<double?>(mandays),
       'remarks': serializer.toJson<String?>(remarks),
@@ -886,6 +911,7 @@ class OperationLogsTableData extends DataClass
     Value<String?> activityType = const Value.absent(),
     Value<String?> field = const Value.absent(),
     Value<double?> hectar = const Value.absent(),
+    Value<double?> mt = const Value.absent(),
     Value<double?> hectarToDate = const Value.absent(),
     Value<double?> mandays = const Value.absent(),
     Value<String?> remarks = const Value.absent(),
@@ -912,6 +938,7 @@ class OperationLogsTableData extends DataClass
     activityType: activityType.present ? activityType.value : this.activityType,
     field: field.present ? field.value : this.field,
     hectar: hectar.present ? hectar.value : this.hectar,
+    mt: mt.present ? mt.value : this.mt,
     hectarToDate: hectarToDate.present ? hectarToDate.value : this.hectarToDate,
     mandays: mandays.present ? mandays.value : this.mandays,
     remarks: remarks.present ? remarks.value : this.remarks,
@@ -946,6 +973,7 @@ class OperationLogsTableData extends DataClass
           : this.activityType,
       field: data.field.present ? data.field.value : this.field,
       hectar: data.hectar.present ? data.hectar.value : this.hectar,
+      mt: data.mt.present ? data.mt.value : this.mt,
       hectarToDate: data.hectarToDate.present
           ? data.hectarToDate.value
           : this.hectarToDate,
@@ -1007,6 +1035,7 @@ class OperationLogsTableData extends DataClass
           ..write('activityType: $activityType, ')
           ..write('field: $field, ')
           ..write('hectar: $hectar, ')
+          ..write('mt: $mt, ')
           ..write('hectarToDate: $hectarToDate, ')
           ..write('mandays: $mandays, ')
           ..write('remarks: $remarks, ')
@@ -1038,6 +1067,7 @@ class OperationLogsTableData extends DataClass
     activityType,
     field,
     hectar,
+    mt,
     hectarToDate,
     mandays,
     remarks,
@@ -1068,6 +1098,7 @@ class OperationLogsTableData extends DataClass
           other.activityType == this.activityType &&
           other.field == this.field &&
           other.hectar == this.hectar &&
+          other.mt == this.mt &&
           other.hectarToDate == this.hectarToDate &&
           other.mandays == this.mandays &&
           other.remarks == this.remarks &&
@@ -1097,6 +1128,7 @@ class OperationLogsTableCompanion
   final Value<String?> activityType;
   final Value<String?> field;
   final Value<double?> hectar;
+  final Value<double?> mt;
   final Value<double?> hectarToDate;
   final Value<double?> mandays;
   final Value<String?> remarks;
@@ -1123,6 +1155,7 @@ class OperationLogsTableCompanion
     this.activityType = const Value.absent(),
     this.field = const Value.absent(),
     this.hectar = const Value.absent(),
+    this.mt = const Value.absent(),
     this.hectarToDate = const Value.absent(),
     this.mandays = const Value.absent(),
     this.remarks = const Value.absent(),
@@ -1150,6 +1183,7 @@ class OperationLogsTableCompanion
     this.activityType = const Value.absent(),
     this.field = const Value.absent(),
     this.hectar = const Value.absent(),
+    this.mt = const Value.absent(),
     this.hectarToDate = const Value.absent(),
     this.mandays = const Value.absent(),
     this.remarks = const Value.absent(),
@@ -1177,6 +1211,7 @@ class OperationLogsTableCompanion
     Expression<String>? activityType,
     Expression<String>? field,
     Expression<double>? hectar,
+    Expression<double>? mt,
     Expression<double>? hectarToDate,
     Expression<double>? mandays,
     Expression<String>? remarks,
@@ -1204,6 +1239,7 @@ class OperationLogsTableCompanion
       if (activityType != null) 'activity_type': activityType,
       if (field != null) 'field': field,
       if (hectar != null) 'hectar': hectar,
+      if (mt != null) 'mt': mt,
       if (hectarToDate != null) 'hectar_to_date': hectarToDate,
       if (mandays != null) 'mandays': mandays,
       if (remarks != null) 'remarks': remarks,
@@ -1233,6 +1269,7 @@ class OperationLogsTableCompanion
     Value<String?>? activityType,
     Value<String?>? field,
     Value<double?>? hectar,
+    Value<double?>? mt,
     Value<double?>? hectarToDate,
     Value<double?>? mandays,
     Value<String?>? remarks,
@@ -1260,6 +1297,7 @@ class OperationLogsTableCompanion
       activityType: activityType ?? this.activityType,
       field: field ?? this.field,
       hectar: hectar ?? this.hectar,
+      mt: mt ?? this.mt,
       hectarToDate: hectarToDate ?? this.hectarToDate,
       mandays: mandays ?? this.mandays,
       remarks: remarks ?? this.remarks,
@@ -1300,6 +1338,9 @@ class OperationLogsTableCompanion
     }
     if (hectar.present) {
       map['hectar'] = Variable<double>(hectar.value);
+    }
+    if (mt.present) {
+      map['mt'] = Variable<double>(mt.value);
     }
     if (hectarToDate.present) {
       map['hectar_to_date'] = Variable<double>(hectarToDate.value);
@@ -1372,6 +1413,7 @@ class OperationLogsTableCompanion
           ..write('activityType: $activityType, ')
           ..write('field: $field, ')
           ..write('hectar: $hectar, ')
+          ..write('mt: $mt, ')
           ..write('hectarToDate: $hectarToDate, ')
           ..write('mandays: $mandays, ')
           ..write('remarks: $remarks, ')
@@ -2181,6 +2223,7 @@ typedef $$OperationLogsTableTableCreateCompanionBuilder =
       Value<String?> activityType,
       Value<String?> field,
       Value<double?> hectar,
+      Value<double?> mt,
       Value<double?> hectarToDate,
       Value<double?> mandays,
       Value<String?> remarks,
@@ -2209,6 +2252,7 @@ typedef $$OperationLogsTableTableUpdateCompanionBuilder =
       Value<String?> activityType,
       Value<String?> field,
       Value<double?> hectar,
+      Value<double?> mt,
       Value<double?> hectarToDate,
       Value<double?> mandays,
       Value<String?> remarks,
@@ -2262,6 +2306,11 @@ class $$OperationLogsTableTableFilterComposer
 
   ColumnFilters<double> get hectar => $composableBuilder(
     column: $table.hectar,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get mt => $composableBuilder(
+    column: $table.mt,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -2400,6 +2449,11 @@ class $$OperationLogsTableTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<double> get mt => $composableBuilder(
+    column: $table.mt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<double> get hectarToDate => $composableBuilder(
     column: $table.hectarToDate,
     builder: (column) => ColumnOrderings(column),
@@ -2528,6 +2582,9 @@ class $$OperationLogsTableTableAnnotationComposer
 
   GeneratedColumn<double> get hectar =>
       $composableBuilder(column: $table.hectar, builder: (column) => column);
+
+  GeneratedColumn<double> get mt =>
+      $composableBuilder(column: $table.mt, builder: (column) => column);
 
   GeneratedColumn<double> get hectarToDate => $composableBuilder(
     column: $table.hectarToDate,
@@ -2665,6 +2722,7 @@ class $$OperationLogsTableTableTableManager
                 Value<String?> activityType = const Value.absent(),
                 Value<String?> field = const Value.absent(),
                 Value<double?> hectar = const Value.absent(),
+                Value<double?> mt = const Value.absent(),
                 Value<double?> hectarToDate = const Value.absent(),
                 Value<double?> mandays = const Value.absent(),
                 Value<String?> remarks = const Value.absent(),
@@ -2691,6 +2749,7 @@ class $$OperationLogsTableTableTableManager
                 activityType: activityType,
                 field: field,
                 hectar: hectar,
+                mt: mt,
                 hectarToDate: hectarToDate,
                 mandays: mandays,
                 remarks: remarks,
@@ -2719,6 +2778,7 @@ class $$OperationLogsTableTableTableManager
                 Value<String?> activityType = const Value.absent(),
                 Value<String?> field = const Value.absent(),
                 Value<double?> hectar = const Value.absent(),
+                Value<double?> mt = const Value.absent(),
                 Value<double?> hectarToDate = const Value.absent(),
                 Value<double?> mandays = const Value.absent(),
                 Value<String?> remarks = const Value.absent(),
@@ -2745,6 +2805,7 @@ class $$OperationLogsTableTableTableManager
                 activityType: activityType,
                 field: field,
                 hectar: hectar,
+                mt: mt,
                 hectarToDate: hectarToDate,
                 mandays: mandays,
                 remarks: remarks,

@@ -54,7 +54,11 @@ class _ActivityFormPageState extends State<ActivityFormPage> {
     bool isEdit = widget.record != null;
 
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
+        elevation: 0,
+        scrolledUnderElevation: 0,
+        backgroundColor: Colors.white,
         title: Text(isEdit ? "Edit Activity" : "Add Activity"),
         actions: [
           if (isEdit)
