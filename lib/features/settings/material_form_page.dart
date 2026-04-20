@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:palmx/core/widgets/input_formatter/currency_input_formatter.dart';
 import 'package:palmx/data/local/datasource/material_local_datasource.dart';
 import 'package:palmx/data/local/models/material_model.dart';
 import 'package:palmx/data/local/tables/material_table.dart';
@@ -24,7 +26,7 @@ class _MaterialFormPageState extends State<MaterialFormPage> {
     // Initialize with existing data or defaults
     _nameController = TextEditingController(text: widget.record?.name ?? "");
     _priceController = TextEditingController(
-      text: widget.record?.price.toString() ?? "",
+      text: widget.record?.price.toString() ?? "0.00",
     );
     _selectedFormat = widget.record?.materialFormat ?? MaterialFormat.kg;
   }
@@ -82,6 +84,20 @@ class _MaterialFormPageState extends State<MaterialFormPage> {
                 border: OutlineInputBorder(),
               ),
               validator: (value) => value!.isEmpty ? "Enter a name" : null,
+            ),
+            const SizedBox(height: 20),
+            TextFormField(
+              controller: _priceController,
+              decoration: const InputDecoration(
+                labelText: "Price",
+                border: OutlineInputBorder(),
+              ),
+              keyboardType: TextInputType.number,
+              inputFormatters: [
+                FilteringTextInputFormatter.digitsOnly,
+                CurrencyInputFormatter(),
+              ],
+              validator: (value) => value!.isEmpty ? "Enter a price" : null,
             ),
             const SizedBox(height: 20),
 
