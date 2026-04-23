@@ -1,6 +1,7 @@
 // main.dart or profile_screen.dart
 import 'package:flutter/material.dart';
-import 'package:palmx/features/settings/edit_field_page.dart';
+import 'package:palmx/features/settings/provider/setting_provider.dart';
+import 'package:provider/provider.dart';
 
 class SettingPage extends StatefulWidget {
   const SettingPage({super.key});
@@ -13,23 +14,12 @@ class _SettingPageState extends State<SettingPage> {
   // Your user data state variables
   String userFullName = "Asnawi";
   String userEmail = "asnawi@gmail.com";
+  late SettingProvider _settingProvider;
 
-  // Reusable function to handle navigation to the edit screen
-  void _editField(
-    String title,
-    String currentValue,
-    Function(String) onUpdate,
-  ) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => EditFieldPage(
-          title: title,
-          initialValue: currentValue,
-          onSave: onUpdate,
-        ),
-      ),
-    );
+  @override
+  void initState() {
+    super.initState();
+    _settingProvider = context.read<SettingProvider>();
   }
 
   @override
@@ -37,7 +27,7 @@ class _SettingPageState extends State<SettingPage> {
     // Theme colors (adjust as needed for closer match)
     const primaryTextColor = Colors.black;
     const secondaryTextColor = Colors.grey;
-    const accentColor = Colors.orangeAccent;
+    // const accentColor = Colors.orangeAccent;
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -63,26 +53,26 @@ class _SettingPageState extends State<SettingPage> {
                       backgroundColor: Colors.orange[800],
                       child: Icon(Icons.person, size: 50, color: Colors.white),
                     ),
-                    Positioned(
-                      bottom: -5,
-                      right: -5,
-                      child: Container(
-                        padding: const EdgeInsets.all(3),
-                        decoration: const BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: Colors.white,
-                        ),
-                        child: CircleAvatar(
-                          radius: 12,
-                          backgroundColor: Colors.white.withValues(alpha: 0.8),
-                          child: const Icon(
-                            Icons.edit_outlined,
-                            size: 16,
-                            color: accentColor,
-                          ),
-                        ),
-                      ),
-                    ),
+                    // Positioned(
+                    //   bottom: -5,
+                    //   right: -5,
+                    //   child: Container(
+                    //     padding: const EdgeInsets.all(3),
+                    //     decoration: const BoxDecoration(
+                    //       shape: BoxShape.circle,
+                    //       color: Colors.white,
+                    //     ),
+                    //     child: CircleAvatar(
+                    //       radius: 12,
+                    //       backgroundColor: Colors.white.withValues(alpha: 0.8),
+                    //       child: const Icon(
+                    //         Icons.edit_outlined,
+                    //         size: 16,
+                    //         color: accentColor,
+                    //       ),
+                    //     ),
+                    //   ),
+                    // ),
                   ],
                 ),
                 const SizedBox(height: 10),
@@ -119,15 +109,17 @@ class _SettingPageState extends State<SettingPage> {
             const SizedBox(height: 10),
 
             // Reusable editable ListTiles (This is where your logic is integrated)
-            _buildEditableInfoTile(
-              "Import Data",
-              userFullName,
-              (val) => setState(() => userFullName = val),
+            _buildInfoTile(
+              label: "Import Data",
+              icon: Icons.file_download,
+              value: "Import your database from a file",
+              onTap: () => _settingProvider.importDatabase(context),
             ),
-            _buildEditableInfoTile(
-              "Export Data",
-              userEmail,
-              (val) => setState(() => userEmail = val),
+            _buildInfoTile(
+              label: "Export Data",
+              icon: Icons.file_upload,
+              value: "Export your database to a file",
+              onTap: () => _settingProvider.exportDatabase(context),
             ),
 
             const SizedBox(height: kToolbarHeight + 20),
@@ -139,13 +131,16 @@ class _SettingPageState extends State<SettingPage> {
 
   // Helper method for regular non-editable info tiles (for context and the "linked accounts" part)
   Widget _buildInfoTile({
+    required IconData? icon,
     required String label,
     required String value,
-    required Function() onTap,
+    required void Function() onTap,
   }) {
     return ListTile(
       onTap: onTap,
-      leading: Icon(Icons.person, color: Colors.grey[400]),
+      contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      leading: Icon(icon, color: Colors.grey[400]),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       title: Text(label, style: const TextStyle(fontWeight: FontWeight.w500)),
       subtitle: Text(value, style: const TextStyle(color: Colors.grey)),
       trailing: Icon(
@@ -153,19 +148,6 @@ class _SettingPageState extends State<SettingPage> {
         size: 16,
         color: Colors.grey[400],
       ),
-    );
-  }
-
-  // Reusable method for editable info tiles - integrates with _editField
-  Widget _buildEditableInfoTile(
-    String label,
-    String value,
-    Function(String) onUpdate,
-  ) {
-    return _buildInfoTile(
-      label: label,
-      value: value,
-      onTap: () => _editField(label, value, onUpdate),
     );
   }
 }

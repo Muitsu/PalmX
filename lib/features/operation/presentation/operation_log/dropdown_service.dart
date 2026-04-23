@@ -6,9 +6,9 @@ import 'package:palmx/data/local/datasource/material_local_datasource.dart';
 import 'package:palmx/data/local/models/activity_model.dart';
 import 'package:palmx/data/local/models/field_model.dart';
 import 'package:palmx/data/local/models/material_model.dart';
-import 'package:palmx/features/settings/activity_form_page.dart';
-import 'package:palmx/features/settings/field_form_page.dart';
-import 'package:palmx/features/settings/material_form_page.dart';
+import 'package:palmx/features/settings/dropdown-form/activity_form_page.dart';
+import 'package:palmx/features/settings/dropdown-form/field_form_page.dart';
+import 'package:palmx/features/settings/dropdown-form/material_form_page.dart';
 
 class DropdownService {
   // MARK: Activity Dropdown

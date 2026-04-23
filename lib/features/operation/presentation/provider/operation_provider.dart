@@ -46,6 +46,11 @@ class OperationProvider extends ChangeNotifier {
     mandaysCtrl = TextEditingController(
       text: operationData?.mandays?.toString() ?? '0',
     );
+    mandaysCtrl.addListener(() {
+      haAvrgCtrl.text = _calcHaAvrg();
+      mtAvrgCtrl.text = _calcMtAvrg();
+      notifyListeners();
+    });
     //HA Today
     haTodayCtrl = TextEditingController(
       text: operationData?.hectar?.toString() ?? '0',
