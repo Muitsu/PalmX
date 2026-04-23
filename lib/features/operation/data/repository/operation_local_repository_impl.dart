@@ -49,4 +49,8 @@ class OperationLocalRepositoryImpl extends OperationRepository {
   @override
   Stream<double> streamMonthlyTotalCost({required DateTime date}) =>
       remote.watchMonthlyTotalCost(date);
+
+  @override
+  Stream<double> watchDifferencePercentage({required DateTime date}) =>
+      remote.watchDifferencePercentage(date);
 }

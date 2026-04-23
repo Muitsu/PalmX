@@ -119,13 +119,10 @@ class _HomePageState extends State<HomePage>
   // Modified to take the Drift Data object
   Widget _operationItem(OperationLogsTableData log) {
     final dateStr = DateFormat('MMM dd, yyyy').format(log.operationDate);
-
+    final data = OperationLogModel.fromDrift(log);
     return ListTile(
       onTap: () {
-        _calendarProvider.viewDetails(
-          context,
-          data: OperationLogModel.fromDrift(log),
-        );
+        _calendarProvider.viewDetails(context, data: data);
       },
       contentPadding: EdgeInsets.zero,
       leading: CircleAvatar(
@@ -133,16 +130,17 @@ class _HomePageState extends State<HomePage>
         child: const Icon(Icons.opacity, color: Colors.orange),
       ),
       title: Text(
-        "${log.activityType} - ${log.field ?? 'No Field'}",
+        "${data.activityType} - ${data.field ?? 'No Field'}",
         style: const TextStyle(fontWeight: FontWeight.bold),
       ),
-      subtitle: Text("$dateStr • ${log.remarks ?? 'No remarks'}"),
+      subtitle: Text("$dateStr • ${data.remarks ?? 'No remarks'}"),
       trailing: Column(
         crossAxisAlignment: CrossAxisAlignment.end,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Text(
-            "RM ${log.labourRate.toStringAsFixed(2)}",
+            //costPerPalm
+            "RM ${data.costPerPalm.toStringAsFixed(2)}",
             style: const TextStyle(fontWeight: FontWeight.bold),
           ),
           const Text(
@@ -204,12 +202,32 @@ class _HomePageState extends State<HomePage>
                     ),
                   ),
                   const SizedBox(width: 8),
-                  Text(
-                    "↗5.2%", // You can make this dynamic later if needed
-                    style: TextStyle(
-                      color: Colors.orange[800],
-                      fontWeight: FontWeight.bold,
-                    ),
+                  StreamBuilder<double>(
+                    stream: _homeProvider.streamMonthlyPercentage(),
+                    builder: (context, snapshot) {
+                      // Default to 0.0 while loading or if no data exists
+                      final percentage = snapshot.data ?? 0.0;
+
+                      // Determine direction and styling
+                      final bool isIncrease = percentage > 0;
+                      final bool isDecrease = percentage < 0;
+
+                      // Select Icon: ↗ for up, ↘ for down, or just text if exactly 0
+                      String arrow = "";
+                      if (isIncrease) arrow = "↗";
+                      if (isDecrease) arrow = "↘";
+
+                      return Text(
+                        "$arrow${percentage.abs()}%",
+                        style: TextStyle(
+                          // Orange/Red for increase, Green for decrease, Grey for no change
+                          color: isIncrease
+                              ? Colors.orange[800]
+                              : (isDecrease ? Colors.green[700] : Colors.grey),
+                          fontWeight: FontWeight.bold,
+                        ),
+                      );
+                    },
                   ),
                 ],
               ),

@@ -427,13 +427,17 @@ class _OperationLogFormPageState extends State<OperationLogFormPage> {
   }
 
   Widget _buildMetricCards() {
+    final pWatch = context.watch<OperationProvider>();
+    final data = pWatch.currentOperation;
     return Row(
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
-        _metricCard("COST / HA", "RM 473"),
+        _metricCard(
+          "COST / HA",
+          "RM ${data?.costPerHectar.toStringAsFixed(2)}",
+        ),
         SizedBox(width: 16),
-        _metricCard("COST / MT", "RM 15.2"),
-        // _metricCard("COST / PALM", "RM 3.40"),
+        _metricCard("COST / MT", "RM ${data?.costPerMt.toStringAsFixed(2)}"),
       ],
     );
   }

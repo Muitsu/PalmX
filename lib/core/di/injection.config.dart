@@ -17,6 +17,8 @@ import 'package:palmx/data/local/services/database_backup_service.dart'
     as _i954;
 import 'package:palmx/features/calendar/provider/calendar_provider.dart'
     as _i209;
+import 'package:palmx/features/home/domain/usecase/stream_monthly_percentage.dart'
+    as _i869;
 import 'package:palmx/features/home/domain/usecase/stream_monthly_total_cost.dart'
     as _i365;
 import 'package:palmx/features/home/domain/usecase/stream_recent.dart' as _i6;
@@ -62,6 +64,9 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i308.SettingProvider>(
       () => _i308.SettingProvider(gh<_i954.DatabaseBackupService>()),
     );
+    gh.lazySingleton<_i869.StreamMonthlyPercentage>(
+      () => _i869.StreamMonthlyPercentage(gh<_i649.OperationRepository>()),
+    );
     gh.lazySingleton<_i365.StreamMonthlyTotalCost>(
       () => _i365.StreamMonthlyTotalCost(gh<_i649.OperationRepository>()),
     );
@@ -88,6 +93,7 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i6.StreamRecent>(),
         gh<_i365.StreamMonthlyTotalCost>(),
         gh<_i748.StreamTotalRecent>(),
+        gh<_i869.StreamMonthlyPercentage>(),
       ),
     );
     return this;

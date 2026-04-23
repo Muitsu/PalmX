@@ -1,6 +1,7 @@
 import 'package:drift/drift.dart';
 import 'package:injectable/injectable.dart';
 import 'package:palmx/core/local/database.dart';
+import 'package:rxdart/rxdart.dart';
 
 @lazySingleton
 class OperationLogsLocalDatasource {
@@ -152,5 +153,32 @@ class OperationLogsLocalDatasource {
       ..where(tbl.operationDate.isBetweenValues(firstDay, lastDay));
 
     return query.map((row) => row.read(totalSum) ?? 0.0).watchSingle();
+  }
+
+  /// Returns a real-time Stream of the percentage change in total cost
+  /// compared to the previous month.
+  Stream<double> watchDifferencePercentage(DateTime date) {
+    final currentMonthStream = watchMonthlyTotalCost(date);
+
+    // Calculate previous month date
+    final prevMonthDate = DateTime(date.year, date.month - 1, 1);
+    final prevMonthStream = watchMonthlyTotalCost(prevMonthDate);
+
+    // Using rxdart to combine both streams and calculate the % diff
+    return Rx.combineLatest2<double, double, double>(
+      currentMonthStream,
+      prevMonthStream,
+      (current, previous) {
+        if (previous == 0) {
+          return current > 0 ? 100.0 : 0.0; // Avoid division by zero
+        }
+
+        // Formula: ((Current - Previous) / Previous) * 100
+        final diff = ((current - previous) / previous) * 100;
+
+        // Returns positive if increased, negative if decreased
+        return double.parse(diff.toStringAsFixed(1));
+      },
+    );
   }
 }

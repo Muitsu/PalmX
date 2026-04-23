@@ -175,4 +175,16 @@ class OperationLogModel extends OperationLogsTableData {
       driverTotalCost +
       materialTotalCost +
       evitTotalCost;
+
+  double get costPerHectar =>
+      hectar != null && hectar! > 0 ? totalAll / hectar! : 0.0;
+
+  double get costPerMt => mt != null && mt! > 0 ? totalAll / mt! : 0.0;
+
+  double get costPerPalm {
+    if (costPerHectar != 0.0) {
+      return costPerHectar;
+    }
+    return costPerMt;
+  }
 }

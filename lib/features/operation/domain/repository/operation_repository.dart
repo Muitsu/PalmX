@@ -12,4 +12,5 @@ abstract class OperationRepository {
   Stream<List<OperationLogsTableData>> streamRecent({int limit = 4});
   Stream<int> streamCount();
   Stream<double> streamMonthlyTotalCost({required DateTime date});
+  Stream<double> watchDifferencePercentage({required DateTime date});
 }

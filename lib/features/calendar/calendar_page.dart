@@ -118,7 +118,7 @@ class _CalendarPageState extends State<CalendarPage>
                   leading: const Icon(Icons.agriculture, color: Colors.green),
                   title: Text(log.activityType ?? "-"),
                   subtitle: Text("${log.field} • ${log.hectar} Ha"),
-                  trailing: Text("RM ${log.labourRate}"),
+                  trailing: Text("RM ${log.costPerPalm.toStringAsFixed(2)}"),
                 );
               },
             ),
