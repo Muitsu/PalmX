@@ -10,8 +10,25 @@ class DatabaseMigration {
         // Initial Seed logic here
         await _seedInitialData(db);
       },
-      onUpgrade: (m, from, to) async {},
-      beforeOpen: (details) async {},
+      onUpgrade: (m, from, to) async {
+        if (from < 2) {
+          // Operations used to store a single material inline; move it into
+          // its own table so an operation can have more than one material.
+          await m.createTable(db.operationMaterialsTable);
+          await db.customStatement('''
+            INSERT INTO operation_materials_table (operation_log_id, material_type, material_qty, material_rate)
+            SELECT id, material_type, material_qty, material_litre_rate
+            FROM operation_logs_table
+            WHERE material_type IS NOT NULL
+          ''');
+          await m.dropColumn(db.operationLogsTable, 'material_type');
+          await m.dropColumn(db.operationLogsTable, 'material_qty');
+          await m.dropColumn(db.operationLogsTable, 'material_litre_rate');
+        }
+      },
+      beforeOpen: (details) async {
+        await db.customStatement('PRAGMA foreign_keys = ON');
+      },
     );
   }
 

@@ -13,6 +13,7 @@ class CalendarWidget<T> extends StatefulWidget {
   final CalendarFormat calendarFormat;
   final RangeSelectionMode rangeSelectionMode;
   final EdgeInsetsGeometry padding;
+  final Stream<double> Function(DateTime month)? monthCostBuilder;
   const CalendarWidget({
     super.key,
     required this.eventData,
@@ -23,6 +24,7 @@ class CalendarWidget<T> extends StatefulWidget {
     this.onDaySelected,
     this.rangeSelectionMode = RangeSelectionMode.toggledOff,
     this.padding = const EdgeInsets.all(8),
+    this.monthCostBuilder,
   });
 
   @override
@@ -206,12 +208,38 @@ class _CalendarWidgetState<T> extends State<CalendarWidget<T>> {
             children: [
               Padding(
                 padding: const EdgeInsets.only(top: 8.0),
-                child: Text(
-                  day.previewMonth(),
-                  style: const TextStyle(
-                    fontSize: 22,
-                    fontWeight: FontWeight.bold,
-                  ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.baseline,
+                  textBaseline: TextBaseline.alphabetic,
+                  children: [
+                    Text(
+                      day.previewMonth(),
+                      style: const TextStyle(
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    if (widget.monthCostBuilder != null) ...[
+                      const SizedBox(width: 10),
+                      StreamBuilder<double>(
+                        stream: widget.monthCostBuilder!(day),
+                        builder: (context, snapshot) {
+                          final cost = snapshot.data ?? 0.0;
+                          return Padding(
+                            padding: const EdgeInsets.only(left: 8.0),
+                            child: Text(
+                              "TOTAL: RM ${cost.toStringAsFixed(2)}",
+                              style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.grey[600],
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    ],
+                  ],
                 ),
               ),
               const Spacer(),

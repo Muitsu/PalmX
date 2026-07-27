@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:palmx/core/local/database.dart';
 import 'package:palmx/data/local/models/operation_log_model.dart';
 import 'package:palmx/features/calendar/provider/calendar_provider.dart';
 import 'package:palmx/features/home/presentations/provider/home_provider.dart';
+import 'package:palmx/features/operation/presentation/operation_log/all_operations_page.dart';
 import 'package:provider/provider.dart';
 
 class HomePage extends StatefulWidget {
@@ -60,9 +60,45 @@ class _HomePageState extends State<HomePage>
                       fontSize: 12,
                     ),
                   ),
-                  Text(
-                    "Showing $count entries",
-                    style: const TextStyle(color: Colors.grey, fontSize: 10),
+                  Row(
+                    children: [
+                      Text(
+                        "$count entries",
+                        style: const TextStyle(
+                          color: Colors.grey,
+                          fontSize: 10,
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => const AllOperationsPage(),
+                            ),
+                          );
+                        },
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              "View All",
+                              style: TextStyle(
+                                color: Colors.orange[800],
+                                fontWeight: FontWeight.bold,
+                                fontSize: 11,
+                              ),
+                            ),
+                            Icon(
+                              Icons.chevron_right,
+                              size: 14,
+                              color: Colors.orange[800],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               );
@@ -72,7 +108,7 @@ class _HomePageState extends State<HomePage>
           const SizedBox(height: 10),
 
           // --- STREAM FOR RECENT OPERATIONS LIST ---
-          StreamBuilder<List<OperationLogsTableData>>(
+          StreamBuilder<List<OperationLogModel>>(
             stream: _homeProvider.streamOperation(),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
@@ -116,10 +152,8 @@ class _HomePageState extends State<HomePage>
     );
   }
 
-  // Modified to take the Drift Data object
-  Widget _operationItem(OperationLogsTableData log) {
-    final dateStr = DateFormat('MMM dd, yyyy').format(log.operationDate);
-    final data = OperationLogModel.fromDrift(log);
+  Widget _operationItem(OperationLogModel data) {
+    final dateStr = DateFormat('MMM dd, yyyy').format(data.operationDate);
     return ListTile(
       onTap: () {
         _calendarProvider.viewDetails(context, data: data);
@@ -158,7 +192,7 @@ class _HomePageState extends State<HomePage>
 
   Widget _buildCostCard() {
     return StreamBuilder<double>(
-      stream: _homeProvider.streamMonthlyCost(),
+      stream: _homeProvider.streamYearlyCost(),
       builder: (context, snapshot) {
         // 1. Extract the data or default to 0.0
         final totalCost = snapshot.data ?? 0.0;
@@ -171,7 +205,7 @@ class _HomePageState extends State<HomePage>
 
         // 3. Dynamic Date Range Label
         final now = DateTime.now();
-        final monthLabel = DateFormat('MMM 1').format(now);
+        final yearLabel = DateFormat('yyyy').format(now);
         final todayLabel = DateFormat('MMM dd, yyyy').format(now);
 
         return Container(
@@ -184,7 +218,7 @@ class _HomePageState extends State<HomePage>
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const Text(
-                "TOTAL MONTHLY COST",
+                "TOTAL YEARLY COST",
                 style: TextStyle(
                   color: Colors.grey,
                   fontSize: 12,
@@ -203,7 +237,7 @@ class _HomePageState extends State<HomePage>
                   ),
                   const SizedBox(width: 8),
                   StreamBuilder<double>(
-                    stream: _homeProvider.streamMonthlyPercentage(),
+                    stream: _homeProvider.streamYearlyPercentage(),
                     builder: (context, snapshot) {
                       // Default to 0.0 while loading or if no data exists
                       final percentage = snapshot.data ?? 0.0;
@@ -232,7 +266,7 @@ class _HomePageState extends State<HomePage>
                 ],
               ),
               Text(
-                "Reflects costs from $monthLabel - $todayLabel",
+                "Reflects costs from Jan 1 - $todayLabel, $yearLabel",
                 style: const TextStyle(color: Colors.grey, fontSize: 12),
               ),
             ],

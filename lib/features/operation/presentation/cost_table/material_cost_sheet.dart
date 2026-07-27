@@ -17,52 +17,86 @@ class MaterialCostSheet extends StatefulWidget {
   State<MaterialCostSheet> createState() => _MaterialCostSheetState();
 }
 
+class _MaterialRow {
+  final TextEditingController typeCtrl;
+  final TextEditingController qtyCtrl;
+  final TextEditingController rateCtrl;
+  MaterialModel? selectedMaterial;
+
+  _MaterialRow({
+    required String materialType,
+    required int materialQty,
+    required double materialRate,
+  }) : typeCtrl = TextEditingController(text: materialType),
+       qtyCtrl = TextEditingController(text: materialQty.toString()),
+       rateCtrl = TextEditingController(text: materialRate.toStringAsFixed(2));
+
+  void dispose() {
+    typeCtrl.dispose();
+    qtyCtrl.dispose();
+    rateCtrl.dispose();
+  }
+}
+
 class _MaterialCostSheetState extends State<MaterialCostSheet> {
   late OperationProvider _operationProvider;
-  late TextEditingController materialTypeController;
-  late TextEditingController materialCostController;
-  late TextEditingController materialQtyController;
+  late List<_MaterialRow> _rows;
 
   @override
   void initState() {
     super.initState();
     _operationProvider = context.read<OperationProvider>();
-    final data = _operationProvider.currentOperation;
-    materialTypeController = TextEditingController(
-      text: data?.materialType?.toString() ?? "",
-    );
-    materialCostController = TextEditingController(
-      text: data?.materialLitreRate?.toString() ?? "0.00",
-    );
-    materialQtyController = TextEditingController(
-      text: data?.materialQty?.toString() ?? "0",
-    );
+    final materials = _operationProvider.currentOperation?.materials ?? [];
+    _rows = materials
+        .map(
+          (m) => _MaterialRow(
+            materialType: m.materialType,
+            materialQty: m.materialQty,
+            materialRate: m.materialRate,
+          ),
+        )
+        .toList();
   }
 
   @override
-  dispose() {
-    materialTypeController.dispose();
-    materialCostController.dispose();
-    materialQtyController.dispose();
+  void dispose() {
+    for (final row in _rows) {
+      row.dispose();
+    }
     super.dispose();
   }
 
   double _stringToDouble(String val) => double.tryParse(val) ?? 0.0;
-  void _onSave() {
-    EasyDebounce.debounce(
-      "save-data",
-      Duration(milliseconds: 500), // <-- The debounce duration
-      () {
-        _operationProvider.setMaterialCost(
-          materialType: materialTypeController.text,
-          materialQty: int.tryParse(materialQtyController.text) ?? 0,
-          materialLitreRate: _stringToDouble(materialCostController.text),
-        );
-      },
-    );
+
+  void _onSave(int index) {
+    EasyDebounce.debounce("save-material-$index", const Duration(milliseconds: 500), () {
+      _operationProvider.updateMaterial(
+        index,
+        materialType: _rows[index].typeCtrl.text,
+        materialQty: int.tryParse(_rows[index].qtyCtrl.text) ?? 0,
+        materialRate: _stringToDouble(_rows[index].rateCtrl.text),
+      );
+    });
   }
 
-  MaterialModel? _selectedMaterial;
+  void _addRow() {
+    setState(() {
+      _rows.add(
+        _MaterialRow(materialType: '', materialQty: 0, materialRate: 0.0),
+      );
+    });
+    _operationProvider.addMaterial();
+  }
+
+  void _removeRow(int index) {
+    if (_rows.length <= 1) return;
+    EasyDebounce.cancel("save-material-$index");
+    setState(() {
+      _rows.removeAt(index).dispose();
+    });
+    _operationProvider.removeMaterial(index);
+  }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -107,7 +141,7 @@ class _MaterialCostSheetState extends State<MaterialCostSheet> {
                         ),
                         const SizedBox(height: 4),
                         Text(
-                          'Review and update calculation',
+                          'Add one or more materials used',
                           style: TextStyle(
                             color: Colors.grey[600],
                             fontSize: 14,
@@ -132,79 +166,14 @@ class _MaterialCostSheetState extends State<MaterialCostSheet> {
 
               const SizedBox(height: 16),
 
-              // 3. Dropdown - Slightly more prominent entrance
-              buildTextField(
-                    ctrl: materialTypeController,
-                    label: "Material type",
-                    hint: "Choose material",
-                    isDropdown: true,
-                    onTap: () {
-                      DropdownService.showMaterial(
-                        context,
-                        initialValue: _selectedMaterial,
-                        onSelected: (material) {
-                          setState(() => _selectedMaterial = material);
-                          if (material != null) {
-                            materialTypeController.text = material.name;
-                            materialCostController.text = material.price
-                                .toStringAsFixed(2);
-                          }
-                        },
-                      );
-                    },
-                  )
-                  .animate()
-                  .fadeIn(delay: 200.ms)
-                  .slideY(begin: 0.2, curve: Curves.easeOutBack),
+              // 3. Material rows
+              for (var index = 0; index < _rows.length; index++)
+                _buildMaterialRow(index)
+                    .animate()
+                    .fadeIn(delay: (150 + index * 80).ms)
+                    .slideY(begin: 0.1, curve: Curves.easeOutCubic),
 
-              const SizedBox(height: 24),
-
-              // 4. Labor Section row
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _buildSectionHeader('BASIC LABOR'),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: buildTextField(
-                          label: 'Material Qty',
-                          hint: "",
-                          ctrl: materialQtyController,
-                          keyboardType: TextInputType.number,
-                          textAlign: TextAlign.center,
-                          inputFormatters: [
-                            FilteringTextInputFormatter.digitsOnly,
-                          ],
-                          onChanged: (val) {
-                            _onSave();
-                          },
-                        ),
-                      ),
-                      _multiplier(),
-                      Expanded(
-                        child: buildTextField(
-                          label: 'Material cost (Litre)',
-                          hint: "",
-                          ctrl: materialCostController,
-                          keyboardType: TextInputType.number,
-                          inputFormatters: [
-                            FilteringTextInputFormatter.digitsOnly,
-                            CurrencyInputFormatter(),
-                          ],
-                          onChanged: (val) {
-                            _onSave();
-                          },
-                          prefixWidget: const Padding(
-                            padding: EdgeInsets.only(top: 14, left: 10),
-                            child: Text("RM "),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ).animate().fadeIn(delay: 350.ms).slideY(begin: 0.1),
+              _buildAddButton().animate().fadeIn(delay: 250.ms),
 
               const SizedBox(height: 24),
             ],
@@ -215,6 +184,135 @@ class _MaterialCostSheetState extends State<MaterialCostSheet> {
             .animate()
             .fadeIn(delay: 500.ms)
             .slideY(begin: 0.3, curve: Curves.easeOutQuad),
+      ),
+    );
+  }
+
+  Widget _buildMaterialRow(int index) {
+    final row = _rows[index];
+    return Container(
+      key: ValueKey(row),
+      margin: const EdgeInsets.only(bottom: 16),
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: Colors.black.withValues(alpha: 0.02),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.grey.shade200),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  'MATERIAL ${index + 1}',
+                  style: const TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black38,
+                    letterSpacing: 1.1,
+                  ),
+                ),
+              ),
+              if (_rows.length > 1)
+                IconButton(
+                  onPressed: () => _removeRow(index),
+                  padding: EdgeInsets.zero,
+                  constraints: const BoxConstraints(),
+                  visualDensity: VisualDensity.compact,
+                  icon: const Icon(
+                    Icons.delete_outline,
+                    color: Colors.redAccent,
+                    size: 20,
+                  ),
+                ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          buildTextField(
+            ctrl: row.typeCtrl,
+            label: "Material type",
+            hint: "Choose material",
+            isDropdown: true,
+            onTap: () {
+              DropdownService.showMaterial(
+                context,
+                initialValue: row.selectedMaterial,
+                onSelected: (material) {
+                  if (material == null) return;
+                  setState(() {
+                    row.selectedMaterial = material;
+                    row.typeCtrl.text = material.name;
+                    row.rateCtrl.text = material.price.toStringAsFixed(2);
+                  });
+                  _onSave(index);
+                },
+              );
+            },
+          ),
+          const SizedBox(height: 12),
+          Row(
+            children: [
+              Expanded(
+                child: buildTextField(
+                  label: 'Qty',
+                  hint: "0",
+                  ctrl: row.qtyCtrl,
+                  keyboardType: TextInputType.number,
+                  textAlign: TextAlign.center,
+                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                  onChanged: (val) => _onSave(index),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8),
+                child: Icon(Icons.close, color: Colors.orange[800], size: 18),
+              ),
+              Expanded(
+                child: buildTextField(
+                  label: 'Rate',
+                  hint: "0.00",
+                  ctrl: row.rateCtrl,
+                  keyboardType: TextInputType.number,
+                  inputFormatters: [
+                    FilteringTextInputFormatter.digitsOnly,
+                    CurrencyInputFormatter(),
+                  ],
+                  onChanged: (val) => _onSave(index),
+                  prefixWidget: const Padding(
+                    padding: EdgeInsets.only(top: 14, left: 10),
+                    child: Text("RM "),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildAddButton() {
+    return SizedBox(
+      width: double.infinity,
+      child: OutlinedButton.icon(
+        onPressed: _addRow,
+        icon: Icon(Icons.add, color: Colors.orange[800]),
+        label: Text(
+          "Add another material",
+          style: TextStyle(
+            color: Colors.orange[800],
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        style: OutlinedButton.styleFrom(
+          padding: const EdgeInsets.symmetric(vertical: 14),
+          side: BorderSide(color: Colors.orange[800]!),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+        ),
       ),
     );
   }
@@ -242,7 +340,7 @@ class _MaterialCostSheetState extends State<MaterialCostSheet> {
                 ),
               ),
               Text(
-                'RM${pWatch.currentOperation?.materialTotalCost ?? 0.00}',
+                'RM${(pWatch.currentOperation?.materialTotalCost ?? 0.00).toStringAsFixed(2)}',
                 style: TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.w900,
@@ -277,33 +375,6 @@ class _MaterialCostSheetState extends State<MaterialCostSheet> {
             ),
           ),
         ],
-      ),
-    );
-  }
-
-  Widget _multiplier() {
-    return Column(
-      children: [
-        const SizedBox(height: 24),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8),
-          child: Icon(Icons.close, color: Colors.orange[800], size: 18),
-        ),
-      ],
-    ).animate(delay: 700.ms).scale(curve: Curves.elasticOut);
-  }
-
-  Widget _buildSectionHeader(String title) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 12),
-      child: Text(
-        title,
-        style: const TextStyle(
-          fontSize: 12,
-          fontWeight: FontWeight.bold,
-          color: Colors.black38,
-          letterSpacing: 1.2,
-        ),
       ),
     );
   }

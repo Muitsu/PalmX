@@ -2,13 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:injectable/injectable.dart';
 import 'package:palmx/core/widgets/calendar/calendar_utils.dart';
 import 'package:palmx/data/local/models/operation_log_model.dart';
+import 'package:palmx/features/home/domain/usecase/stream_monthly_total_cost.dart';
 import 'package:palmx/features/operation/domain/usecase/get_operation_by_month.dart';
 import 'package:palmx/features/operation/presentation/operation_log/operation_log_summary_page.dart';
 
 @injectable
 class CalendarProvider extends ChangeNotifier {
   final GetOperationByMonth getOperationByMonth;
-  CalendarProvider(this.getOperationByMonth);
+  final StreamMonthlyTotalCost streamMonthlyTotalCost;
+  CalendarProvider(this.getOperationByMonth, this.streamMonthlyTotalCost);
+
+  Stream<double> monthCostStream(DateTime month) =>
+      streamMonthlyTotalCost.call(date: month);
 
   late ValueNotifier<DateTime> focusedDay;
   late ValueNotifier<List<OperationLogModel>> operationsForSelectedDay;
@@ -28,10 +33,7 @@ class CalendarProvider extends ChangeNotifier {
     setLoading(true);
 
     final result = await getOperationByMonth.call(monthDate);
-    result.fold(
-      (l) => error = l.message,
-      (r) => monthLogs = r.map((e) => OperationLogModel.fromDrift(e)).toList(),
-    );
+    result.fold((l) => error = l.message, (r) => monthLogs = r);
     setLoading(false);
   }
 

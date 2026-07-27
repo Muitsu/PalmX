@@ -251,40 +251,6 @@ class $OperationLogsTableTable extends OperationLogsTable
     requiredDuringInsert: false,
     defaultValue: const Constant(0.00),
   );
-  static const VerificationMeta _materialTypeMeta = const VerificationMeta(
-    'materialType',
-  );
-  @override
-  late final GeneratedColumn<String> materialType = GeneratedColumn<String>(
-    'material_type',
-    aliasedName,
-    true,
-    type: DriftSqlType.string,
-    requiredDuringInsert: false,
-  );
-  static const VerificationMeta _materialQtyMeta = const VerificationMeta(
-    'materialQty',
-  );
-  @override
-  late final GeneratedColumn<int> materialQty = GeneratedColumn<int>(
-    'material_qty',
-    aliasedName,
-    true,
-    type: DriftSqlType.int,
-    requiredDuringInsert: false,
-  );
-  static const VerificationMeta _materialLitreRateMeta = const VerificationMeta(
-    'materialLitreRate',
-  );
-  @override
-  late final GeneratedColumn<double> materialLitreRate =
-      GeneratedColumn<double>(
-        'material_litre_rate',
-        aliasedName,
-        true,
-        type: DriftSqlType.double,
-        requiredDuringInsert: false,
-      );
   static const VerificationMeta _evitTimeMeta = const VerificationMeta(
     'evitTime',
   );
@@ -332,9 +298,6 @@ class $OperationLogsTableTable extends OperationLogsTable
     supervisionMandays,
     driverRate,
     driverTotal,
-    materialType,
-    materialQty,
-    materialLitreRate,
     evitTime,
     evitRate,
   ];
@@ -508,33 +471,6 @@ class $OperationLogsTableTable extends OperationLogsTable
         ),
       );
     }
-    if (data.containsKey('material_type')) {
-      context.handle(
-        _materialTypeMeta,
-        materialType.isAcceptableOrUnknown(
-          data['material_type']!,
-          _materialTypeMeta,
-        ),
-      );
-    }
-    if (data.containsKey('material_qty')) {
-      context.handle(
-        _materialQtyMeta,
-        materialQty.isAcceptableOrUnknown(
-          data['material_qty']!,
-          _materialQtyMeta,
-        ),
-      );
-    }
-    if (data.containsKey('material_litre_rate')) {
-      context.handle(
-        _materialLitreRateMeta,
-        materialLitreRate.isAcceptableOrUnknown(
-          data['material_litre_rate']!,
-          _materialLitreRateMeta,
-        ),
-      );
-    }
     if (data.containsKey('evit_time')) {
       context.handle(
         _evitTimeMeta,
@@ -640,18 +576,6 @@ class $OperationLogsTableTable extends OperationLogsTable
         DriftSqlType.double,
         data['${effectivePrefix}driver_total'],
       )!,
-      materialType: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}material_type'],
-      ),
-      materialQty: attachedDatabase.typeMapping.read(
-        DriftSqlType.int,
-        data['${effectivePrefix}material_qty'],
-      ),
-      materialLitreRate: attachedDatabase.typeMapping.read(
-        DriftSqlType.double,
-        data['${effectivePrefix}material_litre_rate'],
-      ),
       evitTime: attachedDatabase.typeMapping.read(
         DriftSqlType.double,
         data['${effectivePrefix}evit_time'],
@@ -692,9 +616,6 @@ class OperationLogsTableData extends DataClass
   final double supervisionMandays;
   final double driverRate;
   final double driverTotal;
-  final String? materialType;
-  final int? materialQty;
-  final double? materialLitreRate;
   final double? evitTime;
   final double? evitRate;
   const OperationLogsTableData({
@@ -719,9 +640,6 @@ class OperationLogsTableData extends DataClass
     required this.supervisionMandays,
     required this.driverRate,
     required this.driverTotal,
-    this.materialType,
-    this.materialQty,
-    this.materialLitreRate,
     this.evitTime,
     this.evitRate,
   });
@@ -763,15 +681,6 @@ class OperationLogsTableData extends DataClass
     map['supervision_mandays'] = Variable<double>(supervisionMandays);
     map['driver_rate'] = Variable<double>(driverRate);
     map['driver_total'] = Variable<double>(driverTotal);
-    if (!nullToAbsent || materialType != null) {
-      map['material_type'] = Variable<String>(materialType);
-    }
-    if (!nullToAbsent || materialQty != null) {
-      map['material_qty'] = Variable<int>(materialQty);
-    }
-    if (!nullToAbsent || materialLitreRate != null) {
-      map['material_litre_rate'] = Variable<double>(materialLitreRate);
-    }
     if (!nullToAbsent || evitTime != null) {
       map['evit_time'] = Variable<double>(evitTime);
     }
@@ -816,15 +725,6 @@ class OperationLogsTableData extends DataClass
       supervisionMandays: Value(supervisionMandays),
       driverRate: Value(driverRate),
       driverTotal: Value(driverTotal),
-      materialType: materialType == null && nullToAbsent
-          ? const Value.absent()
-          : Value(materialType),
-      materialQty: materialQty == null && nullToAbsent
-          ? const Value.absent()
-          : Value(materialQty),
-      materialLitreRate: materialLitreRate == null && nullToAbsent
-          ? const Value.absent()
-          : Value(materialLitreRate),
       evitTime: evitTime == null && nullToAbsent
           ? const Value.absent()
           : Value(evitTime),
@@ -863,11 +763,6 @@ class OperationLogsTableData extends DataClass
       ),
       driverRate: serializer.fromJson<double>(json['driverRate']),
       driverTotal: serializer.fromJson<double>(json['driverTotal']),
-      materialType: serializer.fromJson<String?>(json['materialType']),
-      materialQty: serializer.fromJson<int?>(json['materialQty']),
-      materialLitreRate: serializer.fromJson<double?>(
-        json['materialLitreRate'],
-      ),
       evitTime: serializer.fromJson<double?>(json['evitTime']),
       evitRate: serializer.fromJson<double?>(json['evitRate']),
     );
@@ -897,9 +792,6 @@ class OperationLogsTableData extends DataClass
       'supervisionMandays': serializer.toJson<double>(supervisionMandays),
       'driverRate': serializer.toJson<double>(driverRate),
       'driverTotal': serializer.toJson<double>(driverTotal),
-      'materialType': serializer.toJson<String?>(materialType),
-      'materialQty': serializer.toJson<int?>(materialQty),
-      'materialLitreRate': serializer.toJson<double?>(materialLitreRate),
       'evitTime': serializer.toJson<double?>(evitTime),
       'evitRate': serializer.toJson<double?>(evitRate),
     };
@@ -927,9 +819,6 @@ class OperationLogsTableData extends DataClass
     double? supervisionMandays,
     double? driverRate,
     double? driverTotal,
-    Value<String?> materialType = const Value.absent(),
-    Value<int?> materialQty = const Value.absent(),
-    Value<double?> materialLitreRate = const Value.absent(),
     Value<double?> evitTime = const Value.absent(),
     Value<double?> evitRate = const Value.absent(),
   }) => OperationLogsTableData(
@@ -954,11 +843,6 @@ class OperationLogsTableData extends DataClass
     supervisionMandays: supervisionMandays ?? this.supervisionMandays,
     driverRate: driverRate ?? this.driverRate,
     driverTotal: driverTotal ?? this.driverTotal,
-    materialType: materialType.present ? materialType.value : this.materialType,
-    materialQty: materialQty.present ? materialQty.value : this.materialQty,
-    materialLitreRate: materialLitreRate.present
-        ? materialLitreRate.value
-        : this.materialLitreRate,
     evitTime: evitTime.present ? evitTime.value : this.evitTime,
     evitRate: evitRate.present ? evitRate.value : this.evitRate,
   );
@@ -1013,15 +897,6 @@ class OperationLogsTableData extends DataClass
       driverTotal: data.driverTotal.present
           ? data.driverTotal.value
           : this.driverTotal,
-      materialType: data.materialType.present
-          ? data.materialType.value
-          : this.materialType,
-      materialQty: data.materialQty.present
-          ? data.materialQty.value
-          : this.materialQty,
-      materialLitreRate: data.materialLitreRate.present
-          ? data.materialLitreRate.value
-          : this.materialLitreRate,
       evitTime: data.evitTime.present ? data.evitTime.value : this.evitTime,
       evitRate: data.evitRate.present ? data.evitRate.value : this.evitRate,
     );
@@ -1051,9 +926,6 @@ class OperationLogsTableData extends DataClass
           ..write('supervisionMandays: $supervisionMandays, ')
           ..write('driverRate: $driverRate, ')
           ..write('driverTotal: $driverTotal, ')
-          ..write('materialType: $materialType, ')
-          ..write('materialQty: $materialQty, ')
-          ..write('materialLitreRate: $materialLitreRate, ')
           ..write('evitTime: $evitTime, ')
           ..write('evitRate: $evitRate')
           ..write(')'))
@@ -1083,9 +955,6 @@ class OperationLogsTableData extends DataClass
     supervisionMandays,
     driverRate,
     driverTotal,
-    materialType,
-    materialQty,
-    materialLitreRate,
     evitTime,
     evitRate,
   ]);
@@ -1114,9 +983,6 @@ class OperationLogsTableData extends DataClass
           other.supervisionMandays == this.supervisionMandays &&
           other.driverRate == this.driverRate &&
           other.driverTotal == this.driverTotal &&
-          other.materialType == this.materialType &&
-          other.materialQty == this.materialQty &&
-          other.materialLitreRate == this.materialLitreRate &&
           other.evitTime == this.evitTime &&
           other.evitRate == this.evitRate);
 }
@@ -1144,9 +1010,6 @@ class OperationLogsTableCompanion
   final Value<double> supervisionMandays;
   final Value<double> driverRate;
   final Value<double> driverTotal;
-  final Value<String?> materialType;
-  final Value<int?> materialQty;
-  final Value<double?> materialLitreRate;
   final Value<double?> evitTime;
   final Value<double?> evitRate;
   const OperationLogsTableCompanion({
@@ -1171,9 +1034,6 @@ class OperationLogsTableCompanion
     this.supervisionMandays = const Value.absent(),
     this.driverRate = const Value.absent(),
     this.driverTotal = const Value.absent(),
-    this.materialType = const Value.absent(),
-    this.materialQty = const Value.absent(),
-    this.materialLitreRate = const Value.absent(),
     this.evitTime = const Value.absent(),
     this.evitRate = const Value.absent(),
   });
@@ -1199,9 +1059,6 @@ class OperationLogsTableCompanion
     this.supervisionMandays = const Value.absent(),
     this.driverRate = const Value.absent(),
     this.driverTotal = const Value.absent(),
-    this.materialType = const Value.absent(),
-    this.materialQty = const Value.absent(),
-    this.materialLitreRate = const Value.absent(),
     this.evitTime = const Value.absent(),
     this.evitRate = const Value.absent(),
   }) : operationDate = Value(operationDate);
@@ -1227,9 +1084,6 @@ class OperationLogsTableCompanion
     Expression<double>? supervisionMandays,
     Expression<double>? driverRate,
     Expression<double>? driverTotal,
-    Expression<String>? materialType,
-    Expression<int>? materialQty,
-    Expression<double>? materialLitreRate,
     Expression<double>? evitTime,
     Expression<double>? evitRate,
   }) {
@@ -1255,9 +1109,6 @@ class OperationLogsTableCompanion
       if (supervisionMandays != null) 'supervision_mandays': supervisionMandays,
       if (driverRate != null) 'driver_rate': driverRate,
       if (driverTotal != null) 'driver_total': driverTotal,
-      if (materialType != null) 'material_type': materialType,
-      if (materialQty != null) 'material_qty': materialQty,
-      if (materialLitreRate != null) 'material_litre_rate': materialLitreRate,
       if (evitTime != null) 'evit_time': evitTime,
       if (evitRate != null) 'evit_rate': evitRate,
     });
@@ -1285,9 +1136,6 @@ class OperationLogsTableCompanion
     Value<double>? supervisionMandays,
     Value<double>? driverRate,
     Value<double>? driverTotal,
-    Value<String?>? materialType,
-    Value<int?>? materialQty,
-    Value<double?>? materialLitreRate,
     Value<double?>? evitTime,
     Value<double?>? evitRate,
   }) {
@@ -1313,9 +1161,6 @@ class OperationLogsTableCompanion
       supervisionMandays: supervisionMandays ?? this.supervisionMandays,
       driverRate: driverRate ?? this.driverRate,
       driverTotal: driverTotal ?? this.driverTotal,
-      materialType: materialType ?? this.materialType,
-      materialQty: materialQty ?? this.materialQty,
-      materialLitreRate: materialLitreRate ?? this.materialLitreRate,
       evitTime: evitTime ?? this.evitTime,
       evitRate: evitRate ?? this.evitRate,
     );
@@ -1387,15 +1232,6 @@ class OperationLogsTableCompanion
     if (driverTotal.present) {
       map['driver_total'] = Variable<double>(driverTotal.value);
     }
-    if (materialType.present) {
-      map['material_type'] = Variable<String>(materialType.value);
-    }
-    if (materialQty.present) {
-      map['material_qty'] = Variable<int>(materialQty.value);
-    }
-    if (materialLitreRate.present) {
-      map['material_litre_rate'] = Variable<double>(materialLitreRate.value);
-    }
     if (evitTime.present) {
       map['evit_time'] = Variable<double>(evitTime.value);
     }
@@ -1429,11 +1265,385 @@ class OperationLogsTableCompanion
           ..write('supervisionMandays: $supervisionMandays, ')
           ..write('driverRate: $driverRate, ')
           ..write('driverTotal: $driverTotal, ')
-          ..write('materialType: $materialType, ')
-          ..write('materialQty: $materialQty, ')
-          ..write('materialLitreRate: $materialLitreRate, ')
           ..write('evitTime: $evitTime, ')
           ..write('evitRate: $evitRate')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $OperationMaterialsTableTable extends OperationMaterialsTable
+    with TableInfo<$OperationMaterialsTableTable, OperationMaterialsTableData> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $OperationMaterialsTableTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _operationLogIdMeta = const VerificationMeta(
+    'operationLogId',
+  );
+  @override
+  late final GeneratedColumn<int> operationLogId = GeneratedColumn<int>(
+    'operation_log_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES operation_logs_table (id) ON DELETE CASCADE',
+    ),
+  );
+  static const VerificationMeta _materialTypeMeta = const VerificationMeta(
+    'materialType',
+  );
+  @override
+  late final GeneratedColumn<String> materialType = GeneratedColumn<String>(
+    'material_type',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
+  static const VerificationMeta _materialQtyMeta = const VerificationMeta(
+    'materialQty',
+  );
+  @override
+  late final GeneratedColumn<int> materialQty = GeneratedColumn<int>(
+    'material_qty',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  static const VerificationMeta _materialRateMeta = const VerificationMeta(
+    'materialRate',
+  );
+  @override
+  late final GeneratedColumn<double> materialRate = GeneratedColumn<double>(
+    'material_rate',
+    aliasedName,
+    false,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0.00),
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    operationLogId,
+    materialType,
+    materialQty,
+    materialRate,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'operation_materials_table';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<OperationMaterialsTableData> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('operation_log_id')) {
+      context.handle(
+        _operationLogIdMeta,
+        operationLogId.isAcceptableOrUnknown(
+          data['operation_log_id']!,
+          _operationLogIdMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_operationLogIdMeta);
+    }
+    if (data.containsKey('material_type')) {
+      context.handle(
+        _materialTypeMeta,
+        materialType.isAcceptableOrUnknown(
+          data['material_type']!,
+          _materialTypeMeta,
+        ),
+      );
+    }
+    if (data.containsKey('material_qty')) {
+      context.handle(
+        _materialQtyMeta,
+        materialQty.isAcceptableOrUnknown(
+          data['material_qty']!,
+          _materialQtyMeta,
+        ),
+      );
+    }
+    if (data.containsKey('material_rate')) {
+      context.handle(
+        _materialRateMeta,
+        materialRate.isAcceptableOrUnknown(
+          data['material_rate']!,
+          _materialRateMeta,
+        ),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  OperationMaterialsTableData map(
+    Map<String, dynamic> data, {
+    String? tablePrefix,
+  }) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return OperationMaterialsTableData(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      operationLogId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}operation_log_id'],
+      )!,
+      materialType: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}material_type'],
+      )!,
+      materialQty: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}material_qty'],
+      )!,
+      materialRate: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}material_rate'],
+      )!,
+    );
+  }
+
+  @override
+  $OperationMaterialsTableTable createAlias(String alias) {
+    return $OperationMaterialsTableTable(attachedDatabase, alias);
+  }
+}
+
+class OperationMaterialsTableData extends DataClass
+    implements Insertable<OperationMaterialsTableData> {
+  final int id;
+  final int operationLogId;
+  final String materialType;
+  final int materialQty;
+  final double materialRate;
+  const OperationMaterialsTableData({
+    required this.id,
+    required this.operationLogId,
+    required this.materialType,
+    required this.materialQty,
+    required this.materialRate,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['operation_log_id'] = Variable<int>(operationLogId);
+    map['material_type'] = Variable<String>(materialType);
+    map['material_qty'] = Variable<int>(materialQty);
+    map['material_rate'] = Variable<double>(materialRate);
+    return map;
+  }
+
+  OperationMaterialsTableCompanion toCompanion(bool nullToAbsent) {
+    return OperationMaterialsTableCompanion(
+      id: Value(id),
+      operationLogId: Value(operationLogId),
+      materialType: Value(materialType),
+      materialQty: Value(materialQty),
+      materialRate: Value(materialRate),
+    );
+  }
+
+  factory OperationMaterialsTableData.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return OperationMaterialsTableData(
+      id: serializer.fromJson<int>(json['id']),
+      operationLogId: serializer.fromJson<int>(json['operationLogId']),
+      materialType: serializer.fromJson<String>(json['materialType']),
+      materialQty: serializer.fromJson<int>(json['materialQty']),
+      materialRate: serializer.fromJson<double>(json['materialRate']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'operationLogId': serializer.toJson<int>(operationLogId),
+      'materialType': serializer.toJson<String>(materialType),
+      'materialQty': serializer.toJson<int>(materialQty),
+      'materialRate': serializer.toJson<double>(materialRate),
+    };
+  }
+
+  OperationMaterialsTableData copyWith({
+    int? id,
+    int? operationLogId,
+    String? materialType,
+    int? materialQty,
+    double? materialRate,
+  }) => OperationMaterialsTableData(
+    id: id ?? this.id,
+    operationLogId: operationLogId ?? this.operationLogId,
+    materialType: materialType ?? this.materialType,
+    materialQty: materialQty ?? this.materialQty,
+    materialRate: materialRate ?? this.materialRate,
+  );
+  OperationMaterialsTableData copyWithCompanion(
+    OperationMaterialsTableCompanion data,
+  ) {
+    return OperationMaterialsTableData(
+      id: data.id.present ? data.id.value : this.id,
+      operationLogId: data.operationLogId.present
+          ? data.operationLogId.value
+          : this.operationLogId,
+      materialType: data.materialType.present
+          ? data.materialType.value
+          : this.materialType,
+      materialQty: data.materialQty.present
+          ? data.materialQty.value
+          : this.materialQty,
+      materialRate: data.materialRate.present
+          ? data.materialRate.value
+          : this.materialRate,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('OperationMaterialsTableData(')
+          ..write('id: $id, ')
+          ..write('operationLogId: $operationLogId, ')
+          ..write('materialType: $materialType, ')
+          ..write('materialQty: $materialQty, ')
+          ..write('materialRate: $materialRate')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode =>
+      Object.hash(id, operationLogId, materialType, materialQty, materialRate);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is OperationMaterialsTableData &&
+          other.id == this.id &&
+          other.operationLogId == this.operationLogId &&
+          other.materialType == this.materialType &&
+          other.materialQty == this.materialQty &&
+          other.materialRate == this.materialRate);
+}
+
+class OperationMaterialsTableCompanion
+    extends UpdateCompanion<OperationMaterialsTableData> {
+  final Value<int> id;
+  final Value<int> operationLogId;
+  final Value<String> materialType;
+  final Value<int> materialQty;
+  final Value<double> materialRate;
+  const OperationMaterialsTableCompanion({
+    this.id = const Value.absent(),
+    this.operationLogId = const Value.absent(),
+    this.materialType = const Value.absent(),
+    this.materialQty = const Value.absent(),
+    this.materialRate = const Value.absent(),
+  });
+  OperationMaterialsTableCompanion.insert({
+    this.id = const Value.absent(),
+    required int operationLogId,
+    this.materialType = const Value.absent(),
+    this.materialQty = const Value.absent(),
+    this.materialRate = const Value.absent(),
+  }) : operationLogId = Value(operationLogId);
+  static Insertable<OperationMaterialsTableData> custom({
+    Expression<int>? id,
+    Expression<int>? operationLogId,
+    Expression<String>? materialType,
+    Expression<int>? materialQty,
+    Expression<double>? materialRate,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (operationLogId != null) 'operation_log_id': operationLogId,
+      if (materialType != null) 'material_type': materialType,
+      if (materialQty != null) 'material_qty': materialQty,
+      if (materialRate != null) 'material_rate': materialRate,
+    });
+  }
+
+  OperationMaterialsTableCompanion copyWith({
+    Value<int>? id,
+    Value<int>? operationLogId,
+    Value<String>? materialType,
+    Value<int>? materialQty,
+    Value<double>? materialRate,
+  }) {
+    return OperationMaterialsTableCompanion(
+      id: id ?? this.id,
+      operationLogId: operationLogId ?? this.operationLogId,
+      materialType: materialType ?? this.materialType,
+      materialQty: materialQty ?? this.materialQty,
+      materialRate: materialRate ?? this.materialRate,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (operationLogId.present) {
+      map['operation_log_id'] = Variable<int>(operationLogId.value);
+    }
+    if (materialType.present) {
+      map['material_type'] = Variable<String>(materialType.value);
+    }
+    if (materialQty.present) {
+      map['material_qty'] = Variable<int>(materialQty.value);
+    }
+    if (materialRate.present) {
+      map['material_rate'] = Variable<double>(materialRate.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('OperationMaterialsTableCompanion(')
+          ..write('id: $id, ')
+          ..write('operationLogId: $operationLogId, ')
+          ..write('materialType: $materialType, ')
+          ..write('materialQty: $materialQty, ')
+          ..write('materialRate: $materialRate')
           ..write(')'))
         .toString();
   }
@@ -2201,6 +2411,8 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
   late final $OperationLogsTableTable operationLogsTable =
       $OperationLogsTableTable(this);
+  late final $OperationMaterialsTableTable operationMaterialsTable =
+      $OperationMaterialsTableTable(this);
   late final $ActivityTableTable activityTable = $ActivityTableTable(this);
   late final $FieldTableTable fieldTable = $FieldTableTable(this);
   late final $MaterialTableTable materialTable = $MaterialTableTable(this);
@@ -2210,10 +2422,23 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   @override
   List<DatabaseSchemaEntity> get allSchemaEntities => [
     operationLogsTable,
+    operationMaterialsTable,
     activityTable,
     fieldTable,
     materialTable,
   ];
+  @override
+  StreamQueryUpdateRules get streamUpdateRules => const StreamQueryUpdateRules([
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'operation_logs_table',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [
+        TableUpdate('operation_materials_table', kind: UpdateKind.delete),
+      ],
+    ),
+  ]);
 }
 
 typedef $$OperationLogsTableTableCreateCompanionBuilder =
@@ -2239,9 +2464,6 @@ typedef $$OperationLogsTableTableCreateCompanionBuilder =
       Value<double> supervisionMandays,
       Value<double> driverRate,
       Value<double> driverTotal,
-      Value<String?> materialType,
-      Value<int?> materialQty,
-      Value<double?> materialLitreRate,
       Value<double?> evitTime,
       Value<double?> evitRate,
     });
@@ -2268,12 +2490,51 @@ typedef $$OperationLogsTableTableUpdateCompanionBuilder =
       Value<double> supervisionMandays,
       Value<double> driverRate,
       Value<double> driverTotal,
-      Value<String?> materialType,
-      Value<int?> materialQty,
-      Value<double?> materialLitreRate,
       Value<double?> evitTime,
       Value<double?> evitRate,
     });
+
+final class $$OperationLogsTableTableReferences
+    extends
+        BaseReferences<
+          _$AppDatabase,
+          $OperationLogsTableTable,
+          OperationLogsTableData
+        > {
+  $$OperationLogsTableTableReferences(
+    super.$_db,
+    super.$_table,
+    super.$_typedResult,
+  );
+
+  static MultiTypedResultKey<
+    $OperationMaterialsTableTable,
+    List<OperationMaterialsTableData>
+  >
+  _operationMaterialsTableRefsTable(_$AppDatabase db) =>
+      MultiTypedResultKey.fromTable(
+        db.operationMaterialsTable,
+        aliasName: $_aliasNameGenerator(
+          db.operationLogsTable.id,
+          db.operationMaterialsTable.operationLogId,
+        ),
+      );
+
+  $$OperationMaterialsTableTableProcessedTableManager
+  get operationMaterialsTableRefs {
+    final manager = $$OperationMaterialsTableTableTableManager(
+      $_db,
+      $_db.operationMaterialsTable,
+    ).filter((f) => f.operationLogId.id.sqlEquals($_itemColumn<int>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(
+      _operationMaterialsTableRefsTable($_db),
+    );
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+}
 
 class $$OperationLogsTableTableFilterComposer
     extends Composer<_$AppDatabase, $OperationLogsTableTable> {
@@ -2389,21 +2650,6 @@ class $$OperationLogsTableTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnFilters<String> get materialType => $composableBuilder(
-    column: $table.materialType,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<int> get materialQty => $composableBuilder(
-    column: $table.materialQty,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<double> get materialLitreRate => $composableBuilder(
-    column: $table.materialLitreRate,
-    builder: (column) => ColumnFilters(column),
-  );
-
   ColumnFilters<double> get evitTime => $composableBuilder(
     column: $table.evitTime,
     builder: (column) => ColumnFilters(column),
@@ -2413,6 +2659,32 @@ class $$OperationLogsTableTableFilterComposer
     column: $table.evitRate,
     builder: (column) => ColumnFilters(column),
   );
+
+  Expression<bool> operationMaterialsTableRefs(
+    Expression<bool> Function($$OperationMaterialsTableTableFilterComposer f) f,
+  ) {
+    final $$OperationMaterialsTableTableFilterComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.id,
+          referencedTable: $db.operationMaterialsTable,
+          getReferencedColumn: (t) => t.operationLogId,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$OperationMaterialsTableTableFilterComposer(
+                $db: $db,
+                $table: $db.operationMaterialsTable,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
+    return f(composer);
+  }
 }
 
 class $$OperationLogsTableTableOrderingComposer
@@ -2529,21 +2801,6 @@ class $$OperationLogsTableTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<String> get materialType => $composableBuilder(
-    column: $table.materialType,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<int> get materialQty => $composableBuilder(
-    column: $table.materialQty,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<double> get materialLitreRate => $composableBuilder(
-    column: $table.materialLitreRate,
-    builder: (column) => ColumnOrderings(column),
-  );
-
   ColumnOrderings<double> get evitTime => $composableBuilder(
     column: $table.evitTime,
     builder: (column) => ColumnOrderings(column),
@@ -2655,26 +2912,38 @@ class $$OperationLogsTableTableAnnotationComposer
     builder: (column) => column,
   );
 
-  GeneratedColumn<String> get materialType => $composableBuilder(
-    column: $table.materialType,
-    builder: (column) => column,
-  );
-
-  GeneratedColumn<int> get materialQty => $composableBuilder(
-    column: $table.materialQty,
-    builder: (column) => column,
-  );
-
-  GeneratedColumn<double> get materialLitreRate => $composableBuilder(
-    column: $table.materialLitreRate,
-    builder: (column) => column,
-  );
-
   GeneratedColumn<double> get evitTime =>
       $composableBuilder(column: $table.evitTime, builder: (column) => column);
 
   GeneratedColumn<double> get evitRate =>
       $composableBuilder(column: $table.evitRate, builder: (column) => column);
+
+  Expression<T> operationMaterialsTableRefs<T extends Object>(
+    Expression<T> Function($$OperationMaterialsTableTableAnnotationComposer a)
+    f,
+  ) {
+    final $$OperationMaterialsTableTableAnnotationComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.id,
+          referencedTable: $db.operationMaterialsTable,
+          getReferencedColumn: (t) => t.operationLogId,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$OperationMaterialsTableTableAnnotationComposer(
+                $db: $db,
+                $table: $db.operationMaterialsTable,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
+    return f(composer);
+  }
 }
 
 class $$OperationLogsTableTableTableManager
@@ -2688,16 +2957,9 @@ class $$OperationLogsTableTableTableManager
           $$OperationLogsTableTableAnnotationComposer,
           $$OperationLogsTableTableCreateCompanionBuilder,
           $$OperationLogsTableTableUpdateCompanionBuilder,
-          (
-            OperationLogsTableData,
-            BaseReferences<
-              _$AppDatabase,
-              $OperationLogsTableTable,
-              OperationLogsTableData
-            >,
-          ),
+          (OperationLogsTableData, $$OperationLogsTableTableReferences),
           OperationLogsTableData,
-          PrefetchHooks Function()
+          PrefetchHooks Function({bool operationMaterialsTableRefs})
         > {
   $$OperationLogsTableTableTableManager(
     _$AppDatabase db,
@@ -2738,9 +3000,6 @@ class $$OperationLogsTableTableTableManager
                 Value<double> supervisionMandays = const Value.absent(),
                 Value<double> driverRate = const Value.absent(),
                 Value<double> driverTotal = const Value.absent(),
-                Value<String?> materialType = const Value.absent(),
-                Value<int?> materialQty = const Value.absent(),
-                Value<double?> materialLitreRate = const Value.absent(),
                 Value<double?> evitTime = const Value.absent(),
                 Value<double?> evitRate = const Value.absent(),
               }) => OperationLogsTableCompanion(
@@ -2765,9 +3024,6 @@ class $$OperationLogsTableTableTableManager
                 supervisionMandays: supervisionMandays,
                 driverRate: driverRate,
                 driverTotal: driverTotal,
-                materialType: materialType,
-                materialQty: materialQty,
-                materialLitreRate: materialLitreRate,
                 evitTime: evitTime,
                 evitRate: evitRate,
               ),
@@ -2794,9 +3050,6 @@ class $$OperationLogsTableTableTableManager
                 Value<double> supervisionMandays = const Value.absent(),
                 Value<double> driverRate = const Value.absent(),
                 Value<double> driverTotal = const Value.absent(),
-                Value<String?> materialType = const Value.absent(),
-                Value<int?> materialQty = const Value.absent(),
-                Value<double?> materialLitreRate = const Value.absent(),
                 Value<double?> evitTime = const Value.absent(),
                 Value<double?> evitRate = const Value.absent(),
               }) => OperationLogsTableCompanion.insert(
@@ -2821,16 +3074,51 @@ class $$OperationLogsTableTableTableManager
                 supervisionMandays: supervisionMandays,
                 driverRate: driverRate,
                 driverTotal: driverTotal,
-                materialType: materialType,
-                materialQty: materialQty,
-                materialLitreRate: materialLitreRate,
                 evitTime: evitTime,
                 evitRate: evitRate,
               ),
           withReferenceMapper: (p0) => p0
-              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .map(
+                (e) => (
+                  e.readTable(table),
+                  $$OperationLogsTableTableReferences(db, table, e),
+                ),
+              )
               .toList(),
-          prefetchHooksCallback: null,
+          prefetchHooksCallback: ({operationMaterialsTableRefs = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [
+                if (operationMaterialsTableRefs) db.operationMaterialsTable,
+              ],
+              addJoins: null,
+              getPrefetchedDataCallback: (items) async {
+                return [
+                  if (operationMaterialsTableRefs)
+                    await $_getPrefetchedData<
+                      OperationLogsTableData,
+                      $OperationLogsTableTable,
+                      OperationMaterialsTableData
+                    >(
+                      currentTable: table,
+                      referencedTable: $$OperationLogsTableTableReferences
+                          ._operationMaterialsTableRefsTable(db),
+                      managerFromTypedResult: (p0) =>
+                          $$OperationLogsTableTableReferences(
+                            db,
+                            table,
+                            p0,
+                          ).operationMaterialsTableRefs,
+                      referencedItemsForCurrentItem: (item, referencedItems) =>
+                          referencedItems.where(
+                            (e) => e.operationLogId == item.id,
+                          ),
+                      typedResults: items,
+                    ),
+                ];
+              },
+            );
+          },
         ),
       );
 }
@@ -2845,16 +3133,357 @@ typedef $$OperationLogsTableTableProcessedTableManager =
       $$OperationLogsTableTableAnnotationComposer,
       $$OperationLogsTableTableCreateCompanionBuilder,
       $$OperationLogsTableTableUpdateCompanionBuilder,
-      (
-        OperationLogsTableData,
+      (OperationLogsTableData, $$OperationLogsTableTableReferences),
+      OperationLogsTableData,
+      PrefetchHooks Function({bool operationMaterialsTableRefs})
+    >;
+typedef $$OperationMaterialsTableTableCreateCompanionBuilder =
+    OperationMaterialsTableCompanion Function({
+      Value<int> id,
+      required int operationLogId,
+      Value<String> materialType,
+      Value<int> materialQty,
+      Value<double> materialRate,
+    });
+typedef $$OperationMaterialsTableTableUpdateCompanionBuilder =
+    OperationMaterialsTableCompanion Function({
+      Value<int> id,
+      Value<int> operationLogId,
+      Value<String> materialType,
+      Value<int> materialQty,
+      Value<double> materialRate,
+    });
+
+final class $$OperationMaterialsTableTableReferences
+    extends
         BaseReferences<
           _$AppDatabase,
-          $OperationLogsTableTable,
-          OperationLogsTableData
-        >,
-      ),
-      OperationLogsTableData,
-      PrefetchHooks Function()
+          $OperationMaterialsTableTable,
+          OperationMaterialsTableData
+        > {
+  $$OperationMaterialsTableTableReferences(
+    super.$_db,
+    super.$_table,
+    super.$_typedResult,
+  );
+
+  static $OperationLogsTableTable _operationLogIdTable(_$AppDatabase db) =>
+      db.operationLogsTable.createAlias(
+        $_aliasNameGenerator(
+          db.operationMaterialsTable.operationLogId,
+          db.operationLogsTable.id,
+        ),
+      );
+
+  $$OperationLogsTableTableProcessedTableManager get operationLogId {
+    final $_column = $_itemColumn<int>('operation_log_id')!;
+
+    final manager = $$OperationLogsTableTableTableManager(
+      $_db,
+      $_db.operationLogsTable,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_operationLogIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+}
+
+class $$OperationMaterialsTableTableFilterComposer
+    extends Composer<_$AppDatabase, $OperationMaterialsTableTable> {
+  $$OperationMaterialsTableTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get materialType => $composableBuilder(
+    column: $table.materialType,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get materialQty => $composableBuilder(
+    column: $table.materialQty,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get materialRate => $composableBuilder(
+    column: $table.materialRate,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  $$OperationLogsTableTableFilterComposer get operationLogId {
+    final $$OperationLogsTableTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.operationLogId,
+      referencedTable: $db.operationLogsTable,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$OperationLogsTableTableFilterComposer(
+            $db: $db,
+            $table: $db.operationLogsTable,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$OperationMaterialsTableTableOrderingComposer
+    extends Composer<_$AppDatabase, $OperationMaterialsTableTable> {
+  $$OperationMaterialsTableTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get materialType => $composableBuilder(
+    column: $table.materialType,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get materialQty => $composableBuilder(
+    column: $table.materialQty,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get materialRate => $composableBuilder(
+    column: $table.materialRate,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  $$OperationLogsTableTableOrderingComposer get operationLogId {
+    final $$OperationLogsTableTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.operationLogId,
+      referencedTable: $db.operationLogsTable,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$OperationLogsTableTableOrderingComposer(
+            $db: $db,
+            $table: $db.operationLogsTable,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$OperationMaterialsTableTableAnnotationComposer
+    extends Composer<_$AppDatabase, $OperationMaterialsTableTable> {
+  $$OperationMaterialsTableTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get materialType => $composableBuilder(
+    column: $table.materialType,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get materialQty => $composableBuilder(
+    column: $table.materialQty,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<double> get materialRate => $composableBuilder(
+    column: $table.materialRate,
+    builder: (column) => column,
+  );
+
+  $$OperationLogsTableTableAnnotationComposer get operationLogId {
+    final $$OperationLogsTableTableAnnotationComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.operationLogId,
+          referencedTable: $db.operationLogsTable,
+          getReferencedColumn: (t) => t.id,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$OperationLogsTableTableAnnotationComposer(
+                $db: $db,
+                $table: $db.operationLogsTable,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
+    return composer;
+  }
+}
+
+class $$OperationMaterialsTableTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $OperationMaterialsTableTable,
+          OperationMaterialsTableData,
+          $$OperationMaterialsTableTableFilterComposer,
+          $$OperationMaterialsTableTableOrderingComposer,
+          $$OperationMaterialsTableTableAnnotationComposer,
+          $$OperationMaterialsTableTableCreateCompanionBuilder,
+          $$OperationMaterialsTableTableUpdateCompanionBuilder,
+          (
+            OperationMaterialsTableData,
+            $$OperationMaterialsTableTableReferences,
+          ),
+          OperationMaterialsTableData,
+          PrefetchHooks Function({bool operationLogId})
+        > {
+  $$OperationMaterialsTableTableTableManager(
+    _$AppDatabase db,
+    $OperationMaterialsTableTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$OperationMaterialsTableTableFilterComposer(
+                $db: db,
+                $table: table,
+              ),
+          createOrderingComposer: () =>
+              $$OperationMaterialsTableTableOrderingComposer(
+                $db: db,
+                $table: table,
+              ),
+          createComputedFieldComposer: () =>
+              $$OperationMaterialsTableTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<int> operationLogId = const Value.absent(),
+                Value<String> materialType = const Value.absent(),
+                Value<int> materialQty = const Value.absent(),
+                Value<double> materialRate = const Value.absent(),
+              }) => OperationMaterialsTableCompanion(
+                id: id,
+                operationLogId: operationLogId,
+                materialType: materialType,
+                materialQty: materialQty,
+                materialRate: materialRate,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                required int operationLogId,
+                Value<String> materialType = const Value.absent(),
+                Value<int> materialQty = const Value.absent(),
+                Value<double> materialRate = const Value.absent(),
+              }) => OperationMaterialsTableCompanion.insert(
+                id: id,
+                operationLogId: operationLogId,
+                materialType: materialType,
+                materialQty: materialQty,
+                materialRate: materialRate,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable(table),
+                  $$OperationMaterialsTableTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: ({operationLogId = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [],
+              addJoins:
+                  <
+                    T extends TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic
+                    >
+                  >(state) {
+                    if (operationLogId) {
+                      state =
+                          state.withJoin(
+                                currentTable: table,
+                                currentColumn: table.operationLogId,
+                                referencedTable:
+                                    $$OperationMaterialsTableTableReferences
+                                        ._operationLogIdTable(db),
+                                referencedColumn:
+                                    $$OperationMaterialsTableTableReferences
+                                        ._operationLogIdTable(db)
+                                        .id,
+                              )
+                              as T;
+                    }
+
+                    return state;
+                  },
+              getPrefetchedDataCallback: (items) async {
+                return [];
+              },
+            );
+          },
+        ),
+      );
+}
+
+typedef $$OperationMaterialsTableTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $OperationMaterialsTableTable,
+      OperationMaterialsTableData,
+      $$OperationMaterialsTableTableFilterComposer,
+      $$OperationMaterialsTableTableOrderingComposer,
+      $$OperationMaterialsTableTableAnnotationComposer,
+      $$OperationMaterialsTableTableCreateCompanionBuilder,
+      $$OperationMaterialsTableTableUpdateCompanionBuilder,
+      (OperationMaterialsTableData, $$OperationMaterialsTableTableReferences),
+      OperationMaterialsTableData,
+      PrefetchHooks Function({bool operationLogId})
     >;
 typedef $$ActivityTableTableCreateCompanionBuilder =
     ActivityTableCompanion Function({
@@ -3332,6 +3961,11 @@ class $AppDatabaseManager {
   $AppDatabaseManager(this._db);
   $$OperationLogsTableTableTableManager get operationLogsTable =>
       $$OperationLogsTableTableTableManager(_db, _db.operationLogsTable);
+  $$OperationMaterialsTableTableTableManager get operationMaterialsTable =>
+      $$OperationMaterialsTableTableTableManager(
+        _db,
+        _db.operationMaterialsTable,
+      );
   $$ActivityTableTableTableManager get activityTable =>
       $$ActivityTableTableTableManager(_db, _db.activityTable);
   $$FieldTableTableTableManager get fieldTable =>

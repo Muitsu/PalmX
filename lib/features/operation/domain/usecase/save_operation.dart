@@ -2,6 +2,7 @@ import 'package:fpdart/fpdart.dart';
 import 'package:injectable/injectable.dart';
 import 'package:palmx/core/error/failure.dart';
 import 'package:palmx/core/local/database.dart';
+import 'package:palmx/data/local/models/operation_material_model.dart';
 import 'package:palmx/features/operation/domain/repository/operation_repository.dart';
 
 @lazySingleton
@@ -11,7 +12,8 @@ class SaveOperation {
 
   Future<Either<Failure, int>> call({
     required OperationLogsTableCompanion entry,
+    List<OperationMaterialModel> materials = const [],
   }) async {
-    return await repository.save(entry: entry);
+    return await repository.save(entry: entry, materials: materials);
   }
 }

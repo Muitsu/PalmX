@@ -7,6 +7,7 @@ import 'package:palmx/core/widgets/input/custom_date_picker.dart';
 import 'package:palmx/data/local/models/activity_model.dart';
 import 'package:palmx/data/local/models/field_model.dart';
 import 'package:palmx/data/local/models/operation_log_model.dart';
+import 'package:palmx/data/local/models/operation_material_model.dart';
 import 'package:palmx/features/calendar/provider/calendar_provider.dart';
 import 'package:palmx/features/operation/domain/usecase/save_operation.dart';
 import 'package:provider/provider.dart';
@@ -38,6 +39,11 @@ class OperationProvider extends ChangeNotifier {
     isUpdate = operationData != null;
     _currentOperation =
         operationData ?? OperationLogModel(id: 0, operationDate: defaultDate);
+    if (_currentOperation!.materials.isEmpty) {
+      _currentOperation = _currentOperation!.copyData(
+        materials: [OperationMaterialModel.empty()],
+      );
+    }
     dateCtrl = TextEditingController(text: defaultDate.previewDate());
 
     acitivityCtrl = TextEditingController(text: operationData?.activityType);
@@ -203,16 +209,39 @@ class OperationProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void setMaterialCost({
+  void addMaterial() {
+    final updated = List<OperationMaterialModel>.from(
+      _currentOperation!.materials,
+    )..add(OperationMaterialModel.empty());
+    _currentOperation = _currentOperation!.copyData(materials: updated);
+    notifyListeners();
+  }
+
+  void removeMaterial(int index) {
+    // Always keep at least one material row.
+    if (_currentOperation!.materials.length <= 1) return;
+    final updated = List<OperationMaterialModel>.from(
+      _currentOperation!.materials,
+    )..removeAt(index);
+    _currentOperation = _currentOperation!.copyData(materials: updated);
+    notifyListeners();
+  }
+
+  void updateMaterial(
+    int index, {
     String? materialType,
     int? materialQty,
-    double? materialLitreRate,
+    double? materialRate,
   }) {
-    _currentOperation = _currentOperation!.copyData(
+    final updated = List<OperationMaterialModel>.from(
+      _currentOperation!.materials,
+    );
+    updated[index] = updated[index].copyData(
       materialType: materialType,
       materialQty: materialQty,
-      materialLitreRate: materialLitreRate,
+      materialRate: materialRate,
     );
+    _currentOperation = _currentOperation!.copyData(materials: updated);
     notifyListeners();
   }
 
@@ -239,6 +268,7 @@ class OperationProvider extends ChangeNotifier {
       entry: _currentOperation!.toInsert(
         ids: isUpdate ? _currentOperation!.id : null,
       ),
+      materials: _currentOperation!.materials,
     );
     bool success = false;
     results.fold(

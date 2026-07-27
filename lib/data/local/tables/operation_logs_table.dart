@@ -30,11 +30,6 @@ class OperationLogsTable extends Table {
   RealColumn get driverRate => real().withDefault(const Constant(70.38))();
   RealColumn get driverTotal => real().withDefault(const Constant(0.00))();
 
-  // Materials
-  TextColumn get materialType => text().nullable()();
-  IntColumn get materialQty => integer().nullable()();
-  RealColumn get materialLitreRate => real().nullable()();
-
   // Evit
   RealColumn get evitTime =>
       real().nullable().withDefault(const Constant(0.00))();

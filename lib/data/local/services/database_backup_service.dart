@@ -21,12 +21,16 @@ class DatabaseBackupService {
       final fields = await _db.select(_db.fieldTable).get();
       final materials = await _db.select(_db.materialTable).get();
       final logs = await _db.select(_db.operationLogsTable).get();
+      final operationMaterials = await _db
+          .select(_db.operationMaterialsTable)
+          .get();
 
       final Map<String, dynamic> exportData = {
         'activities': activities,
         'fields': fields,
         'materials': materials,
         'operationLogs': logs,
+        'operationMaterials': operationMaterials,
       };
 
       // 2. Serialize (Potential Memory error)
@@ -55,6 +59,8 @@ class DatabaseBackupService {
 
       await _db.transaction(() async {
         // 1. Clear existing data (Optional, but prevents ID conflicts)
+        // Child rows first so the operation logs' foreign key never dangles.
+        await _db.delete(_db.operationMaterialsTable).go();
         await _db.delete(_db.activityTable).go();
         await _db.delete(_db.fieldTable).go();
         await _db.delete(_db.materialTable).go();
@@ -93,6 +99,15 @@ class DatabaseBackupService {
             await _db
                 .into(_db.operationLogsTable)
                 .insert(OperationLogsTableData.fromJson(item));
+          }
+        }
+
+        // 6. Import OperationMaterials (after logs, since it references them)
+        if (data['operationMaterials'] != null) {
+          for (var item in data['operationMaterials']) {
+            await _db
+                .into(_db.operationMaterialsTable)
+                .insert(OperationMaterialsTableData.fromJson(item));
           }
         }
       });

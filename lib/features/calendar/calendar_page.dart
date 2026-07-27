@@ -44,6 +44,7 @@ class _CalendarPageState extends State<CalendarPage>
               ),
               onPageChanged: provider.onPageChanged,
               onDaySelected: provider.onDaySelected,
+              monthCostBuilder: provider.monthCostStream,
             ),
 
             if (provider.isLoading)

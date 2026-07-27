@@ -321,7 +321,7 @@ class _OperationLogFormPageState extends State<OperationLogFormPage> {
           ),
           _costItem(
             "Material cost",
-            "50 bags x RM45.50",
+            "${data?.materials.length ?? 0} material(s)",
             (data?.materialTotalCost ?? 0.00).toStringAsFixed(2),
             onTap: () {
               CustomDraggableSheet.show(

@@ -24,6 +24,10 @@ import 'package:palmx/features/home/domain/usecase/stream_monthly_total_cost.dar
 import 'package:palmx/features/home/domain/usecase/stream_recent.dart' as _i6;
 import 'package:palmx/features/home/domain/usecase/stream_total_recent.dart'
     as _i748;
+import 'package:palmx/features/home/domain/usecase/stream_yearly_percentage.dart'
+    as _i668;
+import 'package:palmx/features/home/domain/usecase/stream_yearly_total_cost.dart'
+    as _i321;
 import 'package:palmx/features/home/presentations/provider/home_provider.dart'
     as _i256;
 import 'package:palmx/features/operation/data/datasource/operation_log_local_datasource.dart'
@@ -36,6 +40,10 @@ import 'package:palmx/features/operation/domain/usecase/get_operation_by_month.d
     as _i160;
 import 'package:palmx/features/operation/domain/usecase/save_operation.dart'
     as _i911;
+import 'package:palmx/features/operation/domain/usecase/stream_filtered_operations.dart'
+    as _i535;
+import 'package:palmx/features/operation/presentation/provider/all_operations_provider.dart'
+    as _i236;
 import 'package:palmx/features/operation/presentation/provider/operation_provider.dart'
     as _i233;
 import 'package:palmx/features/settings/provider/setting_provider.dart'
@@ -76,24 +84,39 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i748.StreamTotalRecent>(
       () => _i748.StreamTotalRecent(gh<_i649.OperationRepository>()),
     );
+    gh.lazySingleton<_i668.StreamYearlyPercentage>(
+      () => _i668.StreamYearlyPercentage(gh<_i649.OperationRepository>()),
+    );
+    gh.lazySingleton<_i321.StreamYearlyTotalCost>(
+      () => _i321.StreamYearlyTotalCost(gh<_i649.OperationRepository>()),
+    );
     gh.lazySingleton<_i160.GetOperationByMonth>(
       () => _i160.GetOperationByMonth(gh<_i649.OperationRepository>()),
     );
     gh.lazySingleton<_i911.SaveOperation>(
       () => _i911.SaveOperation(gh<_i649.OperationRepository>()),
     );
-    gh.factory<_i233.OperationProvider>(
-      () => _i233.OperationProvider(gh<_i911.SaveOperation>()),
+    gh.lazySingleton<_i535.StreamFilteredOperations>(
+      () => _i535.StreamFilteredOperations(gh<_i649.OperationRepository>()),
     );
-    gh.factory<_i209.CalendarProvider>(
-      () => _i209.CalendarProvider(gh<_i160.GetOperationByMonth>()),
+    gh.factory<_i236.AllOperationsProvider>(
+      () => _i236.AllOperationsProvider(gh<_i535.StreamFilteredOperations>()),
     );
     gh.factory<_i256.HomeProvider>(
       () => _i256.HomeProvider(
         gh<_i6.StreamRecent>(),
-        gh<_i365.StreamMonthlyTotalCost>(),
+        gh<_i321.StreamYearlyTotalCost>(),
         gh<_i748.StreamTotalRecent>(),
-        gh<_i869.StreamMonthlyPercentage>(),
+        gh<_i668.StreamYearlyPercentage>(),
+      ),
+    );
+    gh.factory<_i233.OperationProvider>(
+      () => _i233.OperationProvider(gh<_i911.SaveOperation>()),
+    );
+    gh.factory<_i209.CalendarProvider>(
+      () => _i209.CalendarProvider(
+        gh<_i160.GetOperationByMonth>(),
+        gh<_i365.StreamMonthlyTotalCost>(),
       ),
     );
     return this;

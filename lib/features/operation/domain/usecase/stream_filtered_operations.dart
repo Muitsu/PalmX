@@ -3,10 +3,12 @@ import 'package:palmx/data/local/models/operation_log_model.dart';
 import 'package:palmx/features/operation/domain/repository/operation_repository.dart';
 
 @lazySingleton
-class StreamRecent {
+class StreamFilteredOperations {
   final OperationRepository repository;
-  StreamRecent(this.repository);
+  StreamFilteredOperations(this.repository);
 
-  Stream<List<OperationLogModel>> call({int limit = 4}) =>
-      repository.streamRecent(limit: limit);
+  Stream<List<OperationLogModel>> call({
+    DateTime? month,
+    String? activityType,
+  }) => repository.streamFiltered(month: month, activityType: activityType);
 }

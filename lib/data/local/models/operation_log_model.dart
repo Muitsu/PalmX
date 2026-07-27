@@ -1,7 +1,10 @@
 import 'package:drift/drift.dart';
 import 'package:palmx/core/local/database.dart';
+import 'package:palmx/data/local/models/operation_material_model.dart';
 
 class OperationLogModel extends OperationLogsTableData {
+  final List<OperationMaterialModel> materials;
+
   OperationLogModel({
     required super.id,
     required super.operationDate,
@@ -23,14 +26,15 @@ class OperationLogModel extends OperationLogsTableData {
     super.supervisionMandays = 0.0,
     super.driverRate = 0.0,
     super.driverTotal = 0.0,
-    super.materialType,
-    super.materialQty = 0,
-    super.materialLitreRate = 0.0,
     super.evitTime = 0,
     super.evitRate = 0.0,
-  });
+    List<OperationMaterialModel>? materials,
+  }) : materials = materials ?? const [];
 
-  factory OperationLogModel.fromDrift(OperationLogsTableData data) {
+  factory OperationLogModel.fromDrift(
+    OperationLogsTableData data, {
+    List<OperationMaterialModel> materials = const [],
+  }) {
     return OperationLogModel(
       id: data.id,
       operationDate: data.operationDate,
@@ -52,11 +56,9 @@ class OperationLogModel extends OperationLogsTableData {
       supervisionMandays: data.supervisionMandays,
       driverRate: data.driverRate,
       driverTotal: data.driverTotal,
-      materialType: data.materialType,
-      materialQty: data.materialQty,
-      materialLitreRate: data.materialLitreRate,
       evitTime: data.evitTime,
       evitRate: data.evitRate,
+      materials: materials,
     );
   }
 
@@ -81,11 +83,9 @@ class OperationLogModel extends OperationLogsTableData {
     double? supervisionMandays,
     double? driverRate,
     double? driverTotal,
-    String? materialType,
-    int? materialQty,
-    double? materialLitreRate,
     double? evitTime,
     double? evitRate,
+    List<OperationMaterialModel>? materials,
   }) {
     return OperationLogModel(
       id: id ?? this.id,
@@ -105,16 +105,12 @@ class OperationLogModel extends OperationLogsTableData {
       labourHarvestUnit: labourHarvestUnit ?? this.labourHarvestUnit,
       labourHarvestRate: labourHarvestRate ?? this.labourHarvestRate,
       supervisionRate: supervisionRate ?? this.supervisionRate,
-      supervisionMandays:
-          supervisionMandays ?? this.supervisionMandays, // Fixed here
+      supervisionMandays: supervisionMandays ?? this.supervisionMandays,
       driverRate: driverRate ?? this.driverRate,
-      driverTotal: driverTotal ?? this.driverTotal, // Fixed here
-      materialType: materialType ?? this.materialType,
-      materialQty: materialQty ?? this.materialQty, // Fixed here
-      materialLitreRate:
-          materialLitreRate ?? this.materialLitreRate, // Fixed here
-      evitTime: evitTime ?? this.evitTime, // Fixed here
-      evitRate: evitRate ?? this.evitRate, // Fixed here
+      driverTotal: driverTotal ?? this.driverTotal,
+      evitTime: evitTime ?? this.evitTime,
+      evitRate: evitRate ?? this.evitRate,
+      materials: materials ?? this.materials,
     );
   }
 
@@ -140,9 +136,6 @@ class OperationLogModel extends OperationLogsTableData {
       supervisionMandays: Value(supervisionMandays),
       driverRate: Value(driverRate),
       driverTotal: Value(driverTotal),
-      materialType: Value(materialType),
-      materialQty: Value(materialQty),
-      materialLitreRate: Value(materialLitreRate),
       evitTime: Value(evitTime),
       evitRate: Value(evitRate),
     );
@@ -165,7 +158,7 @@ class OperationLogModel extends OperationLogsTableData {
   double get driverTotalCost => (driverTotal * driverRate);
 
   double get materialTotalCost =>
-      ((materialQty ?? 0) * (materialLitreRate ?? 0));
+      materials.fold(0.0, (sum, m) => sum + m.totalCost);
 
   double get evitTotalCost => ((evitRate ?? 0) * (evitTime ?? 0));
 

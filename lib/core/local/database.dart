@@ -13,7 +13,13 @@ part 'database.g.dart';
 //dart run build_runner build --delete-conflicting-outputs
 
 @DriftDatabase(
-  tables: [OperationLogsTable, ActivityTable, FieldTable, MaterialTable],
+  tables: [
+    OperationLogsTable,
+    OperationMaterialsTable,
+    ActivityTable,
+    FieldTable,
+    MaterialTable,
+  ],
 )
 class AppDatabase extends _$AppDatabase {
   AppDatabase._internal() : super(_openConnection());
@@ -23,7 +29,7 @@ class AppDatabase extends _$AppDatabase {
   factory AppDatabase() => _instance;
 
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 2;
 
   @override
   MigrationStrategy get migration => DatabaseMigration.strategy(this);
